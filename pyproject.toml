@@ -1,0 +1,31 @@
+[project]
+name = "joblens"
+version = "0.1.0"
+description = "AI job market assistant"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "pre-commit",
+]
+
+[tool.ruff]
+# Matches black's default so the two tools do not disagree.
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.pytest.ini_options]
+# Lets tests import from src/ without installing the project.
+pythonpath = ["src"]
+testpaths = ["tests"]
