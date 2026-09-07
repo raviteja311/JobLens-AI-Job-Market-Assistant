@@ -1,0 +1,31 @@
+# Local Postgres for development and tests.
+#
+#   docker compose up -d db
+#
+# The data lives in a named volume so it survives a container restart. Wipe it
+# with `docker compose down -v` when you want to start from an empty database.
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=joblens
+      - POSTGRES_PASSWORD=joblens
+      - POSTGRES_DB=joblens
+
+    ports:
+      - "5432:5432"
+    
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U joblens"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      
+
+volumes:
+  pgdata:
+  
