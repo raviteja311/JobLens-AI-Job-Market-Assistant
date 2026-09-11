@@ -3,7 +3,12 @@ name = "joblens"
 version = "0.1.0"
 description = "AI job market assistant"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "httpx >= 0.27",
+    "psycopg[binary] >= 3.2",
+    "pydantic >= 2.7",
+    "pydantic-settings >= 2.2"
+]
 
 [project.optional-dependencies]
 dev = [
@@ -19,7 +24,7 @@ line-length = 88
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I"]
+select = ["E", "F", "I", "B"]
 
 [tool.black]
 line-length = 88
@@ -29,3 +34,6 @@ target-version = ["py312"]
 # Lets tests import from src/ without installing the project.
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = [
+    "db : needs a running Postgres. Skipped automatically when none is reachable"
+]
