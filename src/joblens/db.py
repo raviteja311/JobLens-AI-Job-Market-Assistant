@@ -106,9 +106,9 @@ def fetch_raw(
     source: str | None = None,
 ) -> list[dict]:
     """Pull raw rows back out for transforming.
-        With no run_id this returns the latest raw row per posting across all
-        history, which is what you want when re-running the transform after a
-        parser fix.
+    With no run_id this returns the latest raw row per posting across all
+    history, which is what you want when re-running the transform after a
+    parser fix.
     """
     if run_id is not None:
         result = conn.execute(

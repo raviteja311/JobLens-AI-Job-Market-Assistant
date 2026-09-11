@@ -1,4 +1,3 @@
-
 import json
 import os
 import uuid
@@ -10,6 +9,7 @@ from joblens.models import Posting, RawItem
 
 pytestmark = pytest.mark.db
 
+
 def _database_available() -> bool:
     try:
         with db.connect() as conn:
@@ -17,12 +17,15 @@ def _database_available() -> bool:
         return True
     except Exception:
         return False
+
+
 pytest.importorskip("psycopg")
 if not _database_available():
     pytest.skip(
         "no Postgres reachable at DATABASE_URL, skipping db tests",
         allow_module_level=True,
     )
+
 
 @pytest.fixture
 def conn():
@@ -33,6 +36,7 @@ def conn():
         connection.execute("truncate postings, raw_postings, ingestion_runs")
         connection.commit()
         yield connection
+
 
 def make_posting(source_id: str = "1", title: str = "ML Engineer") -> Posting:
     return Posting.build(
@@ -46,6 +50,7 @@ def make_posting(source_id: str = "1", title: str = "ML Engineer") -> Posting:
         description_html="<p>Build models.</p>",
     )
 
+
 def test_upsert_inserts_then_updates(conn):
     inserted, updated = db.upsert_postings(conn, [make_posting()])
     assert (inserted, updated) == (1, 0)
@@ -54,12 +59,14 @@ def test_upsert_inserts_then_updates(conn):
     total = conn.execute("select count(*) as n from postings").fetchone()["n"]
     assert total == 1
 
+
 def test_running_twice_does_not_duplicate_rows(conn):
     postings = [make_posting(str(i)) for i in range(5)]
     db.upsert_postings(conn, postings)
     db.upsert_postings(conn, postings)
     total = conn.execute("select count(*) as n from postings").fetchone()["n"]
     assert total == 5
+
 
 def test_last_seen_at_moves_but_first_seen_at_does_not(conn):
     db.upsert_postings(conn, [make_posting()])
@@ -68,6 +75,7 @@ def test_last_seen_at_moves_but_first_seen_at_does_not(conn):
     second = conn.execute("select first_seen_at, last_seen_at from postings").fetchone()
     assert second["first_seen_at"] == first["first_seen_at"]
     assert second["last_seen_at"] >= first["last_seen_at"]
+
 
 def test_duplicate_count_spots_the_same_job_on_two_boards(conn):
     same_job = Posting.build(
@@ -81,6 +89,7 @@ def test_duplicate_count_spots_the_same_job_on_two_boards(conn):
     db.upsert_postings(conn, [make_posting(), same_job])
     assert db.count_duplicates(conn) == 1
 
+
 def test_raw_rows_round_trip(conn):
     run_id = db.start_run(conn, "remoteok")
     payload = {"id": "42", "position": "ML Engineer", "company": "Acme"}
@@ -93,6 +102,7 @@ def test_raw_rows_round_trip(conn):
         stored = json.loads(stored)
     assert stored["position"] == "ML Engineer"
 
+
 def test_run_log_records_success(conn):
     run_id = db.start_run(conn, "remoteok")
     db.finish_run(conn, run_id, status="ok", fetched=10, inserted=8, updated=2)
@@ -103,6 +113,7 @@ def test_run_log_records_success(conn):
     assert row["fetched"] == 10
     assert row["finished_at"] is not None
 
+
 def test_run_log_records_failure(conn):
     run_id = db.start_run(conn, "adzuna")
     db.finish_run(conn, run_id, status="failed", error="429 from upstream")
@@ -111,9 +122,11 @@ def test_run_log_records_failure(conn):
     ).fetchone()
     assert row["status"] == "failed"
     assert "429" in row["error"]
-    
+
+
 def test_unknown_run_id_returns_nothing(conn):
     assert db.fetch_raw(conn, run_id=uuid.uuid4()) == []
+
 
 def test_database_url_is_not_a_production_looking_url():
     # Cheap guard against someone running the truncating fixtures against a
