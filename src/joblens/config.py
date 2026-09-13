@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     adzuna_country: str = "gb"
 
     @property
-    def adzuna_enables(self) -> bool:
+    def adzuna_enabled(self) -> bool:
         return bool(self.adzuna_app_id and self.adzuna_app_key)
 
 

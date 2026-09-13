@@ -1,0 +1,30 @@
+{
+  "id": 41000001,
+  "title": "Ask HN: Who is hiring? (September 2026)",
+  "children": [
+    {
+      "id": 41000010,
+      "author": "acmehiring",
+      "created_at": "2026-09-01T13:02:00.000Z",
+      "text": "Acme Robotics | Senior ML Engineer | London, UK | REMOTE | &#163;90k - &#163;120k<p>We build perception systems. Email jobs@acme.example"
+    },
+    {
+      "id": 41000011,
+      "author": "tinyco",
+      "created_at": "2026-09-01T14:20:00.000Z",
+      "text": "Tessellate | Data Engineer | Berlin, Germany | ONSITE | 75000 EUR per year<p>dbt, Airflow, Postgres."
+    },
+    {
+      "id": 41000012,
+      "author": "curious",
+      "created_at": "2026-09-01T15:00:00.000Z",
+      "text": "Does anyone know if these threads still work for finding remote roles?"
+    },
+    {
+      "id": 41000013,
+      "author": "deleted",
+      "created_at": "2026-09-01T15:30:00.000Z",
+      "text": null
+    }
+  ]
+}
