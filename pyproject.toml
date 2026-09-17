@@ -13,6 +13,9 @@ dependencies = [
     "pandas >= 2.2",
     "scikit-learn >= 1.5",
     "joblib >= 1.4",
+    # Phase 3 onwards.
+    "sentence-transformers >= 3.0",
+    "pyyaml >= 6.0",
 ]
 
 [project.optional-dependencies]
@@ -42,4 +45,5 @@ testpaths = ["tests"]
 markers = [
     "db : needs a running Postgres. Skipped automatically when none is reachable",
     "slow : model training. Runs in CI, skip locally with -m 'not slow'",
+    "eval : scores retrieval or generation against the golden set",
 ]

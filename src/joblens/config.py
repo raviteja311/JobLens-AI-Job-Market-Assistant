@@ -31,6 +31,13 @@ class Settings(BaseSettings):
     adzuna_app_key: str | None = None
     adzuna_country: str = "gb"
 
+    # Phase 3. The local embedder needs nothing; the API one is only used to
+    # reproduce the cost/quality comparison.
+    embedder: str = "local"
+    chunk_strategy: str = "whole"
+    embedding_api_base: str = "https://api.openai.com/v1"
+    embedding_api_key: str | None = None
+
     @property
     def adzuna_enabled(self) -> bool:
         return bool(self.adzuna_app_id and self.adzuna_app_key)

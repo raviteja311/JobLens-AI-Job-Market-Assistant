@@ -3,7 +3,8 @@
 
 PY ?= python
 
-.PHONY: install migrate ingest transform stats skills train cluster trends test lint format check
+.PHONY: install migrate ingest transform stats skills train cluster trends \
+	embed dedup test test-db lint format check
 
 install:
 	$(PY) -m pip install -e ".[dev]"
@@ -32,6 +33,12 @@ cluster:
 
 trends:
 	$(PY) -m joblens trends
+
+embed:
+	$(PY) -m joblens embed --strategy whole --strategy section
+
+dedup:
+	$(PY) -m joblens dedup --save
 
 test:
 	$(PY) -m pytest -q

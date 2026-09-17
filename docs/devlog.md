@@ -6,6 +6,55 @@ Newest entry at the top.
 
 ---
 
+## Phase 3 - embeddings and semantic search
+
+**Did:** pgvector, two chunking strategies, a local MiniLM, hybrid retrieval
+with reciprocal rank fusion, a cross-encoder reranker, embedding-based dedup,
+and the golden set that makes any of it measurable.
+
+**What broke first:** the keyword arm of the hybrid returned nothing. Not
+"poor results", literally zero rows for every natural-language query.
+`websearch_to_tsquery` ANDs its terms, so "remote machine learning engineer
+working on LLMs" became `remot & machin & learn & engin & work & llm` and no
+posting on earth contains all six. The hybrid was running as vector-only and
+the tests all passed, because I had not written a test that asserted the
+keyword arm returned anything.
+
+**Decided:** OR the lexemes and let `ts_rank_cd` handle precision. Extracting
+terms from `to_tsvector` and joining with `|` gets stemming and stopwords
+right with no escaping to get wrong.
+
+**The result I did not want:** hybrid is worse than plain vector search on my
+queries. Worse on recall@5, recall@10 and MRR. Fusing a noisy retriever with
+a good one by rank means the noisy one's rank-1 junk gets the same weight as
+the good one's rank-1 answer, and RRF has no way to know the difference.
+
+I nearly did not write that down. The plan says hybrid beats both, every
+write-up says hybrid beats both, and it would have been easy to report the
+one metric where it wins and move on. What stopped me is that the same
+instinct is what produces the LinkedIn posts I do not believe.
+
+**Where hybrid does earn its place:** query "pgvector". Vector search returns
+Marketing Manager, Chicago or Washington DC, and ON SITE TORONTO, because an
+embedding of "pgvector" is mostly "database". Keyword search returns the one
+posting that names it, at rank 1. Two queries out of fifteen look like that,
+so the average cannot see it. Kept hybrid as the default, wrote down why, and
+put the cost in the limitations.
+
+**The golden set took the longest and was worth it.** Judgements key on
+(source, source_id) rather than posting.id, because the test suite truncates
+the database and every id shifts on the next ingest. Candidates come from a
+pool of all three retrievers, since labelling only what the system returns
+scores it against its own blind spots.
+
+**Honest about it:** 15 of 60 queries judged, and judged from titles and
+snippets rather than full postings. The retrieval table rests entirely on
+that, so it says so.
+
+**Next:** Phase 4, the two LLM features.
+
+---
+
 ## Phase 2 - classic ML layer
 
 **Did:** skill extraction (alias table plus a TF-IDF keyword baseline), salary

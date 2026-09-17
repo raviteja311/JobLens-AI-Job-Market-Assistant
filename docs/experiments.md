@@ -174,3 +174,140 @@ behaviour, so coverage should not be read as 41% missed.
 **Decision.** Ship it. Do not grow the table by guessing; grow it from
 `tfidf_keywords()`, which surfaces terms that are frequent in a posting and
 absent from the taxonomy. Coverage is the number Phase 6 reports against.
+
+---
+
+## 2026-09-17 - Retrieval: hybrid lost to plain vector search
+
+**Hypothesis.** Hybrid retrieval beats either half. Keyword search knows
+exact terms, vector search knows vague ones, and reciprocal rank fusion keeps
+both strengths. This is the received wisdom and the reason the plan called
+for it.
+
+**Setup.** 15 hand-judged queries over 465 postings, graded 0/1/2. Judgements
+key on (source, source_id) rather than the primary key, so they survive a
+re-ingest into an empty database. Every configuration goes through
+`retrieval.search`, the same function `/search` calls. Both models warmed
+before timing.
+
+**Result.**
+
+| configuration | recall@5 | recall@10 | mrr | ndcg@10 | ms/query |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.299 | 0.358 | 0.406 | 0.328 | 25 |
+| vector (whole) | 0.569 | 0.692 | 0.773 | 0.598 | 34 |
+| vector (section) | 0.491 | 0.813 | 0.734 | 0.684 | 35 |
+| hybrid (whole) | 0.438 | 0.666 | 0.761 | 0.620 | 94 |
+| hybrid (section) | 0.430 | 0.646 | 0.736 | 0.600 | 93 |
+| hybrid + rerank | 0.497 | 0.725 | 0.900 | 0.692 | 3145 |
+
+Hybrid is worse than vector alone on recall@5, recall@10 and MRR. It is
+better on nDCG@10, and only because vector (whole) is unusually weak there.
+
+**Why.** Keyword retrieval here ORs its terms, because ANDing them (which is
+what `websearch_to_tsquery` and `plainto_tsquery` both do) returns literally
+nothing for a query like "remote machine learning engineer working on LLMs".
+OR plus `ts_rank_cd` is the standard fix and it works, but for a six-word
+natural-language query it still ranks a posting matching only "engineer"
+first. RRF does not care that the keyword arm has no idea what it is doing:
+it gives that posting rank 1 and therefore the same 1/(60+1) that the vector
+arm's genuinely best result gets.
+
+So fusion is not adding a second opinion, it is adding noise with a vote.
+
+**Where hybrid does win**, and the reason it stays the default: the rare
+token. On the query "pgvector", vector search returns Marketing Manager,
+Chicago or Washington DC, and ON SITE TORONTO, because an embedding of
+"pgvector" is mostly "database". Keyword search returns the one posting that
+names it, at rank 1. Hybrid returns that posting first and the vector results
+below. A 15-query set with two such queries in it cannot show that as an
+average, which is an argument about the golden set and not about the method.
+
+**Decision.** Keep hybrid as the default and stop claiming it is better.
+The honest summary is that hybrid is insurance against the query type that
+embeddings cannot handle at all, bought at a measurable cost on ordinary
+queries. Revisit with a weighted fusion that down-weights the keyword arm
+when its top score is low, and measure that instead of assuming it.
+
+**Reranking is the real win.** MRR 0.773 to 0.900 means the first relevant
+result moved from about rank 1.3 to about rank 1.1. It costs 3.1 seconds a
+query on CPU, which is 90x the first stage, so it is off by default and on
+behind a flag.
+
+---
+
+## 2026-09-17 - Chunking: sections win on depth, whole wins on the top
+
+**Hypothesis.** Job postings are short enough to embed whole. Splitting them
+by section should not help.
+
+**Setup.** Same 15 queries. 465 postings became 465 whole chunks (1,223 chars
+average) or 1,091 section chunks (805 chars average). A posting's score is
+its best chunk, not its average, so a long posting is not penalised for the
+paragraphs that do not match.
+
+**Result.** Section chunking is better at recall@10 (0.813 vs 0.692) and
+nDCG@10 (0.684 vs 0.598), and worse at recall@5 (0.491 vs 0.569) and MRR
+(0.734 vs 0.773).
+
+That split is the whole finding. One vector per posting averages the four
+things a posting is about, which makes the strongest match slightly blunter
+but keeps the document coherent, so the very top of the ranking is good.
+Section vectors match sharply on one paragraph, which surfaces postings the
+whole-document vector missed entirely, but a posting can win on a paragraph
+about the company's funding round rather than the job.
+
+**Decision.** `whole` stays the default because the top three results are
+what a user looks at. `section` is one config flag away and is the better
+choice for /chat, where the retriever feeds eight sources to a model and
+breadth matters more than the exact order. Both stay indexed; the storage
+cost is 1,091 rows.
+
+---
+
+## 2026-09-17 - Dedup: embeddings and the hash disagree in both directions
+
+**Hypothesis.** Embedding similarity is a superset of the Phase 1 content
+hash. Identical text has cosine similarity 1.0, so anything the hash finds
+the embeddings must also find.
+
+**Result.** Wrong, and instructively so.
+
+| threshold | hash pairs | embedding pairs | both | embedding only | hash only |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.90 | 26 | 31 | 19 | 12 | 7 |
+| 0.93 | 26 | 26 | 19 | 7 | 7 |
+| 0.95 | 26 | 26 | 19 | 7 | 7 |
+| 0.97 | 26 | 19 | 16 | 3 | 10 |
+
+Seven pairs the hash finds survive even at a 0.90 threshold. The two methods
+read different fields: the hash is title, company and location with seniority
+words stripped, so it pairs "Senior ML Engineer, London" with "ML Engineer,
+London" at the same company even when the two descriptions share nothing. The
+embedding reads the description, so it pairs postings describing the same work
+under different titles.
+
+**Decision.** Threshold 0.93, and keep both. Verdicts go to
+`posting_duplicates` with the method recorded, so a results page can suppress
+either or both and the counts stay comparable. The Phase 1 hash was never a
+baseline to be replaced; it is a second signal that happens to be free.
+
+---
+
+## 2026-09-17 - Local embeddings, and the comparison that did not run
+
+**Result.** all-MiniLM-L6-v2 on CPU: 384 dimensions, 1.67 ms per text at
+batch size 64, $0.00. Indexing the whole corpus is 25 seconds for the whole
+strategy and 55 seconds for sections.
+
+**Not done.** The plan calls for comparing this against an API embedding
+model on cost, latency and quality. `ApiEmbedder` is implemented behind the
+same interface and the eval harness can score either, but no
+`EMBEDDING_API_KEY` is configured, so there is nothing to report. Quoting a
+comparison from the provider's marketing page would be worse than leaving
+this blank.
+
+What can be said without the key: a 384-dimension local model retrieves
+well enough that MRR is 0.77 before reranking, on hardware that costs nothing
+per query, which is the number an API model would have to beat rather than
+merely match.

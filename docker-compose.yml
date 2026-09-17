@@ -7,7 +7,7 @@
 
 services:
   db:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     environment:
       - POSTGRES_USER=joblens
       - POSTGRES_PASSWORD=joblens

@@ -137,6 +137,50 @@ def cmd_trends(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_embed(args: argparse.Namespace) -> int:
+    """Phase 3: build the vector index."""
+    from joblens.search.embeddings import get_embedder
+    from joblens.search.index import build_index, index_stats
+
+    embedder = get_embedder(args.embedder)
+    for strategy in args.strategy or ["whole"]:
+        log.info(build_index(strategy, embedder, rebuild=args.rebuild).summary())
+    for row in index_stats():
+        print(
+            f"  {row['strategy']:<8} {row['model']:<20} {row['chunks']:>6} chunks"
+            f"  {row['postings']:>5} postings  avg {row['avg_chars']} chars"
+        )
+    return 0
+
+
+def cmd_search(args: argparse.Namespace) -> int:
+    from joblens.search import retrieval
+
+    with db.connect() as conn:
+        hits = retrieval.search(
+            conn,
+            args.query,
+            mode=args.mode,
+            strategy=args.strategy,
+            limit=args.limit,
+            rerank=args.rerank,
+        )
+    for i, hit in enumerate(hits, start=1):
+        where = "remote" if hit.is_remote else (hit.location or "")
+        print(f"{i:>3}. {hit.score:7.4f}  {hit.title[:60]}")
+        print(f"      {hit.company[:40]:<40} {where[:28]:<28} {hit.ranks}")
+    return 0
+
+
+def cmd_dedup(args: argparse.Namespace) -> int:
+    from joblens.search import dedup
+
+    print(dedup.compare_to_hash(args.threshold))
+    if args.save:
+        log.info("recorded %s pairs", dedup.record(dedup.candidates(args.threshold)))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="joblens", description=__doc__)
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -179,6 +223,27 @@ def build_parser() -> argparse.ArgumentParser:
     trends_cmd = sub.add_parser("trends", help="skill and demand trends")
     trends_cmd.add_argument("--days", type=int, default=90)
     trends_cmd.set_defaults(func=cmd_trends)
+
+    embed = sub.add_parser("embed", help="build the vector index")
+    embed.add_argument("--strategy", action="append", choices=["whole", "section"])
+    embed.add_argument("--embedder", default="local", choices=["local", "api"])
+    embed.add_argument("--rebuild", action="store_true")
+    embed.set_defaults(func=cmd_embed)
+
+    search_cmd = sub.add_parser("search", help="search the postings")
+    search_cmd.add_argument("query")
+    search_cmd.add_argument(
+        "--mode", default="hybrid", choices=["keyword", "vector", "hybrid"]
+    )
+    search_cmd.add_argument("--strategy", default="whole", choices=["whole", "section"])
+    search_cmd.add_argument("--limit", type=int, default=10)
+    search_cmd.add_argument("--rerank", action="store_true")
+    search_cmd.set_defaults(func=cmd_search)
+
+    dedup_cmd = sub.add_parser("dedup", help="embedding dedup vs the hash baseline")
+    dedup_cmd.add_argument("--threshold", type=float, default=0.93)
+    dedup_cmd.add_argument("--save", action="store_true")
+    dedup_cmd.set_defaults(func=cmd_dedup)
 
     return parser
 
