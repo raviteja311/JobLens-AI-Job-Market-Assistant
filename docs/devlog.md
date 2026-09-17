@@ -6,6 +6,49 @@ Newest entry at the top.
 
 ---
 
+## Phase 4 - RAG chat and resume matching
+
+**Did:** /chat with citations, /match for resumes, versioned prompt files,
+schema-validated structured output with repair retries, full LLM call
+logging, a rate limit, the FastAPI backend and a Streamlit UI.
+
+**Decided first, before any endpoint:** the `llm_calls` table. Prompt,
+response, tokens, cost, latency, attempt count, prompt version. Writing it
+after the fact is impossible, because the questions it answers are all about
+calls that already happened.
+
+**Decided:** when retrieval scores below a threshold, the model is never
+called at all. The failure mode I was actually afraid of is not a wrong
+answer, it is a fluent one. Ask an always-answering RAG system something the
+corpus cannot address and you get a confident paragraph about the job market
+that a user has no way to distinguish from a real answer. Cheaper, faster and
+safer to refuse in code.
+
+Tested it with "what is the capital of Peru?" Retrieval returned five
+postings over the threshold, so the model did run, and it said the postings
+contain no information about Peru. The prompt held where the threshold did
+not, which is two layers doing their job rather than one.
+
+**Decided:** prompts in `prompts/<name>/<version>.md`, never f-strings. Used
+`string.Template` and not `str.format`, because these prompts are full of
+JSON schema examples and every brace would need doubling. `safe_substitute`
+and not `substitute`, because postings are full of dollar signs and a `$120k`
+in a description should not raise KeyError mid-request.
+
+**Retries carry the error.** "That did not parse, try again" gets the same
+broken output back. "field fit_score must be an integer between 0 and 100,
+you sent 'high'" usually does not. The attempt count goes in the log so a
+prompt regression shows up as a rising average before anyone notices.
+
+**What surprised me:** llama3.1 on CPU takes about 50 seconds an answer with
+six sources. That number changes the design of Phase 5 rather than being an
+inconvenience: a 60-question chat eval would take an hour and would therefore
+never be run.
+
+**Next:** Phase 5, and the thing that separates this from every other repo.
+
+---
+
 ## Phase 3 - embeddings and semantic search
 
 **Did:** pgvector, two chunking strategies, a local MiniLM, hybrid retrieval

@@ -4,7 +4,7 @@
 PY ?= python
 
 .PHONY: install migrate ingest transform stats skills train cluster trends \
-	embed dedup test test-db lint format check
+	embed dedup serve ui test test-db lint format check
 
 install:
 	$(PY) -m pip install -e ".[dev]"
@@ -39,6 +39,12 @@ embed:
 
 dedup:
 	$(PY) -m joblens dedup --save
+
+serve:
+	$(PY) -m joblens serve --reload
+
+ui:
+	$(PY) -m streamlit run app.py
 
 test:
 	$(PY) -m pytest -q

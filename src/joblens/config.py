@@ -38,9 +38,29 @@ class Settings(BaseSettings):
     embedding_api_base: str = "https://api.openai.com/v1"
     embedding_api_key: str | None = None
 
+    # Phase 4. `llm_backend` picks which of these two is live, so the same
+    # code path serves whichever one is configured.
+    llm_backend: str = "ollama"
+    llm_model: str = "llama3.1"
+    ollama_base_url: str = "http://localhost:11434"
+    anthropic_api_key: str | None = None
+    anthropic_model: str = "claude-sonnet-5"
+    llm_max_tokens: int = 1024
+    llm_timeout: float = 120.0
+
+    # Per-caller request budget for the LLM endpoints, counted in a fixed
+    # window. Small on purpose: this is a personal project with a public URL.
+    rate_limit_per_minute: int = 10
+
     @property
     def adzuna_enabled(self) -> bool:
         return bool(self.adzuna_app_id and self.adzuna_app_key)
+
+    @property
+    def llm_enabled(self) -> bool:
+        if self.llm_backend == "anthropic":
+            return bool(self.anthropic_api_key)
+        return self.llm_backend == "ollama"
 
 
 @lru_cache

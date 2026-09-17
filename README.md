@@ -5,9 +5,9 @@ Collects real AI/ML job postings daily, then offers semantic search,
 resume matching, grounded chat with citations, and a live analytics
 dashboard.
 
-Status: Phases 0-3 complete. 465 postings from 2 live sources, and hybrid
-search over pgvector scored against a hand-judged golden set. Phase 4
-(RAG chat and resume matching) is next.
+Status: Phases 0-4 complete. 465 postings from 2 live sources, hybrid search
+over pgvector, and grounded chat and resume matching on a local LLM.
+Phase 5 (the evaluation harness) is next.
 
 ## Development process
 
@@ -17,8 +17,8 @@ that failed, go in `docs/experiments.md`.
 
 ## Setup
 
-Requires Python 3.12 and Docker. The database image is `pgvector/pgvector`,
-not plain `postgres`.
+Requires Python 3.12 and Docker. The LLM features need either Ollama running
+locally or an Anthropic key; everything else runs without both.
 
 ```bash
 python -m venv .venv
@@ -33,6 +33,8 @@ python -m joblens ingest
 python -m joblens embed --strategy whole --strategy section
 ```
 
+Then `make serve` for the API and `make ui` for the dashboard.
+
 ## Commands
 
 Everything runs through one entry point, so the cron job, CI and a human
@@ -44,7 +46,10 @@ python -m joblens transform            # re-parse bronze after a parser fix
 python -m joblens stats                # what is in the database right now
 python -m joblens embed                # build the vector index
 python -m joblens search "remote LLM role" --rerank
-python -m joblens dedup                # embedding dedup vs the hash baseline
+python -m joblens chat "who is hiring Rust engineers?"
+python -m joblens match resume.pdf     # rank jobs against a resume
+python -m joblens spend                # what the LLM calls have cost
+python -m joblens serve                # the API
 ```
 
 ## Repo structure
@@ -53,7 +58,11 @@ python -m joblens dedup                # embedding dedup vs the hash baseline
 src/joblens/         ingestion pipeline, sources, database
 src/joblens/ml/      Phase 2: skills, salary model, clustering, trends
 src/joblens/search/  Phase 3: chunking, embeddings, retrieval, reranking
+src/joblens/llm/     Phase 4: LLM backends, versioned prompts, call logging
+src/joblens/rag/     Phase 4: grounded chat, resume matching
+src/joblens/api/     Phase 4: FastAPI backend
 src/joblens/eval/    Phase 3: golden set, retrieval metrics
+prompts/             versioned prompt files, one directory per prompt
 data/golden/         the judged queries everything is scored against
 tests/               pytest suite
 migrations/          schema, applied by `joblens migrate`
@@ -220,7 +229,45 @@ be worse than leaving it blank.
 
 ### Phase 4: RAG chat and resume matching
 
-<!-- Endpoint behaviour, prompt versioning, cost per request. -->
+**`/chat`** retrieves, builds a prompt with numbered sources, and answers with
+citations. The part worth reading is what happens when retrieval finds
+nothing: the model is never called. A RAG system that always answers is easy
+to build and useless, because its answer to a question the corpus cannot
+address is indistinguishable from a real one. `MIN_SCORE` in
+`src/joblens/rag/chat.py` is that switch and is the first thing to check when
+someone reports a hallucination.
+
+**`/match`** takes a resume PDF, extracts skills with a schema-validated LLM
+call, retrieves candidate jobs, and scores each one for fit with matched and
+missing skills. The Phase 2 dictionary runs on the same text as a free
+control; when the two disagree badly, one of them is wrong and the call log
+says which. `missing_skills` is the useful output: fit scores are easy to
+produce and hard to trust, while "this posting wants Kubernetes and your
+resume does not mention it" is checkable by the person reading it.
+
+**Prompts live in `prompts/<name>/<version>.md`** and are never inlined. A
+prompt is the most-changed and least-reviewed part of an LLM feature; on disk
+with a version, `git log prompts/` is the change history and the A/B harness
+is a loop over two directory entries.
+
+**Structured output** is JSON validated against a pydantic model, retried with
+the actual validation error appended rather than a bare "try again". The retry
+count is logged, because a rising average is the earliest signal a prompt has
+regressed.
+
+**Every LLM call is logged** to `llm_calls`: prompt, response, tokens, cost,
+latency, attempts, and which prompt version produced it. Written before the
+first endpoint, because "why did that answer change" cannot be answered
+retroactively. `python -m joblens spend` reads it.
+
+**Backends.** Ollama (llama3.1, local, free) and Anthropic behind one
+interface, switched by config. Ollama is what runs here, which is why the eval
+suite can run without a card on file. It is also slow: about 50 seconds per
+answer on CPU.
+
+`/chat` and `/match` are rate limited to 10 requests a minute per caller. The
+whole point of the project is a public URL, and a public URL with an uncapped
+model call behind it is someone else's free inference endpoint.
 
 ### Phase 5: Evaluation harness
 
@@ -260,5 +307,9 @@ Kept current and honest.
 - **Locations are a lookup table, not a geocoder.** 37% of postings have no
   usable location.
 - **Skill extraction knows 80 skills** and nothing else.
+- **`/chat` on a local model takes about 50 seconds an answer** on CPU, and
+  llama3.1 is weaker than an API model at following the citation format.
+- **The rate limit is per process and in memory.** Correct for one process,
+  wrong the moment there are two.
 - **The test suite truncates the development database.** Point `DATABASE_URL`
   at anything you care about and `pytest` will empty it.

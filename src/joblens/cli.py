@@ -181,6 +181,67 @@ def cmd_dedup(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_chat(args: argparse.Namespace) -> int:
+    from joblens.rag import chat as chat_rag
+
+    with db.connect() as conn:
+        answer = chat_rag.ask(conn, args.question, limit=args.limit)
+    print(answer.answer)
+    print()
+    for source in answer.sources:
+        print(f"  [{source.n}] {source.title[:56]} | {source.company[:26]}")
+        print(f"       {source.url}")
+    print(f"\ngrounded={answer.grounded}  {answer.took_ms}ms  ${answer.cost_usd:.5f}")
+    return 0
+
+
+def cmd_match(args: argparse.Namespace) -> int:
+    from pathlib import Path as _Path
+
+    from joblens.rag import resume as resume_rag
+
+    data = _Path(args.resume).read_bytes()
+    text = (
+        resume_rag.pdf_to_text(data)
+        if args.resume.lower().endswith(".pdf")
+        else data.decode("utf-8", errors="replace")
+    )
+    with db.connect() as conn:
+        report = resume_rag.match_resume(conn, text, limit=args.limit)
+    print(f"LLM skills : {', '.join(report.profile.skills)}")
+    print(f"rule-based : {', '.join(report.rule_based_skills)}")
+    print()
+    for match in report.matches:
+        verdict = match.verdict
+        print(f"  {verdict.fit_score:>3}  {match.title[:52]} | {match.company[:24]}")
+        print(f"       {verdict.reasoning[:150]}")
+        print(f"       missing: {', '.join(verdict.missing_skills) or 'nothing'}")
+    print(f"\n{report.took_ms}ms  ${report.cost_usd:.5f}")
+    return 0
+
+
+def cmd_spend(args: argparse.Namespace) -> int:
+    from joblens.llm.client import spend
+
+    for row in spend(args.days):
+        print(
+            f"  {row['day']}  {row['feature']:<14} {row['backend']:<10}"
+            f" {row['calls']:>4} calls  {row['tokens'] or 0:>7} tokens"
+            f"  ${row['usd']:>8}  {row['avg_ms'] or 0:>6}ms"
+            f"  retries {row['avg_attempts']}  failed {row['failures']}"
+        )
+    return 0
+
+
+def cmd_serve(args: argparse.Namespace) -> int:
+    import uvicorn
+
+    uvicorn.run(
+        "joblens.api.main:app", host=args.host, port=args.port, reload=args.reload
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="joblens", description=__doc__)
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -244,6 +305,26 @@ def build_parser() -> argparse.ArgumentParser:
     dedup_cmd.add_argument("--threshold", type=float, default=0.93)
     dedup_cmd.add_argument("--save", action="store_true")
     dedup_cmd.set_defaults(func=cmd_dedup)
+
+    chat_cmd = sub.add_parser("chat", help="ask a grounded question")
+    chat_cmd.add_argument("question")
+    chat_cmd.add_argument("--limit", type=int, default=8)
+    chat_cmd.set_defaults(func=cmd_chat)
+
+    match_cmd = sub.add_parser("match", help="rank jobs against a resume")
+    match_cmd.add_argument("resume", help="path to a PDF or text resume")
+    match_cmd.add_argument("--limit", type=int, default=5)
+    match_cmd.set_defaults(func=cmd_match)
+
+    spend_cmd = sub.add_parser("spend", help="what the LLM calls have cost")
+    spend_cmd.add_argument("--days", type=int, default=7)
+    spend_cmd.set_defaults(func=cmd_spend)
+
+    serve = sub.add_parser("serve", help="run the API")
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument("--reload", action="store_true")
+    serve.set_defaults(func=cmd_serve)
 
     return parser
 

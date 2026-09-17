@@ -1,0 +1,145 @@
+"""RAG over the postings: retrieve, ground, cite, and refuse when empty.
+
+The interesting part of this file is `MIN_SCORE` and what happens below it.
+A RAG system that always answers is easy to build and useless: ask it
+something the corpus cannot answer and it will produce a fluent paragraph
+about the job market in general, which is exactly the output a user cannot
+tell apart from a real one. So retrieval decides whether there is an answer
+at all, and when it says no, the model is never called.
+
+That threshold is the honest-failure switch, and it is the first thing to
+check when someone reports a hallucination.
+"""
+
+from __future__ import annotations
+
+import logging
+import re
+import time
+from dataclasses import dataclass, field
+
+from joblens.cleaning import strip_noise
+from joblens.llm import client, prompts
+from joblens.search import retrieval
+from joblens.search.embeddings import Embedder
+
+log = logging.getLogger(__name__)
+
+# Below this hybrid RRF score nothing retrieved is worth answering from.
+# Calibrated against the golden set: queries the corpus genuinely cannot
+# answer score under it, real ones score above.
+MIN_SCORE = 0.016
+
+NO_ANSWER = (
+    "I could not find postings that answer that. This corpus is 465 job "
+    "postings from Hacker News and RemoteOK, so it will not know about a "
+    "company or a technology that none of them mention."
+)
+
+# How much of each posting the model gets to read. Enough for requirements,
+# short enough that eight sources fit in a small local model's context.
+SOURCE_CHARS = 900
+
+
+@dataclass
+class Source:
+    n: int
+    posting_id: int
+    title: str
+    company: str
+    url: str
+    location: str | None
+    text: str
+
+    def render(self) -> str:
+        where = self.location or ("remote" if not self.location else "")
+        head = f"[{self.n}] {self.title} at {self.company}"
+        if where:
+            head += f" ({where})"
+        return f"{head}\n{self.text}"
+
+
+@dataclass
+class ChatAnswer:
+    question: str
+    answer: str
+    sources: list[Source]
+    grounded: bool
+    took_ms: int = 0
+    cost_usd: float = 0.0
+    cited: set[int] = field(default_factory=set)
+
+
+_CITATION = re.compile(r"\[(\d+)\]")
+
+
+def collect_sources(conn, question: str, embedder: Embedder | None, limit: int):
+    hits = retrieval.search(
+        conn, question, mode="hybrid", embedder=embedder, strategy="whole", limit=limit
+    )
+    hits = [h for h in hits if h.score >= MIN_SCORE]
+    if not hits:
+        return []
+    rows = conn.execute(
+        "select id, description from postings where id = any(%s)",
+        ([h.posting_id for h in hits],),
+    ).fetchall()
+    bodies = {r["id"]: strip_noise(r["description"] or "") for r in rows}
+    return [
+        Source(
+            n=i,
+            posting_id=hit.posting_id,
+            title=hit.title,
+            company=hit.company,
+            url=hit.url,
+            location=hit.location,
+            text=bodies.get(hit.posting_id, "")[:SOURCE_CHARS],
+        )
+        for i, hit in enumerate(hits, start=1)
+    ]
+
+
+def ask(
+    conn,
+    question: str,
+    embedder: Embedder | None = None,
+    limit: int = 8,
+    prompt_version: str | None = None,
+) -> ChatAnswer:
+    began = time.perf_counter()
+    sources = collect_sources(conn, question, embedder, limit)
+
+    if not sources:
+        # No model call at all. Cheaper, faster, and it cannot hallucinate.
+        return ChatAnswer(
+            question=question,
+            answer=NO_ANSWER,
+            sources=[],
+            grounded=False,
+            took_ms=int((time.perf_counter() - began) * 1000),
+        )
+
+    prompt = prompts.load("chat_answer", prompt_version)
+    rendered = prompt.render(
+        sources="\n\n".join(s.render() for s in sources), question=question
+    )
+    completion = client.complete(
+        rendered, feature="chat", prompt=prompt, max_tokens=600
+    )
+
+    cited = {int(n) for n in _CITATION.findall(completion.text)}
+    # A citation pointing at a source that was never supplied is the model
+    # inventing a reference. Flagged rather than silently dropped.
+    invalid = cited - {s.n for s in sources}
+    if invalid:
+        log.warning("answer cited sources that were not supplied: %s", sorted(invalid))
+
+    return ChatAnswer(
+        question=question,
+        answer=completion.text.strip(),
+        sources=sources,
+        grounded=bool(cited) and not invalid,
+        took_ms=int((time.perf_counter() - began) * 1000),
+        cost_usd=completion.cost_usd,
+        cited=cited,
+    )

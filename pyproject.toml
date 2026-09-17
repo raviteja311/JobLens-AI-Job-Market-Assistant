@@ -16,6 +16,11 @@ dependencies = [
     # Phase 3 onwards.
     "sentence-transformers >= 3.0",
     "pyyaml >= 6.0",
+    "fastapi >= 0.115",
+    "uvicorn[standard] >= 0.30",
+    "python-multipart >= 0.0.9",
+    "pypdf >= 5.0",
+    "streamlit >= 1.37",
 ]
 
 [project.optional-dependencies]
@@ -46,4 +51,5 @@ markers = [
     "db : needs a running Postgres. Skipped automatically when none is reachable",
     "slow : model training. Runs in CI, skip locally with -m 'not slow'",
     "eval : scores retrieval or generation against the golden set",
+    "llm : needs a reachable LLM backend. Skipped when none is configured",
 ]
