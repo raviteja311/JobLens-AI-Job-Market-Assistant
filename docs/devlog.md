@@ -6,6 +6,53 @@ Newest entry at the top.
 
 ---
 
+## Phase 5 - evaluation harness
+
+**Did:** chat QA set, LLM-as-judge on faithfulness and completeness, a
+refusal metric, an A/B harness over prompt versions, run history in CSV and
+Postgres, and a CI gate that exits non-zero on a regression.
+
+**Decided:** refusal accuracy is reported separately from the judge and is a
+hard floor rather than a trend. Half the QA set is questions the corpus
+cannot answer. Getting those right is not a nice-to-have; a system that
+invents an answer to them is worse than one that answers nothing.
+
+**Decided:** thresholds live in `report.py`, not in the workflow YAML. A
+threshold change should appear in a pull request next to the change that
+needed it, not in a file nobody reads.
+
+**Tolerance is 0.05, not zero.** The corpus grows daily and these numbers
+move a point or two between runs. A gate that fires on noise gets commented
+out within a week, and then there is no gate.
+
+**The uncomfortable part, again:** the judge is not calibrated. It needs
+twenty answers scored by hand and I have not scored them, so
+`Calibration.trustworthy` returns False and the README says the judge numbers
+are a smoke test rather than a measurement. Writing the calibration code and
+then quoting the uncalibrated scores as if they meant something would have
+been the single most dishonest thing in this repo, and it would have been
+invisible.
+
+Worse: the judge is the same llama3.1 that wrote the answers. Self-preference
+bias at its maximum. The code can report that; only human labels can correct
+it.
+
+**What the eval is for, concretely:** in Phase 2 I stripped scraper
+boilerplate out of the clustering input. The clusters went from "came from
+RemoteOK" to "founding engineer", and the silhouette score got slightly
+worse. Optimising the metric would have reverted a correct fix. That is the
+argument for this whole phase in one paragraph.
+
+**Chat eval is not in the PR gate.** A local Llama on a GitHub runner takes
+half an hour. Retrieval is gated on every PR touching retrieval, prompts or
+the golden set; chat runs on demand. A green tick that means "we skipped it"
+is worse than no tick.
+
+**Next:** Phase 6, one honest fine-tuning experiment. The Phase 2 skill
+dictionary at 58.9% coverage is the number to beat.
+
+---
+
 ## Phase 4 - RAG chat and resume matching
 
 **Did:** /chat with citations, /match for resumes, versioned prompt files,

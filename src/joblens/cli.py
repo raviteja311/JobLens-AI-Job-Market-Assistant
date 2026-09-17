@@ -220,6 +220,63 @@ def cmd_match(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_eval(args: argparse.Namespace) -> int:
+    """Phase 5: the scorecard, and the gate that fails CI."""
+    from joblens.eval import report as reporting
+
+    failures = []
+    if args.suite in ("retrieval", "all"):
+        from joblens.eval import retrieval as eval_retrieval
+
+        result = eval_retrieval.run()
+        print(result.as_table())
+        print()
+        best = result.best
+        reporting.record("retrieval", best.name, result.queries, best.scores)
+        gate = reporting.gate("retrieval", best.name, best.scores)
+        print(gate.summary())
+        failures.extend(gate.failures)
+
+    if args.suite in ("chat", "all"):
+        from joblens.eval import generation
+
+        result = generation.run(judge_enabled=not args.no_judge)
+        print()
+        print(result.as_table())
+        print()
+        scores = result.scores
+        reporting.record("chat", result.prompt_version, len(result.results), scores)
+        gate = reporting.gate("chat", result.prompt_version, scores)
+        print(gate.summary())
+        failures.extend(gate.failures)
+
+    return 1 if (failures and args.strict) else 0
+
+
+def cmd_calibrate(args: argparse.Namespace) -> int:
+    from joblens.eval import judge as judging
+
+    calibration = judging.calibrate()
+    if calibration.n == 0:
+        print(
+            "no hand-scored answers in data/golden/judgements.yaml. Score 20 "
+            "answers by hand first: an uncalibrated judge is a number generator."
+        )
+        return 1
+    print(calibration.as_table())
+    for row in calibration.disagreements[:10]:
+        print(f"\n  human {row['human']} judge {row['judge']}: {row['question']}")
+        print(f"    {row['judge_reasoning'][:160]}")
+    return 0
+
+
+def cmd_ab(args: argparse.Namespace) -> int:
+    from joblens.eval import generation
+
+    print(generation.ab_test(args.a, args.b, judge_enabled=not args.no_judge))
+    return 0
+
+
 def cmd_spend(args: argparse.Namespace) -> int:
     from joblens.llm.client import spend
 
@@ -315,6 +372,25 @@ def build_parser() -> argparse.ArgumentParser:
     match_cmd.add_argument("resume", help="path to a PDF or text resume")
     match_cmd.add_argument("--limit", type=int, default=5)
     match_cmd.set_defaults(func=cmd_match)
+
+    eval_cmd = sub.add_parser("eval", help="score retrieval and chat")
+    eval_cmd.add_argument(
+        "--suite", default="all", choices=["all", "retrieval", "chat"]
+    )
+    eval_cmd.add_argument("--no-judge", action="store_true")
+    eval_cmd.add_argument(
+        "--strict", action="store_true", help="exit 1 on a gate failure"
+    )
+    eval_cmd.set_defaults(func=cmd_eval)
+
+    calibrate = sub.add_parser("calibrate", help="score the judge against human labels")
+    calibrate.set_defaults(func=cmd_calibrate)
+
+    ab = sub.add_parser("ab", help="compare two prompt versions")
+    ab.add_argument("a")
+    ab.add_argument("b")
+    ab.add_argument("--no-judge", action="store_true")
+    ab.set_defaults(func=cmd_ab)
 
     spend_cmd = sub.add_parser("spend", help="what the LLM calls have cost")
     spend_cmd.add_argument("--days", type=int, default=7)

@@ -5,9 +5,10 @@ Collects real AI/ML job postings daily, then offers semantic search,
 resume matching, grounded chat with citations, and a live analytics
 dashboard.
 
-Status: Phases 0-4 complete. 465 postings from 2 live sources, hybrid search
-over pgvector, and grounded chat and resume matching on a local LLM.
-Phase 5 (the evaluation harness) is next.
+Status: Phases 0-5 complete. 465 postings from 2 live sources, hybrid search
+over pgvector scored against a hand-judged golden set, grounded chat and
+resume matching on a local LLM, and an eval suite that fails CI on a
+regression. Phase 6 (fine-tuning) is next.
 
 ## Development process
 
@@ -48,6 +49,7 @@ python -m joblens embed                # build the vector index
 python -m joblens search "remote LLM role" --rerank
 python -m joblens chat "who is hiring Rust engineers?"
 python -m joblens match resume.pdf     # rank jobs against a resume
+python -m joblens eval --suite all     # the scorecard
 python -m joblens spend                # what the LLM calls have cost
 python -m joblens serve                # the API
 ```
@@ -61,7 +63,7 @@ src/joblens/search/  Phase 3: chunking, embeddings, retrieval, reranking
 src/joblens/llm/     Phase 4: LLM backends, versioned prompts, call logging
 src/joblens/rag/     Phase 4: grounded chat, resume matching
 src/joblens/api/     Phase 4: FastAPI backend
-src/joblens/eval/    Phase 3: golden set, retrieval metrics
+src/joblens/eval/    Phase 3+5: golden set, metrics, judge, regression gate
 prompts/             versioned prompt files, one directory per prompt
 data/golden/         the judged queries everything is scored against
 tests/               pytest suite
@@ -271,7 +273,83 @@ model call behind it is someone else's free inference endpoint.
 
 ### Phase 5: Evaluation harness
 
-<!-- Judge calibration agreement rate, eval trends, CI regression gate. -->
+`make eval` produces a scorecard, records it, and fails the build on a
+regression. An eval that only prints numbers is a report; this one is a test.
+
+**Retrieval** is scored against the golden set above. **Chat** is scored
+against 8 QA pairs in `data/golden/chat.yaml`, half of which are questions the
+corpus genuinely cannot answer.
+
+Scorecard, 8 questions, `chat_answer/v2`, llama3.1 local, 12 minutes:
+
+| metric | score | gated |
+| --- | ---: | --- |
+| refusal accuracy | 1.00 | yes, floor 0.75 |
+| completeness (judge) | 1.00 | no |
+| faithfulness (judge) | 0.75 | no |
+| citation rate | 0.75 | no |
+| cost | $0.00 | no |
+
+**The refusal metric was wrong three times before the system was.** It began
+as a list of phrases, and it scored three correct refusals as failures
+because the model worded them differently each time ("None of the postings
+mention Elon Musk as a founder", "I'm not able to answer that"). Each miss
+was fixable by adding another phrase, which is tuning the measurement until
+it agrees with the output in front of it.
+
+It is now structural: a refusal has no citations, because there is nothing
+to cite, and a real answer has at least one because the prompt requires one
+per claim. That agrees with a human reading on all 8 questions across both
+prompt versions, where the phrase list got 3 of 16 wrong.
+
+**It did catch a real defect.** Asked "which posting pays the highest salary
+across the whole database?", v1 answered "this is the highest salary
+mentioned in the database" having seen six postings. `chat_answer/v2` adds
+the rule that fixes it, and the A/B is the reason to believe the fix:
+
+| metric | v1 | v2 |
+| --- | ---: | ---: |
+| faithfulness | 0.69 | 0.75 |
+| completeness | 0.94 | 0.94 |
+| citation rate | 0.75 | 0.75 |
+
+**Refusal accuracy is the metric that matters** and is reported separately
+from the judge. A system that answers "what is the capital of Peru?" from job
+postings is worse than one that answers nothing, because it is confidently
+wrong in a way the user cannot detect. That is a hard floor in CI, not a trend
+line.
+
+**The judge is calibrated, or its numbers are not used.** `joblens calibrate`
+scores the judge against hand-scored answers in `data/golden/judgements.yaml`
+and reports agreement and Cohen's kappa. Kappa and not raw agreement because
+the grades are skewed towards 2: a judge that answers "2" to everything scores
+about 70% agreement and a kappa of zero, and only one of those numbers says it
+is useless. **This has not been run**: it needs 20 answers scored by hand, and
+`Calibration.trustworthy` returns False until they exist. The judge scores
+below are therefore uncalibrated and should be read as a smoke test, not as a
+quality measurement.
+
+Known judge biases this design limits rather than fixes: verbosity bias is
+real and unmitigated, and self-preference is at its worst here because the
+judge is the same llama3.1 that wrote the answer.
+
+**The gate.** Thresholds live in `src/joblens/eval/report.py` next to the code
+rather than in the workflow file, so changing one shows up in a pull request
+diff. Absolute floors fail the build outright; a drop of more than 0.05
+against the last recorded run fails it as a regression. The tolerance is not
+zero because these numbers move a point or two on a corpus that grows daily,
+and a gate that fires on noise gets disabled within a week.
+
+**A/B harness.** `joblens ab v1 v2` runs both prompt versions over the same
+questions and diffs the scores.
+
+**History** goes to `data/eval_history.csv` and the `eval_runs` table. The CSV
+is what survives someone dropping the database.
+
+`.github/workflows/eval.yml` runs the retrieval suite on any PR touching
+retrieval, prompts or the golden set. The chat suite is not in that gate: a
+local Llama on a GitHub runner takes half an hour, and a green tick that only
+means "we skipped it" is worse than no tick.
 
 ### Phase 6: Fine-tuning
 
@@ -299,6 +377,7 @@ Kept current and honest.
 - **Recall is recall over the pool**, not over the corpus. A posting no
   retriever surfaces is never judged and never counted as missed. At 465
   postings the gap is small; it would not be at 50,000.
+- **The LLM judge is uncalibrated.** See Phase 5.
 - **Hybrid retrieval is worse than vector alone** on these queries. It is kept
   for rare-token queries, which the current golden set under-represents.
 - **No salary prediction.** The models do not beat predicting the median.

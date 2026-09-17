@@ -4,7 +4,7 @@
 PY ?= python
 
 .PHONY: install migrate ingest transform stats skills train cluster trends \
-	embed dedup serve ui test test-db lint format check
+	embed dedup serve ui eval calibrate test test-db lint format check
 
 install:
 	$(PY) -m pip install -e ".[dev]"
@@ -45,6 +45,17 @@ serve:
 
 ui:
 	$(PY) -m streamlit run app.py
+
+# The scorecard. --strict is what CI runs; locally you usually want to see
+# the numbers without the build failing.
+eval:
+	$(PY) -m joblens eval --suite all
+
+eval-retrieval:
+	$(PY) -m joblens eval --suite retrieval
+
+calibrate:
+	$(PY) -m joblens calibrate
 
 test:
 	$(PY) -m pytest -q

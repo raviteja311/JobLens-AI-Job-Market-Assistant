@@ -33,7 +33,7 @@ if not _database_available():
 def clean_db():
     db.migrate()
     with db.connect() as conn:
-        conn.execute("truncate postings, raw_postings, ingestion_runs")
+        conn.execute("truncate postings, raw_postings, ingestion_runs cascade")
         conn.commit()
     yield
 

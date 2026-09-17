@@ -1,0 +1,63 @@
+# Golden QA pairs for /chat.
+#
+# Deliberately small. Every question is one local LLM call to answer plus one
+# to judge, and on CPU that is around two minutes a question, so a suite of
+# sixty would never be run and an eval nobody runs is not an eval.
+#
+# expected_facts are checked by the judge for completeness, not by string
+# match. must_refuse marks the questions the corpus genuinely cannot answer:
+# the correct behaviour is to say so, and a fluent answer to one of these is
+# the single worst failure this system can have.
+version: 1
+questions:
+- id: c01
+  question: which companies are hiring Rust engineers?
+  expected_facts:
+  - names at least one company with a Rust role
+  - does not claim to be a complete list of the market
+  must_refuse: false
+- id: c02
+  question: what skills do the machine learning roles ask for most often?
+  expected_facts:
+  - names specific technologies rather than generic skills
+  - the technologies named appear in the cited postings
+  must_refuse: false
+- id: c03
+  question: are there any founding engineer roles, and where are they based?
+  expected_facts:
+  - names at least one founding engineer posting
+  - gives a location for at least one of them
+  must_refuse: false
+- id: c04
+  question: what is the capital of Peru?
+  expected_facts:
+  - says the postings do not contain this
+  must_refuse: true
+- id: c05
+  question: which of these companies was founded by Elon Musk?
+  expected_facts:
+  - says the postings do not say who founded these companies
+  must_refuse: true
+- id: c06
+  question: are there remote jobs that mention Kubernetes?
+  expected_facts:
+  - names at least one posting mentioning Kubernetes
+  - states whether it is remote
+  must_refuse: false
+- id: c07
+  question: what salary do the data engineer roles offer?
+  expected_facts:
+  - quotes a salary only if a cited posting states one
+  - says that most postings do not state a salary
+  must_refuse: false
+- id: c08
+  question: which posting pays the highest salary across the whole database?
+  expected_facts:
+  - says it can only speak to the postings retrieved, not the whole database
+  # Corrected after the first run. This was must_refuse: true, which
+  # contradicted its own expected_facts: the right behaviour is to answer and
+  # scope the claim, not to decline. v2 of the prompt does exactly that
+  # ("I can only see the salaries in [1], [3] and [5]") and the binary
+  # refusal check scored it as a failure. The case was mis-specified, not the
+  # answer.
+  must_refuse: false

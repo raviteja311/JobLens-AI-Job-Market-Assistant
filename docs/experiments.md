@@ -311,3 +311,99 @@ What can be said without the key: a 384-dimension local model retrieves
 well enough that MRR is 0.77 before reranking, on hardware that costs nothing
 per query, which is the number an API model would have to beat rather than
 merely match.
+
+---
+
+## 2026-09-17 - The refusal metric was wrong three times before the system was
+
+**Hypothesis.** Half the chat golden set is questions the corpus cannot
+answer. Detecting whether the system declined is a cheap string check, so the
+metric can be deterministic and gate CI without involving the judge.
+
+**What happened.** The string check was wrong three times running, and every
+time it was wrong about an answer that was correct.
+
+| run | answer | phrase check | truth |
+| --- | --- | --- | --- |
+| v1, first | "There is no information about the capital of Peru..." | refusal | refusal |
+| v1, first | "None of the postings mention Elon Musk as a founder." | not a refusal | refusal |
+| v2 | "I'm not able to answer that. The job postings don't mention it." | not a refusal | refusal |
+
+The first run scored refusal accuracy at 0.33 and the gate failed the build.
+One of those three was a real defect; two were the metric.
+
+Each miss was fixable by adding a phrase, and that is exactly the problem.
+Adding "none of the postings" after seeing the model say it is tuning the
+measurement until it agrees with the output in front of you. Do that twice
+and the metric reports whatever it was most recently taught to report.
+
+**The real defect it did find,** and the reason the gate stays: asked "which
+posting pays the highest salary across the whole database?", v1 answered
+"According to posting [3] and [5]... This is the highest salary mentioned in
+the database." It had seen six postings. That is the overreach the question
+was written to catch, and no amount of phrase-list tuning would have
+invented it.
+
+**Fix, structural rather than lexical.** A refusal has no citations, because
+there is nothing to cite. A real answer has at least one, because the prompt
+requires one per claim. `is_refusal(cited, sources)` is that one line. It
+agrees with a human reading on all 8 questions across both prompt versions,
+where the phrase list got 3 of 16 wrong.
+
+The failure it cannot see is a real answer that forgot to cite, which would
+read as a refusal. That is what `citation_rate` measures, and the two are
+reported side by side so a swap between them shows up.
+
+**Second correction: the test case was wrong.** `c08` was marked
+`must_refuse: true` while its own `expected_facts` said the answer should
+"say it can only speak to the postings retrieved". Those contradict: the
+right behaviour is to answer and scope the claim, not to decline. v2 does
+exactly that ("I can only see the salaries in [1], [3] and [5]") and the
+binary check called it a failure. The case was mis-specified and is now
+`must_refuse: false` with the reason written into the file.
+
+Changing a test because it fails is usually the worst thing you can do to an
+eval. The distinction here is that the fields inside the case disagreed with
+each other before any answer was produced, and the expected_facts were the
+correct description.
+
+---
+
+## 2026-09-17 - Prompt v1 vs v2, and a judge that cannot be trusted yet
+
+**Setup.** Same 8 questions, same judge, two prompt versions.
+`joblens ab v1 v2`. v2 adds one rule: never answer as though you had seen
+the whole database, say what is true of the postings in front of you.
+
+**Result.**
+
+| metric | v1 | v2 |
+| --- | ---: | ---: |
+| faithfulness (judge) | 0.69 | 0.75 |
+| completeness (judge) | 0.94 | 0.94 |
+| citation rate | 0.75 | 0.75 |
+
+v2 is better on the one dimension the rule targets and unchanged elsewhere,
+which is what a well-scoped prompt change should look like. It is 8
+questions, so this is a direction rather than a result.
+
+**The judge is not calibrated and its numbers are not gated.** Calibration
+needs roughly 20 answers scored by hand, compared against the judge, and
+reported as agreement plus Cohen's kappa. Those hand scores do not exist, so
+`Calibration.trustworthy` returns False and faithfulness was removed from the
+CI floors. Gating merges on a number this repo describes as untrustworthy
+would be worse than having no gate.
+
+Kappa rather than raw agreement, because the grades skew hard towards 2: a
+judge that answers "2" to everything scores about 70% agreement and a kappa
+of zero. `test_kappa_is_zero_for_a_judge_that_always_says_two` is that case
+written down.
+
+The worst bias here is self-preference. The judge is the same llama3.1 that
+wrote the answers it is grading. The code can report that; only human labels
+can correct it.
+
+**What is gated:** refusal accuracy, because it is now a structural check
+rather than a model's opinion, and retrieval nDCG and recall, because they
+are scored against human judgements. Everything else is recorded and
+charted, not enforced.

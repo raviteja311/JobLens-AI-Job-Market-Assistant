@@ -122,29 +122,32 @@ def test_latest_picks_the_highest_version():
     assert "v1" in versions
 
 
-@pytest.mark.parametrize(
-    "answer",
-    [
-        "I could not find postings that answer that.",
+def test_a_refusal_is_an_answer_with_no_citations():
+    assert generation.is_refusal(cited=set(), sources=6)
+    assert generation.is_refusal(cited=set(), sources=0)
+
+
+def test_a_cited_answer_is_not_a_refusal():
+    assert not generation.is_refusal(cited={1, 4}, sources=6)
+
+
+def test_detection_does_not_depend_on_how_the_refusal_is_worded():
+    # These three are all correct refusals the phrase-matching version scored
+    # wrong. None of them cite anything, which is the whole point.
+    for _ in (
         "There is no information about the capital of Peru in the postings.",
-        "The postings do not say who founded these companies.",
-    ],
-)
-def test_refusals_are_detected(answer):
-    assert generation.looks_like_refusal(answer)
-
-
-@pytest.mark.parametrize(
-    "answer",
-    [
-        "St. Jude is hiring a Rust engineer [1].",
-        "Four of the eight postings mention Kubernetes [2][3].",
-    ],
-)
-def test_real_answers_are_not_mistaken_for_refusals(answer):
-    assert not generation.looks_like_refusal(answer)
+        "None of the postings mention Elon Musk as a founder.",
+        "I'm not able to answer that. The job postings don't mention it.",
+    ):
+        assert generation.is_refusal(cited=set(), sources=5)
 
 
 def test_no_answer_text_is_honest_about_the_corpus():
     assert "465" in chat_rag.NO_ANSWER
     assert "could not find" in chat_rag.NO_ANSWER.lower()
+
+
+def test_v2_adds_the_scope_rule_v1_was_missing():
+    # v1 answered "this is the highest salary in the database" from six
+    # retrieved postings. v2 exists to stop that.
+    assert "across the database" in prompts.load("chat_answer", "v2").template
