@@ -13,6 +13,7 @@ so a failure in production is reproducible by typing the same command.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from collections.abc import Sequence
@@ -95,6 +96,47 @@ def cmd_stats(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_skills(args: argparse.Namespace) -> int:
+    """Phase 2 baseline skill extraction over what is in the database."""
+    from joblens.ml import dataset, skills
+
+    frame = dataset.load_postings(source=args.source)
+    counts = skills.skill_counts(frame)
+    for skill, count in counts.head(args.top).items():
+        print(f"  {skill:<24} {count:>5}  {count / len(frame):>6.1%}")
+    return 0
+
+
+def cmd_train_salary(args: argparse.Namespace) -> int:
+    from joblens.ml import dataset, salary_model
+
+    frame = salary_model.training_frame(dataset.load_postings())
+    report = salary_model.compare_models(frame, folds=args.folds)
+    print(report.as_table())
+    if args.save:
+        path = salary_model.fit_and_save(frame, report.best.name)
+        log.info("saved %s model to %s", report.best.name, path)
+    return 0
+
+
+def cmd_cluster(args: argparse.Namespace) -> int:
+    from joblens.ml import clustering, dataset
+
+    frame = dataset.load_postings()
+    result = clustering.cluster_postings(frame, k=args.k)
+    print(result.as_table())
+    return 0
+
+
+def cmd_trends(args: argparse.Namespace) -> int:
+    from joblens.ml import dataset, trends
+
+    frame = dataset.load_postings()
+    summary = trends.summary(frame, days=args.days)
+    print(json.dumps(summary, indent=2, default=str))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="joblens", description=__doc__)
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -117,6 +159,26 @@ def build_parser() -> argparse.ArgumentParser:
     transform.set_defaults(func=cmd_transform)
 
     sub.add_parser("stats", help="what is in the database").set_defaults(func=cmd_stats)
+
+    skills_cmd = sub.add_parser("skills", help="top skills in the corpus")
+    skills_cmd.add_argument("--source", choices=sorted(sources.REGISTRY))
+    skills_cmd.add_argument("--top", type=int, default=25)
+    skills_cmd.set_defaults(func=cmd_skills)
+
+    train = sub.add_parser("train-salary", help="compare salary regression models")
+    train.add_argument("--folds", type=int, default=5)
+    train.add_argument("--save", action="store_true", help="persist the best model")
+    train.set_defaults(func=cmd_train_salary)
+
+    cluster = sub.add_parser("cluster", help="cluster postings and label the clusters")
+    cluster.add_argument(
+        "--k", type=int, default=None, help="default: pick by silhouette"
+    )
+    cluster.set_defaults(func=cmd_cluster)
+
+    trends_cmd = sub.add_parser("trends", help="skill and demand trends")
+    trends_cmd.add_argument("--days", type=int, default=90)
+    trends_cmd.set_defaults(func=cmd_trends)
 
     return parser
 

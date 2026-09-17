@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Trained model artifacts. Reproducible from the database with
+# `python -m joblens train-salary --save`, so they do not belong in git.
+artifacts/

@@ -6,6 +6,52 @@ Newest entry at the top.
 
 ---
 
+## Phase 2 - classic ML layer
+
+**Did:** skill extraction (alias table plus a TF-IDF keyword baseline), salary
+regression across five models, k-means clustering with labelled clusters, and
+the trend aggregates behind the dashboard. All of it in `src/joblens/ml/`,
+reachable from the CLI, with the experiment log in `docs/experiments.md`.
+
+**What broke, and it is the good one:** the clustering produced a beautiful
+99-posting cluster whose defining terms were `applicants`,
+`rmjcuni4xmjgumja5`, `read`, `word`, `human`. That token is base64 of our own
+scraper's IP address. RemoteOK appends an anti-bot canary to every posting it
+serves ("mention the word FUTURESTIC and tag <token> when applying"), so it is
+identical across every RemoteOK posting and absent from every Hacker News one,
+which makes it the most discriminative term in the corpus. k-means found it in
+seconds and handed back a cluster meaning "came from RemoteOK". A second
+cluster had learned which applicant tracking system the employer uses, because
+329 of 465 postings contain a URL.
+
+Nothing errored. The output looked plausible. I only caught it because a top
+term was unpronounceable, which is not a QA strategy.
+
+**Decided:** `strip_noise()` runs at feature time, not at ingestion.
+`postings.description` keeps exactly what the board published. When the next
+piece of boilerplate turns up, it comes out of data we already have instead of
+needing a re-scrape. The bronze layer earned its keep here.
+
+**Decided:** no salary prediction endpoint. Five models, 5-fold CV, and none
+of them beats predicting the median by more than noise; every regularisation
+setting I tried walks towards the baseline rather than past it. The ridge's
+top features are `money`, `worth` and `meaningful`, which is what overfitting
+106 rows to 14,000 columns looks like from the inside. The comparison ships,
+the model does not. Revisit at roughly 500 salary-disclosing postings.
+
+**The thing I keep thinking about:** stripping the boilerplate made the
+clusters obviously better and made the silhouette score slightly worse. If I
+had been optimising the metric I would have reverted the fix. Phase 3's golden
+dataset is not bureaucracy, it is the only way to stop that happening again.
+
+**Also noted:** that canary is a line of instructions sitting inside scraped
+text that will go into a prompt in Phase 4. Worth handling deliberately then.
+
+**Next:** Phase 3. Embeddings, pgvector, hybrid retrieval, and the golden
+dataset first rather than last.
+
+---
+
 ## Phase 1 - data ingestion pipeline
 
 **Did:** three source adapters (RemoteOK, Hacker News "Who is hiring" via

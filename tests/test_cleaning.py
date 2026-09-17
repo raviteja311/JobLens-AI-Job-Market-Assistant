@@ -1,3 +1,4 @@
+from joblens import cleaning
 from joblens.cleaning import content_hash, is_remote, normalise_location, strip_html
 
 
@@ -51,3 +52,35 @@ def test_different_companies_do_not_collide():
     a = content_hash("ML Engineer", "Acme Corp", "London, UK")
     b = content_hash("ML Engineer", "Globex", "London, UK")
     assert a != b
+
+
+REMOTEOK_CANARY = (
+    "We need a Rust engineer. Apply at https://remoteok.com/l/123456 today.\n\n"
+    "Please mention the word **FUTURESTIC** and tag RMjcuNi4xMjguMjA5 when "
+    "applying to show you read the job post completely (#RMjcuNi4xMjguMjA5). "
+    "This is a beta feature to avoid spam applicants. Companies can search "
+    "these words to find applicants that read this and see they're human."
+)
+
+
+def test_strip_noise_removes_the_remoteok_canary():
+    cleaned = cleaning.strip_noise(REMOTEOK_CANARY)
+    assert "RMjcuNi4xMjguMjA5" not in cleaned
+    assert "FUTURESTIC" not in cleaned
+    assert "beta feature" not in cleaned
+    assert "spam applicants" not in cleaned
+
+
+def test_strip_noise_keeps_the_actual_job():
+    assert "Rust engineer" in cleaning.strip_noise(REMOTEOK_CANARY)
+
+
+def test_strip_noise_removes_urls():
+    cleaned = cleaning.strip_noise("Apply at https://jobs.ashbyhq.com/acme/123 now")
+    assert "ashbyhq" not in cleaned
+    assert cleaned == "Apply at now"
+
+
+def test_strip_noise_handles_nothing():
+    assert cleaning.strip_noise(None) == ""
+    assert cleaning.strip_noise("") == ""
