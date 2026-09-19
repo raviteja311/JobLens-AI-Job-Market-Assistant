@@ -1,0 +1,60 @@
+{"posting_key": "remoteok:1136795", "posting_id": 2106, "title": "Senior Software Engineer Case Execution", "label": [], "dropped": ["aws", "javascript", "kubernetes", "postgresql", "python", "pytorch"], "added": []}
+{"posting_key": "hackernews:49523288", "posting_id": 2174, "title": "https://neuralwatt.com", "label": ["git", "gpu", "python", "rust"], "dropped": ["agent tools", "datacenter optimization", "energy-aware scheduling and control", "inference", "modern ai", "neuralwatt cloud", "production ai infrastructure"], "added": []}
+{"posting_key": "remoteok:1137381", "posting_id": 2070, "title": "Marketing Student Assistant", "label": ["canva", "figma"], "dropped": [], "added": ["canva", "figma"]}
+{"posting_key": "remoteok:1135997", "posting_id": 2146, "title": "BMS Service Technician", "label": [], "dropped": ["it", "network communication", "pc hardware configuration"], "added": []}
+{"posting_key": "hackernews:49522930", "posting_id": 2166, "title": "AI-Native Engineers & Operators", "label": [], "dropped": ["aws", "python", "pytorch"], "added": []}
+{"posting_key": "hackernews:49527115", "posting_id": 2259, "title": "Remote (Europe)", "label": ["ansible", "aws", "cloudformation", "go", "kubernetes", "opentofu", "pulumi", "saltstack", "terraform", "terragrunt"], "dropped": [], "added": ["opentofu", "terragrunt"]}
+{"posting_key": "hackernews:49527388", "posting_id": 2271, "title": "Software Scientist / Research Software Engineer", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49523875", "posting_id": 2193, "title": "https://rootly.com/", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49529054", "posting_id": 2292, "title": "Founding Engineer", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1136796", "posting_id": 2105, "title": "Staff Software Development Engineer SDM", "label": ["distributed systems", "kubernetes"], "dropped": ["ai", "ai-powered intelligence", "aws", "cloud architecture", "cloud-native", "identity security platform", "javascript", "postgresql", "python", "pytorch", "security"], "added": []}
+{"posting_key": "hackernews:49523740", "posting_id": 2187, "title": "https://www.gresearch.com", "label": ["c#", "f#", "python"], "dropped": ["pytorch"], "added": []}
+{"posting_key": "hackernews:49530430", "posting_id": 2265, "title": "Sr. Staff or Principal Software Engineer, Rust Genomics Infrastructure", "label": ["hpc", "rust"], "dropped": ["python"], "added": ["hpc"]}
+{"posting_key": "remoteok:1137194", "posting_id": 2090, "title": "Renewables Project Scheduler", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1135789", "posting_id": 2139, "title": "Patient Outreach Specialist", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49523408", "posting_id": 2176, "title": "https://astronomer.io", "label": ["airflow", "confluent", "databricks", "git", "go", "kafka", "python", "spark", "typescript"], "dropped": ["apache airflow"], "added": []}
+{"posting_key": "hackernews:49524252", "posting_id": 2201, "title": "San Francisco, ONSITE", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1137224", "posting_id": 2082, "title": "AI Engineer Data APIs", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49523704", "posting_id": 2184, "title": "https://cyberatlas.ai", "label": ["docker", "elasticsearch", "fastapi", "flask", "go", "lmdb", "mongodb", "opensearch", "postgresql", "python", "redis"], "dropped": ["postgres"], "added": []}
+{"posting_key": "hackernews:49526396", "posting_id": 2252, "title": "https://boomsupersonic.com/", "label": ["distributed systems"], "dropped": ["aws", "python", "pytorch"], "added": ["distributed systems"]}
+{"posting_key": "hackernews:49527354", "posting_id": 2268, "title": "San Francisco, CA", "label": [], "dropped": ["cost", "digital twins", "homeowner tradeoffs", "imagery", "machine learning surrogates", "physics-informed ai world models", "property data", "python", "pytorch", "risk"], "added": []}
+{"posting_key": "hackernews:49524822", "posting_id": 2216, "title": "Senior Engineers (Agentic Engineer and Forward Deployed Engineer)", "label": ["mlops"], "dropped": [], "added": []}
+{"posting_key": "hackernews:49525483", "posting_id": 2238, "title": "Hiring Java Developer (Full-Time)", "label": ["aeron", "agrona", "artio", "java"], "dropped": [], "added": ["aeron", "agrona", "artio"]}
+{"posting_key": "remoteok:1136094", "posting_id": 2127, "title": "Marketing Specialist", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49523703", "posting_id": 2183, "title": "SENIOR SOFTWARE ENGINEER (Python/Django + JavaScript - VueJS/React)", "label": ["aws", "ci/cd", "claude", "codex", "dagster", "django", "docker", "duckdb", "git", "javascript", "postgresql", "pydanticai", "python", "react", "snowflake", "vuejs"], "dropped": ["pytorch"], "added": ["claude", "codex"]}
+{"posting_key": "hackernews:49524580", "posting_id": 2210, "title": "Lead Product Manager, Security", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49528413", "posting_id": 2285, "title": "Senior Robotics Software Engineer", "label": [], "dropped": ["aws", "python", "pytorch"], "added": []}
+{"posting_key": "remoteok:1135765", "posting_id": 2145, "title": "Voice Over Artist", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49526361", "posting_id": 2251, "title": "Senior/Staff Software Engineer (Interactives)", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49527209", "posting_id": 2264, "title": "Senior Cloud Infrastructure Engineer (SRE)", "label": ["argo", "c++", "ci/cd", "flux", "gcp", "go", "grafana", "iac", "java", "kubernetes", "loki", "prometheus", "python", "rust"], "dropped": ["cicd", "finops", "ha", "orchestration", "security tooling", "tracing"], "added": []}
+{"posting_key": "hackernews:49523604", "posting_id": 2180, "title": "Senior Backend Engineer, Payments, Ledger & Provable Fairness", "label": [], "dropped": ["aws", "python", "pytorch"], "added": []}
+{"posting_key": "hackernews:49530558", "posting_id": 2303, "title": "Member of Technical Staff (infra, ML infra, systems, platform, full stack)", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1136168", "posting_id": 2122, "title": "Why do you want this new job", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1136097", "posting_id": 2134, "title": "Regional Sales Manager", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49530020", "posting_id": 2297, "title": "Forward-Deployed Engineer (FDE)", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1137378", "posting_id": 2073, "title": "Senior People & Talent Operations Partner", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49525141", "posting_id": 2225, "title": "Full-time", "label": [], "dropped": ["aws", "python", "pytorch"], "added": []}
+{"posting_key": "hackernews:49523194", "posting_id": 2161, "title": "https://www.aerdos.com/", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1137138", "posting_id": 2088, "title": "Education Designer UX UI and AI", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49527588", "posting_id": 2273, "title": "Backend & Cloud Platform Engineer", "label": ["ci/cd", "docker", "fastapi", "gcp", "git", "iac", "python"], "dropped": ["relational databases"], "added": []}
+{"posting_key": "hackernews:49523018", "posting_id": 2170, "title": "Full Time", "label": ["python", "rust"], "dropped": [], "added": []}
+{"posting_key": "hackernews:49524080", "posting_id": 2199, "title": "Senior Product Manager", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1137380", "posting_id": 2071, "title": "Engineering Manager TLM Platform", "label": ["aws", "railway"], "dropped": ["javascript", "kubernetes", "postgresql", "python", "pytorch", "scikit-learn"], "added": ["railway"]}
+{"posting_key": "hackernews:49528336", "posting_id": 2281, "title": "Senior Product Manager or Staff Product Manager", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1137114", "posting_id": 2091, "title": "Senior Backend Engineer Build AI Agents", "label": [], "dropped": ["python", "pytorch"], "added": []}
+{"posting_key": "remoteok:1136798", "posting_id": 2103, "title": "Member of Technical Staff Engineering", "label": ["distributed systems", "hpc", "scientific computing"], "dropped": ["agent systems", "cloud infrastructure", "data infrastructure", "developer platforms", "evaluation", "product engineering", "security"], "added": []}
+{"posting_key": "hackernews:49528044", "posting_id": 2277, "title": "Senior Technical Product Engineer, Technical Product Engineer (Early Career)", "label": ["azure", "claude", "fastapi", "postgresql", "python", "react", "typescript"], "dropped": ["javascript", "postgres"], "added": ["claude"]}
+{"posting_key": "hackernews:49522912", "posting_id": 2164, "title": "Fullstack SWE", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1135767", "posting_id": 2150, "title": "Graphic Designer", "label": ["illustrator", "indesign", "photoshop"], "dropped": [], "added": ["illustrator", "indesign", "photoshop"]}
+{"posting_key": "remoteok:1137391", "posting_id": 2065, "title": "Junior Payroll Assistant", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49528002", "posting_id": 2276, "title": "Blockchain Security Engineer", "label": ["cryptography", "git", "linux"], "dropped": [], "added": []}
+{"posting_key": "hackernews:49523666", "posting_id": 2181, "title": "Software Developer C#/.NET (4 openings)", "label": [".net", "c#"], "dropped": [], "added": [".net"]}
+{"posting_key": "remoteok:1136570", "posting_id": 2113, "title": "Software Engineer III Mobile", "label": [], "dropped": ["excel"], "added": []}
+{"posting_key": "remoteok:1137390", "posting_id": 2066, "title": "Customer Experience Representative", "label": ["discord", "intercom"], "dropped": [], "added": ["discord", "intercom"]}
+{"posting_key": "hackernews:49523835", "posting_id": 2192, "title": "Software Engineers (Senior, Staff, Principal)", "label": ["c++", "cranelift", "distributed systems", "ebpf", "go", "http", "javascript", "linux", "python", "quic", "ruby", "rust", "tcp", "tls", "typescript", "varnish", "vcl", "wasmtime", "webassembly", "xdp"], "dropped": ["c/c++", "linux kernel internals"], "added": ["ruby", "vcl", "xdp"]}
+{"posting_key": "remoteok:1136770", "posting_id": 2121, "title": "Future Shaprs", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1137394", "posting_id": 2064, "title": "Sr Solutions Architect", "label": ["networking", "rest api"], "dropped": ["application design", "gui development", "javascript", "python", "trigger script development"], "added": []}
+{"posting_key": "remoteok:1137374", "posting_id": 2076, "title": "Quality Dispense Technician North", "label": [], "dropped": [], "added": []}
+{"posting_key": "remoteok:1137209", "posting_id": 2133, "title": "Online Bidder", "label": [], "dropped": [], "added": []}
+{"posting_key": "hackernews:49523675", "posting_id": 2182, "title": "https://sudowrite.com", "label": ["react native"], "dropped": [], "added": []}
+{"posting_key": "hackernews:49524880", "posting_id": 2218, "title": "Software Engineer", "label": ["node", "playwright", "postgresql", "sveltekit", "typescript"], "dropped": ["ai"], "added": []}

@@ -284,3 +284,91 @@ def test_train_excluding_matches_on_key_not_primary_key():
     )
     train = dataset.train_excluding([example(3)], [held])
     assert train == []
+
+
+# --------------------------------------------------------------------------
+# Gold v2 guards. Both of these were written to fail against the code as it
+# stood, so that passing means something.
+# --------------------------------------------------------------------------
+
+
+def test_gold_is_not_a_superset_of_the_rules_output():
+    """Precision must be measurable, not an identity.
+
+    Gold v1 was built as rules | adjudicated(teacher), so the regex could not
+    produce a false positive on any of the 60 postings and its precision came
+    out at exactly 1.000. If this assertion ever passes trivially again, the
+    labelling has regressed to defining truth as whatever the baseline found.
+    """
+    from joblens.finetune import gold as gold_module
+
+    rows = gold_module.load_gold()
+    if not rows:
+        pytest.skip("gold v2 has not been built")
+    examples = {e.key: e for e in dataset.load(dataset.TEST_FILE)}
+
+    overshoot = [
+        r.posting_key
+        for r in rows
+        if not {s.lower() for s in examples[r.posting_key].rule_based}
+        <= {s.lower() for s in r.label}
+    ]
+    assert overshoot, (
+        "gold contains every term the regex proposed, so the regex cannot "
+        "produce a false positive and its precision is an identity"
+    )
+
+
+LONG_ONE = "Requires Python. " + ("filler words here. " * 200) + " Also Rust."
+LONG_TWO = "We use Docker. " + ("more filler text. " * 250) + " And Kubernetes."
+PARITY_FIXTURES = [
+    ("ML Engineer", "Short posting naming PyTorch and AWS."),
+    ("Data Engineer", LONG_ONE),
+    ("Platform Engineer", LONG_TWO),
+]
+
+
+def test_the_baseline_reads_exactly_the_text_gold_was_built_from():
+    """The defect this guards was the baseline calling the wrong builder.
+
+    render() truncates at MAX_DESCRIPTION_CHARS and posting_text() does not.
+    Gold is built from render(), and RuleExtractor used to call posting_text,
+    so the regex was scored on more text than the labels were derived from
+    and charged with false positives for skills it correctly found past the
+    cutoff. The two disagreed on 12 of the 60 test postings.
+    """
+    from joblens.finetune.extract import RuleExtractor
+    from joblens.ml.skills import extract_skills
+
+    assert len(LONG_ONE) > dataset.MAX_DESCRIPTION_CHARS
+    assert len(LONG_TWO) > dataset.MAX_DESCRIPTION_CHARS
+
+    for title, description in PARITY_FIXTURES:
+        from_gold_text = sorted(
+            {s.lower() for s in extract_skills(dataset.render(title, description))}
+        )
+        from_extractor = RuleExtractor().extract(title, description)
+        assert from_extractor == from_gold_text, (
+            f"the rules row and the gold labels disagree for {title!r}: "
+            f"{from_extractor} vs {from_gold_text}"
+        )
+
+
+def test_the_two_text_builders_are_deliberately_different():
+    """Pin the divergence so nobody merges them by accident.
+
+    posting_text repeats the title, which is Phase 2 weighting for TF-IDF and
+    feeds clustering, the salary model and skill_matrix. render prefixes
+    "Title:" because it goes into a prompt. Making them byte-identical would
+    move Phase 2's published coverage figure and cluster labels to fix a
+    Phase 6 problem that was fixed by pointing the extractor at render.
+    """
+    import pandas as pd
+
+    from joblens.ml.skills import posting_text
+
+    frame = pd.DataFrame([{"title": "ML Engineer", "description": "We use PyTorch."}])
+    assert posting_text(frame).iloc[0] == "ML Engineer. ML Engineer. We use PyTorch."
+    assert dataset.render("ML Engineer", "We use PyTorch.") == (
+        "Title: ML Engineer\n\nWe use PyTorch."
+    )
