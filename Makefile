@@ -57,6 +57,19 @@ eval-retrieval:
 calibrate:
 	$(PY) -m joblens calibrate
 
+# Phase 6 learned this the hard way: Ollama and Postgres were started by a
+# shell that later exited, both died with it, and a two hour training run was
+# lost to services that had been up when it started. These two targets make
+# "is everything actually running" a question with a one word answer.
+services-up:
+	docker compose up -d db
+	@powershell -NoProfile -Command "if (-not (Get-Process ollama -ErrorAction SilentlyContinue)) { Start-Process -FilePath 'ollama' -ArgumentList 'serve' -WindowStyle Hidden }" || true
+	@$(MAKE) services-check
+
+services-check:
+	@docker compose exec -T db pg_isready -U joblens > /dev/null 		&& echo "postgres: up" 		|| (echo "postgres: DOWN, run make services-up" && exit 1)
+	@curl -s -m 5 http://localhost:11434/api/tags > /dev/null 		&& echo "ollama:   up" 		|| (echo "ollama:   DOWN, run make services-up" && exit 1)
+
 # Phase 6. distil-label takes about an hour on a local 8B teacher and is
 # resumable, so it is safe to interrupt.
 distil-label:
