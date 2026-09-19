@@ -646,3 +646,61 @@ first, and only then decide whether the class balance still needs touching.
 the empty-labelled postings. That is a Microsoft Word CSS class surviving
 Phase 1's HTML stripping. It is a cleaning gap, it is not what broke this
 phase, and it belongs in a Phase 1 fix rather than here.
+
+---
+
+## 2026-09-19 - Rung 2: masking the loss, 0.000 to 0.383
+
+**Hypothesis.** The collapse is caused by computing loss on the prompt. Mask
+it and the model starts extracting.
+
+**Setup.** Exactly one variable changed from the collapsed run:
+`assistant_only_loss=True` in place of the inert `completion_only_loss=True`.
+Same 182 examples, split hash `4d3e33f8f7dd`, rank 16, alpha 32, 3 epochs,
+lr 2e-4, CPU. `verify_masking()` confirmed the mask at the start of the run
+rather than after it: 318 of 326 positions masked, 98%, and the 8 that carry
+loss decode to the assistant answer.
+
+Command: `python -m joblens distil-train`, log in `artifacts/rung2.log`.
+
+**Validation F1 by epoch,** the curve the first run had no way to produce:
+
+| epoch | micro F1 | empty | eval loss |
+| ---: | ---: | ---: | ---: |
+| 1 | 0.000 | 100% | 0.1828 |
+| 2 | 0.357 | 94% | 0.1351 |
+| 3 | 0.588 | 88% | 0.1275 |
+
+Note epoch 1. With the loss correctly masked the model still answered empty
+on everything after a full epoch, and only started extracting in epoch 2.
+Had this run been stopped at one epoch it would have looked identical to the
+failure it was fixing.
+
+**Result on the frozen 60-posting test set:**
+
+| extractor | micro F1 | macro F1 | precision | recall | empty | ms/call |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| teacher (llama3.1 8B) | 0.671 | 0.754 | 0.543 | 0.879 | 58% | 10,249 |
+| rules (Phase 2 regex) | 0.654 | 0.742 | 0.714 | 0.603 | 52% | 11 |
+| tuned-v2 (masked loss) | 0.383 | 0.692 | 0.674 | 0.267 | 85% | 3,319 |
+| base (Qwen 0.5B) | 0.112 | 0.062 | 0.094 | 0.138 | 2% | 5,881 |
+| tuned-v1 (unmasked loss) | 0.000 | 0.617 | 0.000 | 0.000 | 100% | 3,359 |
+
+**Decision: confirmed, and not sufficient.** One flag moved micro F1 from
+0.000 to 0.383 and cleared the collapse. The shape of what is left is
+specific rather than mysterious. Precision is 0.674 against the regex
+baseline's 0.714, so what the model says is mostly right. Recall is 0.267
+because it answers empty on 85% of postings when the true rate is about 55%.
+It under-answers; it does not hallucinate.
+
+Two things say what to try next, and neither is a guess. The 85% empty rate
+sits against a training set that is 56% empty. And the validation curve was
+still climbing steeply at the last epoch, 0.000 to 0.357 to 0.588, so three
+epochs under-trains.
+
+**A note on eval loss.** It fell from 0.1828 to 0.1275 across a run where F1
+went from 0.000 to 0.588, so here loss and quality happened to agree. In the
+collapsed run loss fell just as neatly, 1.600 to 1.565, while F1 stayed at
+zero. The lesson is not that loss is useless, it is that loss cannot
+distinguish those two runs and F1 can. That is why the checkpoint is
+selected on F1.
