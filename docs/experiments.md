@@ -556,3 +556,93 @@ model is not part of it.
 **Decision.** `SKILL_EXTRACTOR` stays `rules`. The adapter ships in the repo
 with its training log because the phase is the experiment, not the artifact,
 and a negative result with a diagnosis is worth more than a missing one.
+
+---
+
+## 2026-09-19 - Why the student collapsed: six checks, one cause
+
+The rebalanced retrain was nearly launched straight away. It would have
+addressed the wrong thing. Six checks first, cheapest to most expensive.
+
+**2c. Loss was computed on the prompt. This is the cause.**
+
+`SFTConfig(completion_only_loss=True)` was set and had no effect whatsoever.
+Printing the labels tensor for one training example:
+
+```
+sequence length      : 316
+positions masked -100: 0
+positions with loss  : 316
+```
+
+Zero masked. The trl docstring says why: completion_only_loss is *"supported
+only for prompt-completion datasets"*. The dataset here is conversational,
+a list of `messages`, so the flag was ignored. Silently. No warning, no
+error, and `training.json` recorded `completion_only_loss: true` the whole
+time.
+
+The completion is `{"skills": []}`, about 8 tokens of 316. So roughly 97% of
+every gradient step was teaching the model to recite the system prompt, the
+five rules, the schema block and the job posting back. Only 2.5% was about
+extracting skills.
+
+It gets worse. The masked-in text includes the prompt's own schema line:
+
+```
+SCHEMA
+
+{"skills": ["python", "pytorch", "aws"]}
+```
+
+The model was being explicitly trained to reproduce that literal. It also
+explains the *base* model's behaviour, which returned exactly
+`["python", "pytorch", "aws"]` for a Marketing Student Assistant and a BMS
+Service Technician: it was never extracting, it was completing the example.
+
+The correct flag for a messages dataset is `assistant_only_loss`, which
+exists in trl 1.13, defaults to False, and needs `{% generation %}` markers
+in the chat template. Qwen2.5's template has them.
+
+**2a. The 56% empty rate is real, not a labelling failure.** Of 102
+empty-labelled training postings, zero have skills the regex found and the
+label dropped, which the adjudication rule guarantees by construction, and
+only 4 had a teacher proposal rejected. Scanning the empty postings for
+unknown capitalised tokens returns `strong`, `support`, `lead`, `ability`,
+`responsibilities`: prose, not technology. Those postings are genuinely
+non-technical, which is what a Hacker News hiring thread contains. Class
+imbalance is a real property of the corpus and a contributing cause, but it
+is not a bug and rebalancing alone would not have fixed anything.
+
+**2b. Prompt parity is exact.** The training text starts with the inference
+prompt character for character, then continues with the assistant turn.
+Ruled out.
+
+**2d. Label vocabulary parity is exact.** All 310 training label mentions
+pass the same vocabulary filter the scorer applies. Nothing is being trained
+in that the scorer then rejects. Ruled out.
+
+**2e. Generation config is fine.** 160 max new tokens for an answer that
+needs about 20, greedy decoding, and the parser counts unparseable responses
+separately rather than coercing them to an empty list. Ruled out.
+
+**2f. The collapse is genuine, not a harness artifact.** Raw untruncated
+generations from the shipped adapter, on the eight test postings with the
+richest gold labels:
+
+```
+gold=['ansible','aws','cloudformation','kubernetes','pulumi','saltstack','terraform']
+  RAW: '{"skills": []}'
+gold=['docker','elasticsearch','fastapi','flask','lmdb','mongodb','opensearch',...]
+  RAW: '{"skills": []}'
+```
+
+Valid JSON, correct schema, nothing inside, every time.
+
+**Conclusion.** One primary mechanical cause (2c), one real but secondary
+data property (2a), four ruled out. The fix order follows: mask the prompt
+first, and only then decide whether the class balance still needs touching.
+
+**Noted in passing, not fixed here:** `msonormal` appears 36 times across
+the empty-labelled postings. That is a Microsoft Word CSS class surviving
+Phase 1's HTML stripping. It is a cleaning gap, it is not what broke this
+phase, and it belongs in a Phase 1 fix rather than here.
