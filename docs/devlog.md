@@ -6,6 +6,110 @@ Newest entry at the top.
 
 ---
 
+## Phase 6 - fine-tuning, and a benchmark that could not fail
+
+**Did:** distilled a 0.5B skill extractor from a local llama3.1, watched it
+collapse, found out why, fixed it, then found out the benchmark I was fixing
+it against was rigged in the baseline's favour and rebuilt that too.
+
+**The collapse.** The student answered `{"skills": []}` on 60 of 60 test
+postings. Micro F1 exactly 0.000. Eval loss had fallen every epoch, 1.600 to
+1.573 to 1.565, and nothing in the training output hinted at a problem.
+
+The cause was one flag. `SFTConfig(completion_only_loss=True)` is supported
+only for prompt-completion datasets, and mine is conversational, so trl
+ignored it. Silently. Zero of 316 positions were masked, which means about
+97% of every gradient step taught the model to recite the system prompt, the
+five rules, the schema block and the job posting back to itself. The
+completion is eight tokens.
+
+The masked-in text includes the prompt's own schema line,
+`{"skills": ["python", "pytorch", "aws"]}`. That is exactly what the untuned
+base model returns for a Marketing Student Assistant and a BMS Service
+Technician. Neither model was extracting. Both were completing the example.
+
+`training.json` recorded `completion_only_loss: true` for a run where it did
+nothing. The config and the log agreed with each other and both were wrong.
+
+**Decided:** never trust a flag that claims to work. `verify_masking()` reads
+the first batch back and refuses to train if the prompt is not masked. It
+prints 577 of 607 positions masked before a run starts, rather than after it.
+
+**Decided:** select checkpoints on F1, not loss. The whole lesson of the
+collapse is that loss fell smoothly into a model scoring zero. The callback
+generates on a held-out slice each epoch and logs the empty-prediction rate
+next to the F1, and the eval harness now fails loudly above 90% empty. That
+guard has caught two things since: the collapse itself, and a teacher row
+that came back 0.000 because four Qwen models in one process drove free
+memory to 0.2GB and Ollama returned HTTP 500 on every call.
+
+**What the instrumentation earned immediately:** the fixed run scored F1
+0.000 at 100% empty after epoch 1, identical to the failure it was fixing,
+and only broke out in epoch 2. Judged early, or on loss, I would have
+concluded the fix did not work.
+
+**Then the harder problem.** Someone asked why the empty-prediction rate was
+so high. Answering it meant reading how gold was built, and gold was built as
+`rules(posting) | adjudicated(teacher(posting))`, where adjudication filtered
+teacher terms through a hand-reviewed vocabulary that is, in substance, the
+regex's own capability spec.
+
+Truth was defined as things the regex could have found. Gold was a superset
+of the regex output on all 60 postings, so the regex could not produce a
+false positive, and precision came back as exactly 1.000. I had published
+that as a finding. It was an identity. A benchmark that cannot falsify the
+baseline is not a benchmark.
+
+**Decided:** rebuild gold blind. Candidates from both labellers pooled and
+shuffled, provenance written to a separate file and joined back only after
+every decision was recorded. Decisions per (posting, term) rather than per
+term, because "go" is a language in one posting and a verb in the next. And
+an additive pass over all 60 postings, because without it gold stays a subset
+of the union and both recall numbers flatter both systems.
+
+206 occurrences judged, 116 kept, 90 dropped, 22 added that neither labeller
+had proposed.
+
+**The single most satisfying line in the phase:** one dropped term came from
+the regex. On a Portuguese posting it matched `excel` inside `Excelência`,
+because the word boundaries in `skills.py` are ASCII and an accented letter
+reads as a boundary. Precision went from 1.000 to 0.986, 69 correct out of 70,
+and that 0.014 is a real bug that gold v1 made structurally invisible.
+
+**What the circularity was worth:** the regex led the teacher 0.753 to 0.671
+under v1 and 0.663 to 0.634 under v2. The additive pass put 22 terms into
+gold that an 80-word vocabulary cannot reach. The regex did not get worse;
+the measurement got honest.
+
+**Did not do:** the inter-annotator kappa. I judged all 60 postings myself in
+one sitting, so a second pass would agree with itself and measure my memory
+rather than label quality. The second-pass tooling reads only the candidate
+pool, never the provenance or the first-pass file, so an independent run can
+produce a real figure. Publishing a self-agreement number as reliability
+would have been the same class of mistake as the precision column.
+
+**Cut:** forcing `posting_text` and `render` to be byte-identical. It would
+have moved Phase 2's published coverage figure and cluster labels to fix a
+Phase 6 bug. The guard asserts what actually broke instead, that the baseline
+reads the same text gold was built from, and a third test pins the
+divergence as deliberate.
+
+**Cut:** the disagreement filter on training data, though 13% was inside the
+permitted range. The no-overlap examples are mostly postings where the regex
+is silent because the technology is outside its 80 words and the teacher got
+it right. They are the only examples that could teach the student recall, the
+one dimension it loses badly on. Filtering them would have been removing
+signal and calling it noise.
+
+**Noted elsewhere, not fixed here:** `msonormal` appears 36 times across the
+corpus, a Microsoft Word CSS class surviving Phase 1's HTML stripping. A
+Hacker News comment that is a blog post rather than a job ad also made it
+into the test set. Both are Phase 1 parser gaps.
+
+**Next:** Phase 7. Deployment and MLOps.
+
+---
+
 ## Phase 5 - evaluation harness
 
 **Did:** chat QA set, LLM-as-judge on faithfulness and completeness, a
