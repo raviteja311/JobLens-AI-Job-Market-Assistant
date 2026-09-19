@@ -26,10 +26,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from joblens.cleaning import strip_noise
-from joblens.finetune.dataset import MAX_DESCRIPTION_CHARS, ExtractedSkills
+from joblens.finetune.dataset import MAX_DESCRIPTION_CHARS, ExtractedSkills, render
 from joblens.llm import client, prompts
 from joblens.ml.skills import extract_skills as rule_based_extract
-from joblens.ml.skills import posting_text
 
 log = logging.getLogger(__name__)
 
@@ -76,11 +75,18 @@ class RuleExtractor(Extractor):
         self.usage = Usage()
 
     def extract(self, title: str, description: str) -> list[str]:
-        import pandas as pd
-
         began = time.perf_counter()
-        frame = pd.DataFrame([{"title": title, "description": description}])
-        found = rule_based_extract(posting_text(frame).iloc[0])
+        # dataset.render, not skills.posting_text. render truncates the
+        # description to MAX_DESCRIPTION_CHARS and posting_text does not, so
+        # the two see different amounts of a long posting. The labels were
+        # built from render's output, which meant the baseline was scored on
+        # more text than the gold was built from and charged with false
+        # positives for skills it had correctly found in the tail.
+        #
+        # render's docstring already said it was "the exact text every model
+        # sees ... so teacher, student and baseline cannot drift apart". The
+        # baseline was the one not calling it.
+        found = rule_based_extract(render(title, description))
         self.usage.calls += 1
         self.usage.seconds += time.perf_counter() - began
         return _normalise(found)

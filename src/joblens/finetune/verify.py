@@ -47,10 +47,18 @@ def load_vocabulary() -> tuple[set[str], set[str]]:
     if not VOCABULARY_FILE.exists():
         return set(), set()
     payload = yaml.safe_load(VOCABULARY_FILE.read_text(encoding="utf-8")) or {}
-    return (
-        {s.lower() for s in payload.get("accepted") or []},
-        {s.lower() for s in payload.get("rejected") or []},
-    )
+
+    def collect(prefix: str) -> set[str]:
+        # Reviews are appended as accepted / accepted_round_two / ... rather
+        # than merged into one list, so the file still reads as a record of
+        # what was decided when and on how much data.
+        found: set[str] = set()
+        for key, values in payload.items():
+            if key == prefix or key.startswith(f"{prefix}_"):
+                found |= {str(s).lower() for s in values or []}
+        return found
+
+    return collect("accepted"), collect("rejected")
 
 
 # How much of the posting to show next to a disputed skill. Enough to see
