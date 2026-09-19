@@ -57,6 +57,19 @@ eval-retrieval:
 calibrate:
 	$(PY) -m joblens calibrate
 
+# Phase 6. distil-label takes about an hour on a local 8B teacher and is
+# resumable, so it is safe to interrupt.
+distil-label:
+	$(PY) -m joblens distil-label
+
+distil-train:
+	$(PY) -m joblens distil-train
+
+distil-eval:
+	$(PY) -m joblens distil-eval
+
+distil: distil-label distil-train distil-eval
+
 test:
 	$(PY) -m pytest -q
 

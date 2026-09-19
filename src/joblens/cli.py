@@ -299,6 +299,43 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_distil_label(args: argparse.Namespace) -> int:
+    """Phase 6: label postings with the teacher, for the student to learn from."""
+    from joblens.finetune import dataset
+
+    with db.connect() as conn:
+        examples = dataset.label_corpus(conn, limit=args.limit)
+    train, test = dataset.split(examples, test_size=args.test_size)
+    dataset.save(train, dataset.TRAIN_FILE)
+    dataset.save(test, dataset.TEST_FILE)
+    log.info("train %s, test %s", len(train), len(test))
+    for key, value in dataset.stats(examples).items():
+        print(f"  {key}: {value}")
+    return 0
+
+
+def cmd_distil_train(args: argparse.Namespace) -> int:
+    from joblens.finetune import dataset
+    from joblens.finetune import train as training
+
+    examples = dataset.load(dataset.TRAIN_FILE)
+    config = training.TrainConfig(
+        epochs=args.epochs, lora_rank=args.rank, learning_rate=args.lr
+    )
+    result = training.train(examples, config)
+    print(result.summary())
+    return 0
+
+
+def cmd_distil_eval(args: argparse.Namespace) -> int:
+    from joblens.finetune import evaluate
+
+    names = tuple(args.extractor) if args.extractor else None
+    comparison = evaluate.run(names=names) if names else evaluate.run()
+    print(comparison.as_table())
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="joblens", description=__doc__)
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -401,6 +438,26 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--port", type=int, default=8000)
     serve.add_argument("--reload", action="store_true")
     serve.set_defaults(func=cmd_serve)
+
+    label = sub.add_parser("distil-label", help="label postings with the teacher")
+    label.add_argument("--limit", type=int, default=360)
+    label.add_argument("--test-size", type=int, default=60)
+    label.set_defaults(func=cmd_distil_label)
+
+    distil_train = sub.add_parser("distil-train", help="LoRA fine-tune the student")
+    distil_train.add_argument("--epochs", type=float, default=3.0)
+    distil_train.add_argument("--rank", type=int, default=16)
+    distil_train.add_argument("--lr", type=float, default=2e-4)
+    distil_train.set_defaults(func=cmd_distil_train)
+
+    distil_eval = sub.add_parser("distil-eval", help="compare every skill extractor")
+    distil_eval.add_argument(
+        "--extractor",
+        action="append",
+        choices=["rules", "base", "tuned", "teacher"],
+        help="repeatable. Defaults to all four.",
+    )
+    distil_eval.set_defaults(func=cmd_distil_eval)
 
     return parser
 

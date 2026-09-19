@@ -48,6 +48,14 @@ class Settings(BaseSettings):
     llm_max_tokens: int = 1024
     llm_timeout: float = 120.0
 
+    # Phase 6. Which skill extractor the pipeline uses. "rules" is the Phase 2
+    # dictionary and the default, because it is the one that is free, instant
+    # and understood. "tuned" swaps in the fine-tuned Qwen behind the same
+    # interface, which is the whole point of the phase: the distilled model
+    # has to be droppable into the place the big one occupied.
+    skill_extractor: str = "rules"
+    skill_adapter_path: str | None = None
+
     # Per-caller request budget for the LLM endpoints, counted in a fixed
     # window. Small on purpose: this is a personal project with a public URL.
     rate_limit_per_minute: int = 10

@@ -219,4 +219,17 @@ __marimo__/
 
 # Trained model artifacts. Reproducible from the database with
 # `python -m joblens train-salary --save`, so they do not belong in git.
-artifacts/
+artifacts/*
+
+# The Phase 6 LoRA adapter is the exception. 8.7MB of weights plus its
+# training log, two hours of CPU to reproduce, and it is the evidence behind
+# the Phase 6 comparison table. A reader who wants to confirm the collapse
+# should not have to re-run the training to do it.
+!artifacts/skill-lora/
+
+# Except the tokenizer, which is an 11MB byte-for-byte copy of the base
+# model's and is fetched on load anyway.
+artifacts/skill-lora/tokenizer.json
+artifacts/skill-lora/tokenizer_config.json
+artifacts/skill-lora/chat_template.jinja
+artifacts/skill-lora/README.md

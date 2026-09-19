@@ -1,0 +1,107 @@
+# Hand-adjudicated vocabulary for the Phase 6 test labels.
+#
+# The teacher returns skills the Phase 2 taxonomy has never heard of. Some are
+# real technologies the dictionary is simply missing; some are prose the model
+# lifted out of the posting because it ignored the instruction to skip job
+# descriptions. A substring check cannot tell those apart, because both of
+# them do appear in the text. So they were read and split by hand.
+#
+# `accepted` feeds back into Phase 2: these are the concrete gaps in
+# SKILL_ALIASES, and adding them is the cheapest recall improvement available
+# to the dictionary.
+#
+# `rejected` is the more interesting list. Almost all of it is the teacher
+# answering a different question than it was asked: "production ai
+# infrastructure" and "energy-aware scheduling and control" are what the job
+# does, not tools you can put on a CV. A regex cannot make this mistake, and
+# an 8B model makes it constantly.
+
+accepted:
+  # tools, frameworks, libraries, protocols and named platforms
+  - ansible
+  - apache airflow
+  - argo
+  - c/c++
+  - cloudformation
+  - confluent
+  - cranelift
+  - dagster
+  - duckdb
+  - ebpf
+  - f#
+  - flux
+  - grafana
+  - http
+  - lmdb
+  - loki
+  - node
+  - opensearch
+  - playwright
+  - postgres
+  - prometheus
+  - pulumi
+  - pydanticai
+  - quic
+  - react
+  - react native
+  - saltstack
+  - sveltekit
+  - tcp
+  - tls
+  - varnish
+  - vuejs
+  - wasmtime
+  - webassembly
+  # established technical domains that function as a named skill
+  - cryptography
+  - distributed systems
+  - gpu
+  - hpc
+  - iac
+  - networking
+  - scientific computing
+
+rejected:
+  # too generic to be a skill
+  - ai
+  - cost
+  - evaluation
+  - inference
+  - it
+  - orchestration
+  - risk
+  - security
+  - tracing
+  - relational databases
+  # what the job does, not a tool
+  - agent systems
+  - agent tools
+  - ai-powered intelligence
+  - application design
+  - cloud architecture
+  - cloud infrastructure
+  - cloud-native
+  - data infrastructure
+  - datacenter optimization
+  - developer platforms
+  - digital twins
+  - energy-aware scheduling and control
+  - finops
+  - gui development
+  - homeowner tradeoffs
+  - imagery
+  - linux kernel internals
+  - modern ai
+  - network communication
+  - pc hardware configuration
+  - physics-informed ai world models
+  - product engineering
+  - production ai infrastructure
+  - property data
+  - security tooling
+  - trigger script development
+  # company or product names, not skills
+  - identity security platform
+  - neuralwatt cloud
+  # abbreviations too ambiguous to resolve
+  - ha

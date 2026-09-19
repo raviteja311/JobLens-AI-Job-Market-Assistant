@@ -407,3 +407,152 @@ can correct it.
 rather than a model's opinion, and retrieval nDCG and recall, because they
 are scored against human judgements. Everything else is recorded and
 charted, not enforced.
+
+---
+
+## 2026-09-18 - Distillation: half the teacher's labels did not survive review
+
+**Hypothesis.** Skill extraction is the right task to distil. The reasoning is
+shallow, the output format is rigid and the vocabulary is nearly closed, so a
+0.5B student should be able to match an 8B teacher after a few hundred
+examples.
+
+**Setup.** 242 postings labelled by llama3.1 8B over Ollama. The plan calls
+for a frontier API model as the teacher; no API key is configured, so the
+teacher is the same local model that serves `/chat`. That is a materially
+weaker teacher and every number below inherits it. 182 train, 60 test, split
+before any label correction so nothing could leak.
+
+**The teacher is loose.** 242 postings produced 251 distinct skills the
+Phase 2 taxonomy has never heard of, and the mean label count was 2.99 with
+140 of 242 postings getting an empty list.
+
+**How the test labels were corrected.** Scoring a distilled student against
+its own teacher's output measures imitation, and the teacher wins 1.0 by
+construction, so the test split had to be corrected first. Two rules did the
+work.
+
+The first is the useful one. **The Phase 2 dictionary is exhaustive over its
+own vocabulary**: it is a regex across 80 canonical skills and their aliases,
+so if a posting names PyTorch anywhere in its title or description, the
+dictionary found it. Therefore any taxonomy skill returned by the teacher
+alone is a skill the posting does not contain. That is a proof, not a
+heuristic, and it needs no human.
+
+It caught a lot. Teacher-only mentions that appear nowhere in the posting
+text were led by:
+
+| hallucinated skill | postings |
+| --- | ---: |
+| pytorch | 12 |
+| python | 10 |
+| aws | 5 |
+| javascript | 4 |
+| postgresql | 3 |
+
+The model is pattern-matching "this is an engineering job" onto the skills
+such jobs usually want. It is exactly the failure mode a dictionary cannot
+have, and it is invisible unless something independent checks the text.
+
+The second rule needed reading. For the 80 distinct terms outside the
+taxonomy, a substring check cannot separate a technology the dictionary is
+missing from prose the teacher lifted out of the posting, because both are in
+the text. So they were read and split by hand into
+`data/finetune/vocabulary.yaml`:
+
+- **41 accepted**, and these are real gaps in the Phase 2 taxonomy: ansible,
+  react, vuejs, sveltekit, prometheus, grafana, playwright, pulumi,
+  cloudformation, duckdb, opensearch, ebpf, webassembly, quic, tls.
+- **39 rejected**, almost all of it the teacher answering a different
+  question than it was asked: `production ai infrastructure`,
+  `energy-aware scheduling and control`, `homeowner tradeoffs`,
+  `pc hardware configuration`, `neuralwatt cloud`. These describe what the
+  job does. They are not tools anyone puts on a CV.
+
+**Result of the correction.** On the 60-posting test split, 47 teacher labels
+were rejected as hallucinations, 43 more as unreviewed or non-skills, and 46
+off-taxonomy mentions were accepted. Mean labels per posting fell from 2.99
+to 1.93.
+
+Applying the same rules to the training split dropped **300 of 610 teacher
+labels, 49%**.
+
+**Decision.** Train on the corrected labels rather than the raw teacher
+output. Distilling a teacher that invents PyTorch on one posting in five
+would teach the student to do the same, and the corrected set is free: the
+correction is two rules and a vocabulary file, not an afternoon of reading.
+
+**What this does to the headline.** The plan's punchline is "the fine-tuned
+3B matched the API model at 10x lower cost". There is no API model here, and
+the local teacher has a measured hallucination rate on the most common skills
+in the corpus. So the interesting comparison is no longer student against
+teacher. It is student against the 80-line regex, which costs nothing, runs
+in microseconds and cannot hallucinate.
+
+**Blind spot, stated because it is real.** A skill that both the dictionary
+and the teacher missed never entered the labels. Recall on this test set is
+recall against the union of what those two saw, not against the posting.
+
+---
+
+## 2026-09-19 - The fine-tune collapsed, and the regex won
+
+**Setup.** Qwen2.5-0.5B-Instruct, LoRA rank 16, alpha 32, attention
+projections only, 2,162,688 trainable parameters out of 496,195,456 (0.44%).
+163 training examples after the internal eval split, 3 epochs, effective
+batch 8, cosine schedule, lr 2e-4. CPU only: this machine has a 4GB GTX 1650
+but torch 2.14 publishes no matching CUDA wheel, and running the student on
+the same CPU as the teacher and the embedder keeps the latency column
+comparable. **115.6 minutes.** Final train loss 1.615, eval loss 1.565.
+
+The loss curve looked fine. Eval loss fell every epoch, 1.60 to 1.573 to
+1.565, and token accuracy sat near 0.70. Nothing in the training output
+suggested a problem.
+
+**Result on 60 hand-corrected postings.**
+
+| extractor | micro F1 | macro F1 | precision | recall | exact | ms/call |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| teacher (llama3.1 8B) | 0.675 | 0.756 | 0.548 | 0.879 | 0.567 | 10,897 |
+| rules (Phase 2 regex) | 0.654 | 0.742 | 0.714 | 0.603 | 0.567 | 14 |
+| base (Qwen 0.5B) | 0.112 | 0.062 | 0.094 | 0.138 | 0.017 | 7,024 |
+| tuned (Qwen 0.5B + LoRA) | **0.000** | 0.617 | 0.000 | 0.000 | 0.617 | 3,471 |
+
+**The student learned to say nothing.** 60 empty predictions out of 60. Micro
+F1 is zero because it never returned a single correct skill. Its macro F1 of
+0.617 and its exact-match of 0.617 come entirely from the 37 postings whose
+correct answer is an empty list: it scores full marks on those by refusing to
+answer anything, ever.
+
+This is the exact case the two averages were reported for. A single headline
+number would have read 0.617 exact-match, close to the teacher's 0.567, and
+the model is worthless.
+
+**Why.** 56% of the training labels were empty, because a third of this
+corpus is non-technical and the label correction stripped the teacher's
+inventions from many of the rest. For a 0.5B model with 163 examples,
+"always answer `{"skills": []}`" is a strong local optimum: it is right 56%
+of the time on the training distribution and costs no capacity.
+
+**The base model is worse and fails differently.** It returned
+`["python", "pytorch", "aws"]` for a Marketing Student Assistant, for a BMS
+Service Technician, and for everything else. That triple is the example in
+the prompt's schema block. It is not extracting, it is copying the
+instructions back.
+
+**The comparison the plan wanted does not exist.** There is no API model
+here, so the intended punchline of "matched the API model at 10x lower cost"
+has nothing to attach to. What the table shows instead is more useful:
+
+**An 80-line regex scores within 0.021 micro F1 of an 8B language model,
+at 780x the speed and no failure modes.** The dictionary wins precision
+0.714 to 0.548, because it cannot hallucinate. The model wins recall 0.879
+to 0.603, because it is not limited to 80 skills. Both land at 0.567
+exact-match.
+
+That is the honest cost/quality story for this task, and the fine-tuned
+model is not part of it.
+
+**Decision.** `SKILL_EXTRACTOR` stays `rules`. The adapter ships in the repo
+with its training log because the phase is the experiment, not the artifact,
+and a negative result with a diagnosis is worth more than a missing one.
