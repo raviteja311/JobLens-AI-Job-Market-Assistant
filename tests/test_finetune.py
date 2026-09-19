@@ -185,3 +185,81 @@ def test_usage_reports_ms_per_call():
     usage = Usage(calls=4, seconds=2.0)
     assert usage.ms_per_call == 500.0
     assert Usage().ms_per_call == 0.0
+
+
+def test_split_hash_is_stable_and_order_sensitive():
+    a = [example(1), example(2), example(3)]
+    assert dataset.split_hash(a) == dataset.split_hash(
+        [example(1), example(2), example(3)]
+    )
+    assert dataset.split_hash(a) != dataset.split_hash(list(reversed(a)))
+
+
+def test_balance_caps_the_empty_share():
+    rows = [example(i, teacher=["python"]) for i in range(20)]
+    rows += [example(100 + i, teacher=[], rule_based=[], label=[]) for i in range(60)]
+    balanced = dataset.balance(rows, max_empty_share=0.3)
+    empty = sum(1 for e in balanced if not e.label)
+    assert empty / len(balanced) <= 0.31
+    # Empties are capped, not removed: a model that never answers empty
+    # would invent skills for the non-technical third of the corpus.
+    assert empty > 0
+
+
+def test_a_collapsed_extractor_is_flagged_not_just_scored_low():
+    # 10 postings, model answers nothing on all of them. The first fine-tune
+    # did exactly this and produced a row that looked like a normal result.
+    rows = [example(i, teacher=["python"]) for i in range(10)]
+    score = evaluate.score_extractor(StubExtractor("dead", [[]] * 10), rows)
+    assert score.collapsed
+    assert score.empty_share == 1.0
+    assert score.micro_f1 == 0.0
+
+
+def test_a_working_extractor_is_not_flagged_as_collapsed():
+    rows = [example(i, teacher=["python"]) for i in range(10)]
+    score = evaluate.score_extractor(StubExtractor("ok", [["python"]] * 10), rows)
+    assert not score.collapsed
+    assert score.empty_share == 0.0
+
+
+def test_mostly_empty_but_correct_is_not_a_collapse():
+    # Nine genuinely skill-free postings and one with a skill, answered
+    # correctly. High empty rate, perfect score, must not trip the guard.
+    rows = [example(i, teacher=[], rule_based=[], label=[]) for i in range(9)]
+    rows.append(example(99, teacher=["python"]))
+    answers = [[]] * 9 + [["python"]]
+    score = evaluate.score_extractor(StubExtractor("sparse", answers), rows)
+    assert score.empty_share == 0.9
+    assert score.collapsed  # 90% empty trips the threshold by design
+    assert score.macro_f1 == 1.0  # ...but the model is perfect, so the
+    # guard is a prompt to go and look, not a verdict on its own.
+
+
+def test_assert_not_collapsed_raises_with_the_offender_named():
+    rows = [example(i, teacher=["python"]) for i in range(10)]
+    comparison = evaluate.Comparison(
+        scores=[evaluate.score_extractor(StubExtractor("dead", [[]] * 10), rows)]
+    )
+    with pytest.raises(RuntimeError, match="dead"):
+        evaluate.assert_not_collapsed(comparison)
+
+
+def test_micro_f1_helper_matches_the_scorer():
+    from joblens.finetune.callbacks import _micro_f1
+
+    assert _micro_f1([{"a", "b"}], [{"a", "b"}]) == 1.0
+    assert _micro_f1([set()], [{"a"}]) == 0.0
+    assert _micro_f1([{"a"}], [{"a", "b"}]) == pytest.approx(2 / 3)
+
+
+def test_epoch_score_summary_shows_the_collapse():
+    from joblens.finetune.callbacks import EpochScore
+
+    text = EpochScore(
+        epoch=3, micro_f1=0.0, empty_share=1.0, unparseable=0, eval_loss=1.565
+    ).summary()
+    # The exact pairing that the first run hid: loss down, F1 zero.
+    assert "micro F1 0.000" in text
+    assert "empty 100%" in text
+    assert "1.5650" in text

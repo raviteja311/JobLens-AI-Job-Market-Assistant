@@ -33,6 +33,13 @@ log = logging.getLogger(__name__)
 # Listed so the table has a scale, marked as an estimate everywhere it shows.
 API_COST_PER_1K_EXTRACTIONS_USD = 1.50
 
+# Above this share of empty predictions, an extractor has not scored badly,
+# it has stopped answering. The first fine-tune returned an empty list on 60
+# of 60 postings and still produced a table row that looked like a number
+# (macro F1 0.617), because the corpus has enough genuinely empty postings to
+# make silence look like a strategy. A collapse is now a loud failure.
+COLLAPSE_THRESHOLD = 0.9
+
 
 @dataclass
 class Score:
@@ -51,6 +58,16 @@ class Score:
     @property
     def usd_per_1k(self) -> float:
         return self.usd / self.examples * 1000 if self.examples else 0.0
+
+    @property
+    def empty_share(self) -> float:
+        return self.empty_predictions / self.examples if self.examples else 0.0
+
+    @property
+    def collapsed(self) -> bool:
+        """True when the extractor has stopped answering rather than scored
+        badly. Reported in the table so it can never be missed again."""
+        return self.empty_share >= COLLAPSE_THRESHOLD
 
 
 def _prf(predicted: set[str], truth: set[str]) -> tuple[int, int, int]:
@@ -126,14 +143,16 @@ class Comparison:
             f"{head.examples if head else 0} hand-corrected postings",
             "",
             "| extractor | micro F1 | macro F1 | precision | recall | exact | "
-            "unparseable | ms/call | $/1k |",
-            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            "empty | unparseable | ms/call | $/1k |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
         for score in self.scores:
             lines.append(
                 f"| {score.name} | {score.micro_f1:.3f} | {score.macro_f1:.3f} "
                 f"| {score.micro_precision:.3f} | {score.micro_recall:.3f} "
-                f"| {score.exact_match:.3f} | {score.parse_failures} "
+                f"| {score.exact_match:.3f} "
+                f"| {score.empty_share:.0%}{' COLLAPSED' if score.collapsed else ''} "
+                f"| {score.parse_failures} "
                 f"| {score.ms_per_call:.0f} | ${score.usd_per_1k:.2f} |"
             )
         return "\n".join(lines)
@@ -161,5 +180,26 @@ def run(
             log.warning("skipping %s: %s", name, exc)
             continue
         log.info("scoring %s over %s postings", name, len(verified))
-        comparison.scores.append(score_extractor(extractor, verified))
+        score = score_extractor(extractor, verified)
+        if score.collapsed:
+            # Loud, but not fatal. The collapsed row belongs in the table
+            # next to the fixed one; what must not happen is it passing for
+            # an ordinary result.
+            log.error(
+                "%s COLLAPSED: %.0f%% of predictions are empty. This is not a "
+                "low score, it is a model that has stopped answering.",
+                name,
+                score.empty_share * 100,
+            )
+        comparison.scores.append(score)
     return comparison
+
+
+def assert_not_collapsed(comparison: Comparison) -> None:
+    """Fail loudly. For callers that must not proceed on a dead model."""
+    dead = [s.name for s in comparison.scores if s.collapsed]
+    if dead:
+        raise RuntimeError(
+            f"these extractors returned an empty list on at least "
+            f"{COLLAPSE_THRESHOLD:.0%} of postings: {', '.join(dead)}"
+        )

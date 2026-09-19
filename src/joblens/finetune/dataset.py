@@ -22,6 +22,7 @@ recall on the test set is recall against what one of the two systems saw.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import random
@@ -169,6 +170,17 @@ def split(
     shuffled = list(examples)
     random.Random(seed).shuffle(shuffled)
     return shuffled[test_size:], shuffled[:test_size]
+
+
+def split_hash(examples: list[Example]) -> str:
+    """A fingerprint of which postings are in a split, in order.
+
+    Recorded next to every training run. Two runs quoting the same hash were
+    trained on the same rows; two quoting different hashes are not
+    comparable, however similar their configs look.
+    """
+    joined = "|".join(e.key for e in examples)
+    return hashlib.sha256(joined.encode("utf-8")).hexdigest()[:12]
 
 
 def balance(
