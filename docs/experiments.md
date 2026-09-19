@@ -704,3 +704,127 @@ collapsed run loss fell just as neatly, 1.600 to 1.565, while F1 stayed at
 zero. The lesson is not that loss is useless, it is that loss cannot
 distinguish those two runs and F1 can. That is why the checkpoint is
 selected on F1.
+
+---
+
+## 2026-09-19 - Gold v1 was circular, and the regex was the beneficiary
+
+**How it surfaced.** Someone asked why the empty-prediction rate was so
+high. Answering it meant looking at how gold was built, and gold was built
+wrong.
+
+**The defect.** Test gold was `rules(posting) | adjudicated(teacher(posting))`,
+where adjudication filtered teacher terms through a hand-reviewed vocabulary
+that is, in substance, the regex's own capability spec. Truth was therefore
+defined as things the regex could have found. Gold was a superset of the
+regex output on all 60 of 60 postings, so the regex could not emit a false
+positive, and its precision came back as exactly 1.000.
+
+That number was published as a finding. It was an identity.
+
+Gold was also a subset of what the two labellers found between them, so both
+recall figures were really recall-at-union and flattered both systems.
+
+**The rebuild.** Three changes.
+
+*Blind.* Candidates from both labellers pooled and shuffled, with provenance
+written to a separate file and joined back only after every decision was
+recorded. 206 candidate occurrences across the 60 postings: 136 teacher-only,
+56 proposed by both, 14 rules-only.
+
+*Per occurrence, not per term.* The unit is (posting, term). A global accept
+list is wrong in both directions: "go" is a language in one posting and a
+verb in the next.
+
+*Additive.* A read of all 60 postings added 22 skills neither labeller
+proposed, including figma, canva, opentofu, terragrunt, aeron, artio,
+agrona, railway, vcl, xdp, ruby, hpc, .net, photoshop, intercom and discord.
+
+**Counts.** 116 kept, 90 dropped, 22 added. Gold went from 116 mentions to
+138, and from 62% empty to 57%.
+
+**One rules-origin drop, and it is the whole point.** On a Portuguese
+posting, the regex matched `excel` inside `Excelência`. The word boundary
+characters in `skills.py` are ASCII, so an accented letter reads as a
+boundary. Under gold v1 that error was structurally unobservable.
+
+**Result, same 60 postings, gold hash 256c78609120d71f.**
+
+| extractor | micro F1 | macro F1 | precision | recall | empty | ms/call |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| rules | 0.663 | 0.792 | 0.986 (69/70) | 0.500 (69/138) | 65% | 5 |
+| teacher (llama3.1 8B) | 0.634 | 0.682 | 0.551 (103/187) | 0.746 (103/138) | 55% | 9,512 |
+| tuned-balanced | 0.369 | 0.653 | 0.559 (38/68) | 0.275 (38/138) | 82% | 3,612 |
+| tuned-masked | 0.337 | 0.639 | 0.674 (31/46) | 0.225 (31/138) | 85% | 3,348 |
+| base (Qwen 0.5B) | 0.104 | 0.075 | 0.094 (16/170) | 0.116 (16/138) | 2% | 6,046 |
+| tuned-v1 (collapsed) | 0.000 | 0.567 | 0.000 (0/0) | 0.000 (0/138) | 100% | 3,105 |
+
+**What the circularity was worth.** Against gold v1 the regex led the teacher
+0.753 to 0.671. Against v2 the gap narrows to 0.663 against 0.634, because
+the additive pass put 22 terms into gold that an 80 word vocabulary cannot
+reach. The regex did not get worse; the measurement got honest.
+
+Recall is the cleanest line in the table. The teacher finds 103 of 138 gold
+mentions, the regex 69. The trade is precision against coverage, at 5ms
+against 9.5 seconds.
+
+**Superseded.** The v1 table is kept above for history. Every v1 number was
+computed against a gold set that could not falsify the baseline.
+
+**No agreement figure.** Gold v2 has one adjudicator, who judged all 60
+postings in one sitting. A second pass by the same adjudicator would agree
+with itself, and reporting that kappa as inter-annotator reliability would be
+a fabricated quality number. `adjudicate_cli --pass two --sample 20` reads
+only the candidate pool and never the provenance or the first-pass file, so
+an independent pass can produce a real figure later. Until then gold v2 is
+better built than v1 and has no measured reliability, and both halves of that
+sentence matter.
+
+**Two guards, both confirmed failing first.** The superset guard asserts gold
+is not a superset of the regex output. The parity guard asserts the Phase 6
+baseline reads byte-identical text to what gold was built from; checked by
+pointing `RuleExtractor` back at `posting_text` and watching it fail on a
+posting where `rust` appears past the 1800 character cutoff.
+
+The parity guard is deliberately narrower than "make the two text builders
+identical". `posting_text` repeats the title as Phase 2 TF-IDF weighting and
+feeds clustering, the salary model and skill_matrix; forcing byte-identity
+would move Phase 2's published coverage figure to fix a Phase 6 bug. A third
+test pins the divergence as intentional.
+
+**Operational note.** The first rescore returned the teacher at 0.000 with 60
+of 60 unparseable. Not a result: four Qwen models were resident in one
+process, free memory reached 0.2GB, and Ollama answered HTTP 500 on every
+call. Re-run in a clean process it scores 0.634 with zero parse failures. The
+collapse guard caught it, the second time that guard has paid for itself.
+
+---
+
+## 2026-09-19 - Training data for the gold v2 retrain
+
+**Counts before anything was applied.** 404 training examples, zero overlap
+with the frozen test set checked by (source, source_id). 164 empty, 41%.
+
+**Empty cap.** 30%, giving 342 examples with 102 empty. Not zero: 57% of the
+test set is genuinely empty, and a model that never answers empty invents
+skills for the non-technical third of the corpus.
+
+**Agreement on the 240 non-empty examples.**
+
+| | count | share |
+| --- | ---: | ---: |
+| exact rules/teacher agreement | 9 | 4% |
+| partial overlap | 177 | 74% |
+| no overlap at all | 54 | 22% |
+
+**Decision: no disagreement filter.** Dropping the 54 no-overlap examples
+would remove 13% of the set, within the permitted range, and it was still
+the wrong call. Those are largely postings where the regex is silent because
+the technology sits outside its 80 words and the teacher found it correctly.
+They are the only examples that could teach the student to beat the regex on
+recall, which is the one dimension where it loses badly, 0.275 against 0.500.
+The filter would have removed signal and called it noise.
+
+Filtering to exact agreement was never an option: it leaves 9 examples, and
+it would teach the student the regex's own coverage, which is the gold
+superset problem one layer down.
