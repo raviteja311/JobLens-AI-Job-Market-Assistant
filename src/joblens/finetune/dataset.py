@@ -133,8 +133,19 @@ def label_corpus(conn, limit: int = 360, path: Path | None = None) -> list[Examp
     """
     path = path or LABELLED_FILE
     path.parent.mkdir(parents=True, exist_ok=True)
-    done = {e.posting_id for e in load(path)}
-    rows = [r for r in load_postings(conn, limit) if r["id"] not in done]
+    # Resume on (source, source_id), never on postings.id. The primary key is
+    # a bigserial and the test suite truncates the table, so a re-ingest
+    # renumbers every row. Resuming on the id would then skip postings that
+    # happen to have inherited a used number and re-label ones that did not,
+    # silently, after an hour of teacher calls. The golden set learned this in
+    # Phase 3; this module had the same bug until the corpus was rebuilt under
+    # it.
+    done = {e.key for e in load(path)}
+    rows = [
+        r
+        for r in load_postings(conn, limit)
+        if f"{r['source']}:{r['source_id']}" not in done
+    ]
     if done:
         log.info("resuming: %s already labelled, %s to go", len(done), len(rows))
 
@@ -181,6 +192,19 @@ def split_hash(examples: list[Example]) -> str:
     """
     joined = "|".join(e.key for e in examples)
     return hashlib.sha256(joined.encode("utf-8")).hexdigest()[:12]
+
+
+def train_excluding(labelled: list[Example], test: list[Example]) -> list[Example]:
+    """Everything labelled that is not in the frozen test set.
+
+    Used when the corpus grows. The test split was drawn once, corrected by
+    hand once, and every number in the comparison table is measured on it, so
+    it must not move when more training data arrives. Exclusion is by
+    (source, source_id) rather than by primary key, because a re-ingest
+    renumbers the table.
+    """
+    held = {e.key for e in test}
+    return [e for e in labelled if e.key not in held]
 
 
 def balance(

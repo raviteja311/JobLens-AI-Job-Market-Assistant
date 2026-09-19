@@ -263,3 +263,24 @@ def test_epoch_score_summary_shows_the_collapse():
     assert "micro F1 0.000" in text
     assert "empty 100%" in text
     assert "1.5650" in text
+
+
+def test_train_excluding_keeps_the_frozen_test_set_out():
+    labelled = [example(i) for i in range(10)]
+    test = [example(3), example(7)]
+    train = dataset.train_excluding(labelled, test)
+    assert len(train) == 8
+    assert {e.key for e in train} & {e.key for e in test} == set()
+
+
+def test_train_excluding_matches_on_key_not_primary_key():
+    # Same posting, renumbered by a re-ingest. It must still be excluded.
+    held = dataset.Example(
+        posting_id=999,
+        source="hackernews",
+        source_id="3",
+        title="t",
+        description="d",
+    )
+    train = dataset.train_excluding([example(3)], [held])
+    assert train == []
