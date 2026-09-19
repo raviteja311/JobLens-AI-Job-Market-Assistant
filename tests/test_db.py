@@ -33,7 +33,7 @@ def conn():
     with db.connect() as connection:
         # Each test starts from an empty database. Fine here because this is a
         # throwaway test database; never point DATABASE_URL at anything real.
-        connection.execute("truncate postings, raw_postings, ingestion_runs")
+        connection.execute("truncate postings, raw_postings, ingestion_runs cascade")
         connection.commit()
         yield connection
 

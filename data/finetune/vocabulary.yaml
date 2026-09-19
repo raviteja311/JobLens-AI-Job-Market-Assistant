@@ -1,0 +1,551 @@
+# Hand-adjudicated vocabulary for the Phase 6 test labels.
+#
+# The teacher returns skills the Phase 2 taxonomy has never heard of. Some are
+# real technologies the dictionary is simply missing; some are prose the model
+# lifted out of the posting because it ignored the instruction to skip job
+# descriptions. A substring check cannot tell those apart, because both of
+# them do appear in the text. So they were read and split by hand.
+#
+# `accepted` feeds back into Phase 2: these are the concrete gaps in
+# SKILL_ALIASES, and adding them is the cheapest recall improvement available
+# to the dictionary.
+#
+# `rejected` is the more interesting list. Almost all of it is the teacher
+# answering a different question than it was asked: "production ai
+# infrastructure" and "energy-aware scheduling and control" are what the job
+# does, not tools you can put on a CV. A regex cannot make this mistake, and
+# an 8B model makes it constantly.
+
+accepted:
+  # tools, frameworks, libraries, protocols and named platforms
+  - ansible
+  - apache airflow
+  - argo
+  - c/c++
+  - cloudformation
+  - confluent
+  - cranelift
+  - dagster
+  - duckdb
+  - ebpf
+  - f#
+  - flux
+  - grafana
+  - http
+  - lmdb
+  - loki
+  - node
+  - opensearch
+  - playwright
+  - postgres
+  - prometheus
+  - pulumi
+  - pydanticai
+  - quic
+  - react
+  - react native
+  - saltstack
+  - sveltekit
+  - tcp
+  - tls
+  - varnish
+  - vuejs
+  - wasmtime
+  - webassembly
+  # established technical domains that function as a named skill
+  - cryptography
+  - distributed systems
+  - gpu
+  - hpc
+  - iac
+  - networking
+  - scientific computing
+
+rejected:
+  # too generic to be a skill
+  - ai
+  - cost
+  - evaluation
+  - inference
+  - it
+  - orchestration
+  - risk
+  - security
+  - tracing
+  - relational databases
+  # what the job does, not a tool
+  - agent systems
+  - agent tools
+  - ai-powered intelligence
+  - application design
+  - cloud architecture
+  - cloud infrastructure
+  - cloud-native
+  - data infrastructure
+  - datacenter optimization
+  - developer platforms
+  - digital twins
+  - energy-aware scheduling and control
+  - finops
+  - gui development
+  - homeowner tradeoffs
+  - imagery
+  - linux kernel internals
+  - modern ai
+  - network communication
+  - pc hardware configuration
+  - physics-informed ai world models
+  - product engineering
+  - production ai infrastructure
+  - property data
+  - security tooling
+  - trigger script development
+  # company or product names, not skills
+  - identity security platform
+  - neuralwatt cloud
+  # abbreviations too ambiguous to resolve
+  - ha
+
+# Second review, 2026-09-19, after labelling grew the corpus from 242 to 464
+# postings and produced 419 further off-taxonomy terms carrying 593 mentions.
+# Same rule as the first pass: a named technology, language, framework,
+# library, protocol or product is a skill; a description of the work is not.
+#
+# Three patterns worth recording, because they are the teacher's fingerprint.
+#
+# It mangles product names. "Claude Code" came back as claudia code, claud
+# code, claudecode, claudes code, claudio, claudio code and cursor/claude
+# code. Every variant is rejected and plain `claude` is accepted.
+#
+# It returns compliance standards as skills: hipaa, soc 2, iso 27001, pipeda,
+# mfippa, ucc. A regulation is a context, not a tool, and the prompt already
+# says to skip degrees and benefits for the same reason.
+#
+# It returns the shape of the job: high-scale backend services, real-time
+# scoring pipelines, data-intensive applications, operational workflows,
+# distributed systems development. These read like skills and cannot be
+# separated from them by any rule that does not involve reading.
+
+
+accepted_round_two:
+  - .net
+  - adafruit gfx
+  - altair
+  - android
+  - angular
+  - anthropic
+  - apache iceberg
+  - apollo
+  - apptainer
+  - argo workflows
+  - argocd
+  - asp.net core
+  - assemblyai
+  - aurora
+  - aws api gateway
+  - aws bedrock
+  - aws cloudwatch
+  - aws cognito
+  - aws dynamodb
+  - aws lambda
+  - aws s3
+  - axum
+  - azure ai
+  - azure devops
+  - beam
+  - bedrock
+  - benthos
+  - bitbucket
+  - ble
+  - blender
+  - boost
+  - bullmq
+  - c
+  - cdktf
+  - cgroups
+  - chatgpt
+  - cilium cni
+  - circleci
+  - claude
+  - client-go
+  - clojure
+  - cloudflare
+  - cloudflare workers
+  - cloudwatch
+  - cmake
+  - cockroachdb
+  - codex
+  - coldfusion
+  - confluence
+  - containerd
+  - controller-runtime
+  - copilot
+  - cortex
+  - crdt
+  - cri-o
+  - csharp
+  - css
+  - cuda
+  - cursor
+  - d3
+  - dask
+  - datadog
+  - deepgram
+  - dicom
+  - digitalocean
+  - dns
+  - dynamodb
+  - ecs
+  - egui
+  - eks
+  - elastic apm
+  - electron
+  - elixir
+  - embedded linux
+  - entity framework core
+  - esp32
+  - expo
+  - express
+  - express.js
+  - fargate
+  - fhir
+  - figma
+  - flutter
+  - fluxcd
+  - freebsd
+  - freertos
+  - gdi
+  - gdi+
+  - gemini
+  - github
+  - github actions
+  - github copilot
+  - github enterprise
+  - gitlab
+  - golang
+  - google cloud
+  - google cloud platform
+  - google sheets
+  - googletest
+  - gradle
+  - graphhopper
+  - graphrag
+  - grok
+  - grpc
+  - hl7v2
+  - hotwire
+  - hubspot
+  - hudi
+  - iceberg
+  - imu
+  - infiniband
+  - ios
+  - ipc
+  - jenkins
+  - jira
+  - json
+  - julia
+  - jvm
+  - kinesis
+  - kong
+  - kotlin
+  - kubebuilder
+  - lambda
+  - langchain.js
+  - langfuse
+  - langgraph
+  - langsmith
+  - lidar
+  - lustre
+  - macos
+  - mastra
+  - matplotlib
+  - maven
+  - mcp
+  - mfc
+  - mitiq
+  - ms sql server
+  - nestjs
+  - next.js
+  - nextflow
+  - nix
+  - node.js
+  - nuxt
+  - nvidia
+  - oci
+  - onnx
+  - opa
+  - openai
+  - openapi
+  - opendental
+  - openfin
+  - opengl
+  - openstack
+  - opentofu
+  - otterai
+  - paxos
+  - perplexity
+  - pgvector
+  - phoenix
+  - pinecone
+  - polars
+  - posthog
+  - powershell
+  - prefect
+  - prisma
+  - puppet
+  - pwm
+  - pydantic
+  - pyramid
+  - pyspark
+  - qt
+  - quantization
+  - raft
+  - rails
+  - ray
+  - reactjs
+  - redpanda
+  - redux
+  - rego
+  - restate
+  - rlhf
+  - rocksdb
+  - ros
+  - ros2
+  - rspec
+  - rtos
+  - ruby
+  - ruby on rails
+  - runc
+  - s3
+  - salt
+  - scaleway
+  - seccomp
+  - selenium
+  - semantic kernel
+  - sglang
+  - slurm
+  - snakemake
+  - snowpark
+  - socks5
+  - solidity
+  - solidjs
+  - sonarqube
+  - sql server
+  - sqlalchemy
+  - sqlite
+  - sqs
+  - ssl/tls
+  - stimulusjs
+  - supabase
+  - svelte
+  - swift
+  - swiftui
+  - tailwind
+  - talos linux
+  - taskiq
+  - tcp/ip
+  - teleport
+  - temporal
+  - tensorrt-llm
+  - testng
+  - tft_espi
+  - tokio
+  - trigger.dev
+  - turbo
+  - u8g2
+  - udp
+  - unreal engine 5
+  - vercel
+  - vue
+  - vue.js
+  - wasm
+  - webgl2
+  - webgpu
+  - webrtc
+  - websocket
+  - whisper
+  - wireguard
+  - yaml
+  - zephyr
+  - zfs
+  - zpl
+
+rejected_round_two:
+  - agent frameworks
+  - agent harnesses
+  - agent orchestration
+  - agentic
+  - agents
+  - agi
+  - agile
+  - ai agents
+  - ai apis
+  - ai technologies
+  - ai/ml
+  - alphasense
+  - alpinejs
+  - annotation
+  - anthropic claude
+  - api gateway
+  - apis
+  - app clip
+  - applied physics
+  - arc-agi3
+  - asr
+  - audio pipelines
+  - backend
+  - batching
+  - bi
+  - bloomberg
+  - boot environments
+  - bot detection
+  - browser automation
+  - browser extensions
+  - caching
+  - capital iq
+  - cdns
+  - chatbots
+  - checkpoints
+  - chunking
+  - ci
+  - classification
+  - claud code
+  - claudecode
+  - claudes code
+  - claudia
+  - claudia code
+  - claudio
+  - claudio code
+  - clifft
+  - cloud
+  - cloud infra
+  - code generation
+  - coderabbit
+  - collection
+  - computer graphics
+  - consistency guarantees
+  - containers
+  - crawlers
+  - cursor/claude code
+  - data structures
+  - data visualization
+  - data-intensive applications
+  - data-to-model pipeline
+  - database design
+  - databases
+  - datasets
+  - dbs
+  - ddn intelliflash
+  - ddn nfs storage
+  - delta
+  - deployment
+  - developer tooling
+  - devops
+  - diffusion
+  - distributed systems development
+  - dmu
+  - ee
+  - encoders
+  - entity matching
+  - etl orchestrator
+  - evaluation frameworks
+  - factset
+  - feature stores
+  - fingerprinting
+  - frontier llms
+  - full-stack
+  - gemin
+  - geometric deep learning
+  - google
+  - google news
+  - gpus
+  - guardrails
+  - headless browsers
+  - high-scale backend services
+  - hipaa
+  - hybrid search
+  - iso 27001
+  - job scheduling
+  - kanban
+  - kernels
+  - knowledge graphs
+  - lakehouses
+  - langfuse/langsmith
+  - large data processing/data science
+  - llm apis
+  - llm usage
+  - llms
+  - locking
+  - low-level computing
+  - lvgl
+  - memory management
+  - mfippa
+  - microcontrollers
+  - ml
+  - model card
+  - mos
+  - multimodal
+  - murex
+  - mxtest
+  - next
+  - numerical methods
+  - nvidia-geforce-gb300
+  - object-oriented programming
+  - observability
+  - operational workflows
+  - orchestration framework
+  - os internals
+  - pacelc
+  - pando
+  - pb-scale storage
+  - pipeda
+  - pitchbook
+  - play
+  - proxies
+  - qa
+  - query optimization
+  - queues/orchestration
+  - radiometry
+  - ranking
+  - real-time scoring pipelines
+  - reinforcement learning from human feedback
+  - rest apis
+  - rl
+  - rl environments
+  - routing
+  - rubrics
+  - scanners
+  - schema design
+  - scientific ml
+  - scraping infrastructure
+  - sensors
+  - serverless
+  - service mesh
+  - shell script
+  - simulation
+  - soc 2
+  - sociocracy 3.0
+  - sockets
+  - spec-driven development
+  - speech-processing
+  - speech-to-text
+  - spreadsheet
+  - synthetic monitoring
+  - system architecture
+  - tensors
+  - threading
+  - traditional ai/ml
+  - tui
+  - typescript/node.js
+  - ucc
+  - user namespaces
+  - valkey/redis
+  - vdevs
+  - vector databases
+  - vector db
+  - vector stores
+  - vfs
+  - vision
+  - wafs
+  - yjs

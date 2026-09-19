@@ -1,0 +1,539 @@
+version: 1
+grades:
+  0: not relevant
+  1: acceptable
+  2: exactly what was asked
+queries:
+- id: q01
+  query: remote machine learning engineer for someone with two years experience
+  note: the query this whole project exists to answer
+  verified: false
+  judgements: {}
+- id: q02
+  query: LLM engineer building RAG systems
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49159942: 0
+    hackernews:49169371: 0
+    hackernews:49523985: 2
+    hackernews:49528234: 2
+    hackernews:49530424: 0
+    hackernews:49534270: 0
+    hackernews:49538639: 0
+    hackernews:49555479: 0
+    remoteok:1135672: 0
+    remoteok:1135997: 0
+    remoteok:1136001: 0
+    remoteok:1136097: 0
+    remoteok:1136670: 0
+    remoteok:1136795: 0
+    remoteok:1136796: 0
+    remoteok:1136798: 1
+    remoteok:1136878: 0
+- id: q03
+  query: pgvector
+  note: rare token, keyword search should win outright | judged by Claude from title, company
+    and retrieved snippet, not from the full posting. Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49157265: 0
+    hackernews:49160170: 0
+    hackernews:49163658: 0
+    hackernews:49523830: 0
+    hackernews:49524691: 0
+    hackernews:49530381: 0
+    hackernews:49530464: 0
+    hackernews:49531002: 0
+    hackernews:49533498: 0
+    hackernews:49541500: 2
+- id: q04
+  query: jobs that need PyTorch rather than TensorFlow
+  note: negation, which retrieval does not handle and the eval should show
+  verified: false
+  judgements: {}
+- id: q05
+  query: entry level data science role no PhD required
+  note: ''
+  verified: false
+  judgements: {}
+- id: q06
+  query: founding engineer at a seed stage startup
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49156711: 0
+    hackernews:49158552: 1
+    hackernews:49159942: 0
+    hackernews:49162950: 0
+    hackernews:49169371: 0
+    hackernews:49522929: 0
+    hackernews:49523950: 1
+    hackernews:49525270: 2
+    hackernews:49525463: 2
+    hackernews:49526894: 1
+    hackernews:49529054: 2
+    hackernews:49530424: 0
+    hackernews:49532259: 2
+    hackernews:49534647: 1
+    hackernews:49544301: 2
+    hackernews:49595476: 0
+    hackernews:49711313: 2
+    remoteok:1136670: 0
+- id: q07
+  query: platform engineering with Kubernetes and Terraform
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49156711: 2
+    hackernews:49156737: 2
+    hackernews:49159942: 0
+    hackernews:49161868: 1
+    hackernews:49168356: 2
+    hackernews:49522929: 2
+    hackernews:49524822: 0
+    hackernews:49527115: 2
+    hackernews:49527209: 1
+    hackernews:49529957: 2
+    hackernews:49530424: 0
+    hackernews:49539168: 2
+    hackernews:49555567: 2
+    hackernews:49573833: 2
+    hackernews:49608356: 1
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+- id: q08
+  query: backend engineer Rust
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49156711: 0
+    hackernews:49158689: 0
+    hackernews:49159942: 0
+    hackernews:49165359: 2
+    hackernews:49166080: 1
+    hackernews:49169371: 0
+    hackernews:49522929: 0
+    hackernews:49523123: 1
+    hackernews:49523422: 2
+    hackernews:49525399: 0
+    hackernews:49530424: 0
+    hackernews:49530430: 2
+    hackernews:49530894: 0
+    hackernews:49533651: 1
+    hackernews:49534764: 0
+    hackernews:49546958: 0
+    remoteok:1136670: 0
+- id: q09
+  query: roles in San Francisco that are onsite
+  note: location plus modality
+  verified: false
+  judgements: {}
+- id: q10
+  query: computer vision engineer
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49156711: 0
+    hackernews:49157959: 1
+    hackernews:49159942: 0
+    hackernews:49162501: 1
+    hackernews:49164461: 1
+    hackernews:49169371: 0
+    hackernews:49522929: 0
+    hackernews:49524691: 1
+    hackernews:49524822: 0
+    hackernews:49525183: 0
+    hackernews:49526361: 0
+    hackernews:49527113: 0
+    hackernews:49527181: 0
+    hackernews:49528637: 2
+    hackernews:49530424: 0
+    hackernews:49532154: 0
+    remoteok:1135767: 0
+    remoteok:1136670: 0
+    remoteok:1136798: 0
+    remoteok:1137309: 1
+- id: q11
+  query: data engineer building pipelines with Airflow and dbt
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49157080: 0
+    hackernews:49159028: 1
+    hackernews:49160256: 2
+    hackernews:49163520: 0
+    hackernews:49164668: 0
+    hackernews:49164894: 0
+    hackernews:49165031: 0
+    hackernews:49523408: 2
+    hackernews:49524502: 0
+    hackernews:49525116: 2
+    hackernews:49528044: 0
+    hackernews:49530424: 0
+    hackernews:49542805: 1
+    hackernews:49613305: 2
+    remoteok:1136222: 1
+    remoteok:1136670: 0
+    remoteok:1136795: 0
+- id: q12
+  query: someone who can own the whole stack at a small company
+  note: vague phrasing, no keyword overlap, vector should win
+  verified: false
+  judgements: {}
+- id: q13
+  query: fine-tuning open source models
+  note: ''
+  verified: false
+  judgements: {}
+- id: q14
+  query: MLOps and model deployment
+  note: ''
+  verified: false
+  judgements: {}
+- id: q15
+  query: python developer with AWS experience
+  note: ''
+  verified: false
+  judgements: {}
+- id: q16
+  query: forward deployed engineer working directly with customers
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49159942: 0
+    hackernews:49163337: 2
+    hackernews:49525544: 1
+    hackernews:49528405: 2
+    hackernews:49530020: 2
+    hackernews:49531126: 2
+    hackernews:49608356: 2
+    hackernews:49656171: 1
+    remoteok:1136066: 0
+    remoteok:1136670: 0
+    remoteok:1136987: 1
+- id: q17
+  query: jobs paying over 200k
+  note: retrieval cannot answer this; it belongs in /trends and the eval should show retrieval
+    failing honestly
+  verified: false
+  judgements: {}
+- id: q18
+  query: TypeScript and React frontend work
+  note: ''
+  verified: false
+  judgements: {}
+- id: q19
+  query: research scientist publishing papers
+  note: ''
+  verified: false
+  judgements: {}
+- id: q20
+  query: developer relations or technical writing
+  note: ''
+  verified: false
+  judgements: {}
+- id: q21
+  query: security engineer
+  note: ''
+  verified: false
+  judgements: {}
+- id: q22
+  query: internship or new grad position
+  note: ''
+  verified: false
+  judgements: {}
+- id: q23
+  query: fully remote anywhere in the world
+  note: ''
+  verified: false
+  judgements: {}
+- id: q24
+  query: Go and distributed systems
+  note: short token that stems badly, a known weak spot | judged by Claude from title, company
+    and retrieved snippet, not from the full posting. Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49163458: 1
+    hackernews:49164668: 1
+    hackernews:49166092: 1
+    hackernews:49530116: 2
+    hackernews:49532898: 2
+    hackernews:49539168: 1
+    remoteok:1135634: 2
+    remoteok:1135672: 0
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+    remoteok:1136798: 0
+    remoteok:1136841: 0
+    remoteok:1137072: 0
+- id: q25
+  query: startup working on developer tools
+  note: ''
+  verified: false
+  judgements: {}
+- id: q26
+  query: Postgres database performance work
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49157080: 0
+    hackernews:49157647: 0
+    hackernews:49163131: 0
+    hackernews:49163658: 1
+    hackernews:49164668: 0
+    remoteok:1135903: 0
+    remoteok:1136097: 0
+    remoteok:1136222: 0
+    remoteok:1136670: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137391: 0
+- id: q27
+  query: AI agents and tool use
+  note: ''
+  verified: false
+  judgements: {}
+- id: q28
+  query: engineering manager leading a small team
+  note: ''
+  verified: false
+  judgements: {}
+- id: q29
+  query: fintech or payments company
+  note: ''
+  verified: false
+  judgements: {}
+- id: q30
+  query: healthcare or biotech machine learning
+  note: ''
+  verified: false
+  judgements: {}
+- id: q31
+  query: data annotation and labelling work
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49169577: 0
+    hackernews:49530464: 0
+    hackernews:49534359: 1
+    hackernews:49537584: 0
+    hackernews:49542805: 0
+    remoteok:1135673: 1
+    remoteok:1135903: 1
+    remoteok:1136222: 1
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137309: 2
+    remoteok:1137375: 1
+- id: q32
+  query: roles in London or the UK
+  note: ''
+  verified: false
+  judgements: {}
+- id: q33
+  query: contract or freelance rather than full time
+  note: ''
+  verified: false
+  judgements: {}
+- id: q34
+  query: open source maintainer role
+  note: ''
+  verified: false
+  judgements: {}
+- id: q35
+  query: Ruby on Rails
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49157647: 1
+    hackernews:49159686: 2
+    hackernews:49165651: 0
+    hackernews:49523768: 1
+    hackernews:49527344: 2
+    hackernews:49529015: 0
+    hackernews:49531646: 1
+    hackernews:49533482: 0
+    remoteok:1137388: 0
+- id: q36
+  query: infrastructure and site reliability engineering
+  note: ''
+  verified: false
+  judgements: {}
+- id: q37
+  query: NLP and text processing
+  note: ''
+  verified: false
+  judgements: {}
+- id: q38
+  query: product engineer who talks to users
+  note: ''
+  verified: false
+  judgements: {}
+- id: q39
+  query: climate or energy technology
+  note: ''
+  verified: false
+  judgements: {}
+- id: q40
+  query: recommendation systems and ranking
+  note: ''
+  verified: false
+  judgements: {}
+- id: q41
+  query: work with embeddings and vector search
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49160170: 1
+    hackernews:49163907: 2
+    hackernews:49524691: 1
+    hackernews:49525600: 1
+    hackernews:49532154: 1
+    hackernews:49534359: 1
+    hackernews:49537584: 1
+    hackernews:49541500: 2
+    remoteok:1136066: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137224: 1
+    remoteok:1137309: 0
+    remoteok:1137378: 0
+    remoteok:1137391: 0
+- id: q42
+  query: senior staff or principal level
+  note: ''
+  verified: false
+  judgements: {}
+- id: q43
+  query: mobile app development iOS or Android
+  note: ''
+  verified: false
+  judgements: {}
+- id: q44
+  query: company that mentions equity in the offer
+  note: ''
+  verified: false
+  judgements: {}
+- id: q45
+  query: evaluation and testing of AI systems
+  note: the thing Phase 5 is about, and rare in the corpus
+  verified: false
+  judgements: {}
+- id: q46
+  query: analytics engineer building dashboards
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49156689: 0
+    hackernews:49159942: 0
+    hackernews:49160915: 0
+    hackernews:49162501: 0
+    hackernews:49164668: 1
+    hackernews:49169371: 0
+    hackernews:49522912: 1
+    hackernews:49524822: 0
+    hackernews:49530424: 0
+    hackernews:49543579: 0
+    hackernews:49615973: 0
+    remoteok:1135673: 2
+    remoteok:1136222: 2
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+- id: q47
+  query: hardware or embedded systems
+  note: ''
+  verified: false
+  judgements: {}
+- id: q48
+  query: role that involves both research and shipping product
+  note: ''
+  verified: false
+  judgements: {}
+- id: q49
+  query: no whiteboard interviews
+  note: ''
+  verified: false
+  judgements: {}
+- id: q50
+  query: small team under twenty people
+  note: ''
+  verified: false
+  judgements: {}
+- id: q51
+  query: developer tools for AI engineers
+  note: ''
+  verified: false
+  judgements: {}
+- id: q52
+  query: Java or Scala backend
+  note: ''
+  verified: false
+  judgements: {}
+- id: q53
+  query: technical support or solutions engineer
+  note: ''
+  verified: false
+  judgements: {}
+- id: q54
+  query: robotics
+  note: ''
+  verified: false
+  judgements: {}
+- id: q55
+  query: hybrid two days a week in the office
+  note: ''
+  verified: false
+  judgements: {}
+- id: q56
+  query: growth or marketing role at a tech company
+  note: ''
+  verified: false
+  judgements: {}
+- id: q57
+  query: designer who can code
+  note: ''
+  verified: false
+  judgements: {}
+- id: q58
+  query: quantitative or trading systems
+  note: ''
+  verified: false
+  judgements: {}
+- id: q59
+  query: LangChain or LlamaIndex
+  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
+    Review before quoting the numbers.
+  verified: true
+  judgements:
+    hackernews:49157646: 2
+    hackernews:49165024: 0
+    hackernews:49169157: 0
+    hackernews:49523985: 2
+    hackernews:49524835: 0
+    hackernews:49534032: 1
+    hackernews:49547973: 0
+    hackernews:49552714: 1
+    hackernews:49711313: 1
+    remoteok:1137279: 0
+    remoteok:1137307: 0
+- id: q60
+  query: company building their own foundation models
+  note: ''
+  verified: false
+  judgements: {}

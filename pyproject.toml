@@ -7,7 +7,20 @@ dependencies = [
     "httpx >= 0.27",
     "psycopg[binary] >= 3.2",
     "pydantic >= 2.7",
-    "pydantic-settings >= 2.2"
+    "pydantic-settings >= 2.2",
+    # Phase 2 onwards. Kept in the base install rather than an extra so that
+    # `python -m joblens trends` works on a fresh clone without a second step.
+    "pandas >= 2.2",
+    "scikit-learn >= 1.5",
+    "joblib >= 1.4",
+    # Phase 3 onwards.
+    "sentence-transformers >= 3.0",
+    "pyyaml >= 6.0",
+    "fastapi >= 0.115",
+    "uvicorn[standard] >= 0.30",
+    "python-multipart >= 0.0.9",
+    "pypdf >= 5.0",
+    "streamlit >= 1.37",
 ]
 
 [project.optional-dependencies]
@@ -35,5 +48,8 @@ target-version = ["py312"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 markers = [
-    "db : needs a running Postgres. Skipped automatically when none is reachable"
+    "db : needs a running Postgres. Skipped automatically when none is reachable",
+    "slow : model training. Runs in CI, skip locally with -m 'not slow'",
+    "eval : scores retrieval or generation against the golden set",
+    "llm : needs a reachable LLM backend. Skipped when none is configured",
 ]

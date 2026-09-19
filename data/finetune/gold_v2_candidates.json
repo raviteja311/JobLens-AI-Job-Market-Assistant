@@ -1,0 +1,300 @@
+{
+ "hackernews:49522912": [],
+ "hackernews:49522930": [
+  "pytorch",
+  "python",
+  "aws"
+ ],
+ "hackernews:49523018": [
+  "rust",
+  "python"
+ ],
+ "hackernews:49523194": [],
+ "hackernews:49523288": [
+  "energy-aware scheduling and control",
+  "inference",
+  "datacenter optimization",
+  "python",
+  "rust",
+  "git",
+  "neuralwatt cloud",
+  "agent tools",
+  "gpu",
+  "production ai infrastructure",
+  "modern ai"
+ ],
+ "hackernews:49523408": [
+  "apache airflow",
+  "confluent",
+  "python",
+  "go",
+  "git",
+  "typescript",
+  "airflow",
+  "databricks",
+  "spark",
+  "kafka"
+ ],
+ "hackernews:49523604": [
+  "python",
+  "pytorch",
+  "aws"
+ ],
+ "hackernews:49523666": [
+  "c#"
+ ],
+ "hackernews:49523675": [
+  "react native"
+ ],
+ "hackernews:49523703": [
+  "python",
+  "vuejs",
+  "aws",
+  "pydanticai",
+  "snowflake",
+  "django",
+  "javascript",
+  "pytorch",
+  "postgresql",
+  "docker",
+  "react",
+  "git",
+  "dagster",
+  "ci/cd",
+  "duckdb"
+ ],
+ "hackernews:49523704": [
+  "mongodb",
+  "lmdb",
+  "postgres",
+  "redis",
+  "go",
+  "elasticsearch",
+  "postgresql",
+  "python",
+  "fastapi",
+  "flask",
+  "opensearch",
+  "docker"
+ ],
+ "hackernews:49523740": [
+  "pytorch",
+  "c#",
+  "f#",
+  "python"
+ ],
+ "hackernews:49523835": [
+  "ebpf",
+  "tcp",
+  "varnish",
+  "http",
+  "tls",
+  "python",
+  "wasmtime",
+  "typescript",
+  "cranelift",
+  "quic",
+  "linux kernel internals",
+  "c++",
+  "go",
+  "linux",
+  "c/c++",
+  "webassembly",
+  "javascript",
+  "rust",
+  "distributed systems"
+ ],
+ "hackernews:49523875": [],
+ "hackernews:49524080": [],
+ "hackernews:49524252": [],
+ "hackernews:49524580": [],
+ "hackernews:49524822": [
+  "mlops"
+ ],
+ "hackernews:49524880": [
+  "typescript",
+  "playwright",
+  "sveltekit",
+  "ai",
+  "node",
+  "postgresql"
+ ],
+ "hackernews:49525141": [
+  "aws",
+  "python",
+  "pytorch"
+ ],
+ "hackernews:49525483": [
+  "java"
+ ],
+ "hackernews:49526361": [],
+ "hackernews:49526396": [
+  "python",
+  "pytorch",
+  "aws"
+ ],
+ "hackernews:49527115": [
+  "terraform",
+  "pulumi",
+  "saltstack",
+  "aws",
+  "cloudformation",
+  "ansible",
+  "kubernetes",
+  "go"
+ ],
+ "hackernews:49527209": [
+  "flux",
+  "c++",
+  "ci/cd",
+  "rust",
+  "grafana",
+  "cicd",
+  "argo",
+  "orchestration",
+  "security tooling",
+  "loki",
+  "prometheus",
+  "java",
+  "iac",
+  "kubernetes",
+  "finops",
+  "gcp",
+  "go",
+  "tracing",
+  "python",
+  "ha"
+ ],
+ "hackernews:49527354": [
+  "digital twins",
+  "physics-informed ai world models",
+  "risk",
+  "homeowner tradeoffs",
+  "machine learning surrogates",
+  "property data",
+  "pytorch",
+  "imagery",
+  "cost",
+  "python"
+ ],
+ "hackernews:49527388": [],
+ "hackernews:49527588": [
+  "gcp",
+  "git",
+  "docker",
+  "python",
+  "relational databases",
+  "ci/cd",
+  "fastapi",
+  "iac"
+ ],
+ "hackernews:49528002": [
+  "git",
+  "linux",
+  "cryptography"
+ ],
+ "hackernews:49528044": [
+  "react",
+  "postgres",
+  "azure",
+  "python",
+  "javascript",
+  "fastapi",
+  "typescript",
+  "postgresql"
+ ],
+ "hackernews:49528336": [],
+ "hackernews:49528413": [
+  "python",
+  "pytorch",
+  "aws"
+ ],
+ "hackernews:49529054": [],
+ "hackernews:49530020": [],
+ "hackernews:49530430": [
+  "python",
+  "rust"
+ ],
+ "hackernews:49530558": [],
+ "remoteok:1135765": [],
+ "remoteok:1135767": [],
+ "remoteok:1135789": [],
+ "remoteok:1135997": [
+  "pc hardware configuration",
+  "it",
+  "network communication"
+ ],
+ "remoteok:1136094": [],
+ "remoteok:1136097": [],
+ "remoteok:1136168": [],
+ "remoteok:1136570": [
+  "excel"
+ ],
+ "remoteok:1136770": [],
+ "remoteok:1136795": [
+  "postgresql",
+  "javascript",
+  "python",
+  "kubernetes",
+  "aws",
+  "pytorch"
+ ],
+ "remoteok:1136796": [
+  "cloud-native",
+  "cloud architecture",
+  "identity security platform",
+  "security",
+  "aws",
+  "kubernetes",
+  "pytorch",
+  "ai",
+  "postgresql",
+  "python",
+  "ai-powered intelligence",
+  "javascript",
+  "distributed systems"
+ ],
+ "remoteok:1136798": [
+  "product engineering",
+  "hpc",
+  "data infrastructure",
+  "cloud infrastructure",
+  "scientific computing",
+  "developer platforms",
+  "security",
+  "evaluation",
+  "agent systems",
+  "distributed systems"
+ ],
+ "remoteok:1137114": [
+  "pytorch",
+  "python"
+ ],
+ "remoteok:1137138": [],
+ "remoteok:1137194": [],
+ "remoteok:1137209": [],
+ "remoteok:1137224": [],
+ "remoteok:1137374": [],
+ "remoteok:1137378": [],
+ "remoteok:1137380": [
+  "kubernetes",
+  "pytorch",
+  "python",
+  "javascript",
+  "postgresql",
+  "aws",
+  "scikit-learn"
+ ],
+ "remoteok:1137381": [],
+ "remoteok:1137390": [],
+ "remoteok:1137391": [],
+ "remoteok:1137394": [
+  "networking",
+  "javascript",
+  "gui development",
+  "rest api",
+  "application design",
+  "trigger script development",
+  "python"
+ ]
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "legal": "Data from RemoteOK.com. Please contact them for licensing."
+  },
+  {
+    "id": "1099821",
+    "slug": "machine-learning-engineer-northwind",
+    "company": "Northwind Analytics",
+    "position": "Machine Learning Engineer",
+    "tags": ["python", "pytorch", "ml"],
+    "description": "<p>We are looking for an ML engineer.</p><ul><li>3+ years Python</li><li>PyTorch</li></ul><script>track();</script>",
+    "location": "Remote (Europe)",
+    "salary_min": 90000,
+    "salary_max": 120000,
+    "date": "2026-08-14T09:12:03+00:00",
+    "url": "https://remoteok.com/remote-jobs/1099821"
+  },
+  {
+    "id": "1099822",
+    "company": "Tessellate",
+    "position": "Senior Data Engineer",
+    "description": "<p>Pipelines &amp; warehouses.</p>",
+    "location": "Remote",
+    "salary_min": 0,
+    "salary_max": 0,
+    "date": "2026-08-15T11:00:00+00:00",
+    "url": "https://remoteok.com/remote-jobs/1099822"
+  },
+  {
+    "id": "1099823",
+    "company": "Ghost Co",
+    "description": "<p>No position field, should be skipped.</p>",
+    "date": "2026-08-15T11:00:00+00:00"
+  }
+]

@@ -1,0 +1,66 @@
+name: eval
+
+# The gate. An eval that only prints numbers is a report; this one fails the
+# build, which is the difference between measuring quality and having it.
+#
+# Retrieval only. The chat suite needs a model, and a local Llama on a GitHub
+# runner takes half an hour, so /chat is scored on a schedule and before a
+# release rather than on every push. Pretending otherwise would give a green
+# tick that means nothing.
+on:
+  pull_request:
+    paths:
+      - "src/joblens/search/**"
+      - "src/joblens/eval/**"
+      - "prompts/**"
+      - "data/golden/**"
+  workflow_dispatch:
+
+jobs:
+  retrieval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: joblens
+          POSTGRES_PASSWORD: joblens
+          POSTGRES_DB: joblens
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://joblens:joblens@localhost:5432/joblens
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -e ".[dev]"
+
+      - name: collect a corpus to score against
+        run: |
+          python -m joblens migrate
+          python -m joblens ingest --limit 400
+
+      - name: build the index
+        run: python -m joblens embed --strategy whole --strategy section
+
+      # --strict makes a score drop exit 1. Without it this job is decoration.
+      - name: score retrieval
+        run: python -m joblens eval --suite retrieval --strict | tee eval.md
+
+      - name: publish the scorecard
+        if: always()
+        run: cat eval.md >> "$GITHUB_STEP_SUMMARY"

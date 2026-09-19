@@ -1,0 +1,29 @@
+{
+  "count": 2,
+  "results": [
+    {
+      "id": "4551200991",
+      "title": "Machine Learning Engineer",
+      "company": {"display_name": "Halcyon Data Ltd"},
+      "location": {"display_name": "Manchester, Greater Manchester"},
+      "description": "Working on recommender systems in a small team.",
+      "redirect_url": "https://www.adzuna.co.uk/jobs/details/4551200991",
+      "created": "2026-08-28T08:00:00Z",
+      "salary_min": 55000,
+      "salary_max": 70000,
+      "salary_is_predicted": "0"
+    },
+    {
+      "id": "4551200992",
+      "title": "Data Scientist",
+      "company": {"display_name": "Bluefield"},
+      "location": {"display_name": "Remote, UK"},
+      "description": "Predicted salary, should not be trusted.",
+      "redirect_url": "https://www.adzuna.co.uk/jobs/details/4551200992",
+      "created": "2026-08-29T08:00:00Z",
+      "salary_min": 48000,
+      "salary_max": 62000,
+      "salary_is_predicted": "1"
+    }
+  ]
+}

@@ -54,6 +54,43 @@ def strip_html(raw: str | None) -> str:
     return "\n".join(line.strip() for line in text.splitlines()).strip()
 
 
+URL = re.compile(r"https?://\S+|\bwww\.\S+", re.I)
+
+# Board furniture that appears in every posting from a source and therefore
+# carries no information about the job.
+#
+# The RemoteOK one is worth reading. Every posting it serves ends with a line
+# asking the applicant to quote a magic word and a token, where the token is
+# base64 of the IP address that fetched the page. It is an anti-bot canary, so
+# it is identical across the whole source and unique against every other
+# source, which made it the single strongest term in the corpus: k-means
+# happily produced a cluster that meant "came from RemoteOK" and we nearly
+# shipped it as a job family. It is also a sentence of instructions living
+# inside scraped text, which is worth remembering in Phase 4 when that text
+# starts going into prompts.
+_BOILERPLATE = (
+    re.compile(r"please mention the word\b.*?(?:\.|$)", re.I | re.S),
+    re.compile(r"this is a beta feature to avoid spam applicants\.?", re.I),
+    re.compile(r"companies can search these words[^.]*\.?", re.I),
+)
+
+
+def strip_noise(text: str | None) -> str:
+    """Remove URLs and known board furniture. For modelling input only.
+
+    Deliberately not applied before storing: `postings.description` stays as
+    the board wrote it, because the stored row is evidence and because the
+    next piece of furniture we discover has to be removable from data already
+    collected. This runs at feature time instead, where it is cheap to change.
+    """
+    if not text:
+        return ""
+    cleaned = URL.sub(" ", text)
+    for pattern in _BOILERPLATE:
+        cleaned = pattern.sub(" ", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
 REMOTE_HINTS = re.compile(
     r"\b(?:remote|work\s+from\s+home|wfh|anywhere|distributed|telecommute)\b", re.I
 )

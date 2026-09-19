@@ -1,0 +1,589 @@
+{
+ "hackernews:49522912": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49522930": {
+  "added": [],
+  "drop": [
+   "pytorch",
+   "python",
+   "aws"
+  ],
+  "keep": []
+ },
+ "hackernews:49523018": {
+  "added": [],
+  "drop": [],
+  "keep": [
+   "rust",
+   "python"
+  ]
+ },
+ "hackernews:49523194": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49523288": {
+  "added": [],
+  "drop": [
+   "inference",
+   "datacenter optimization",
+   "energy-aware scheduling and control",
+   "neuralwatt cloud",
+   "agent tools",
+   "production ai infrastructure",
+   "modern ai"
+  ],
+  "keep": [
+   "python",
+   "rust",
+   "gpu",
+   "git"
+  ]
+ },
+ "hackernews:49523408": {
+  "added": [],
+  "drop": [
+   "apache airflow"
+  ],
+  "keep": [
+   "airflow",
+   "confluent",
+   "python",
+   "go",
+   "git",
+   "typescript",
+   "databricks",
+   "spark",
+   "kafka"
+  ]
+ },
+ "hackernews:49523604": {
+  "added": [],
+  "drop": [
+   "python",
+   "pytorch",
+   "aws"
+  ],
+  "keep": []
+ },
+ "hackernews:49523666": {
+  "added": [
+   ".net"
+  ],
+  "drop": [],
+  "keep": [
+   "c#"
+  ]
+ },
+ "hackernews:49523675": {
+  "added": [],
+  "drop": [],
+  "keep": [
+   "react native"
+  ]
+ },
+ "hackernews:49523703": {
+  "added": [
+   "claude",
+   "codex"
+  ],
+  "drop": [
+   "pytorch"
+  ],
+  "keep": [
+   "python",
+   "vuejs",
+   "aws",
+   "pydanticai",
+   "snowflake",
+   "django",
+   "javascript",
+   "postgresql",
+   "docker",
+   "react",
+   "git",
+   "dagster",
+   "ci/cd",
+   "duckdb"
+  ]
+ },
+ "hackernews:49523704": {
+  "added": [],
+  "drop": [
+   "postgres"
+  ],
+  "keep": [
+   "mongodb",
+   "lmdb",
+   "redis",
+   "go",
+   "elasticsearch",
+   "postgresql",
+   "python",
+   "fastapi",
+   "flask",
+   "opensearch",
+   "docker"
+  ]
+ },
+ "hackernews:49523740": {
+  "added": [],
+  "drop": [
+   "pytorch"
+  ],
+  "keep": [
+   "c#",
+   "f#",
+   "python"
+  ]
+ },
+ "hackernews:49523835": {
+  "added": [
+   "ruby",
+   "vcl",
+   "xdp"
+  ],
+  "drop": [
+   "c/c++",
+   "linux kernel internals"
+  ],
+  "keep": [
+   "ebpf",
+   "tcp",
+   "varnish",
+   "http",
+   "tls",
+   "python",
+   "wasmtime",
+   "typescript",
+   "cranelift",
+   "quic",
+   "c++",
+   "go",
+   "linux",
+   "webassembly",
+   "javascript",
+   "rust",
+   "distributed systems"
+  ]
+ },
+ "hackernews:49523875": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49524080": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49524252": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49524580": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49524822": {
+  "added": [],
+  "drop": [],
+  "keep": [
+   "mlops"
+  ]
+ },
+ "hackernews:49524880": {
+  "added": [],
+  "drop": [
+   "ai"
+  ],
+  "keep": [
+   "typescript",
+   "playwright",
+   "sveltekit",
+   "node",
+   "postgresql"
+  ]
+ },
+ "hackernews:49525141": {
+  "added": [],
+  "drop": [
+   "aws",
+   "python",
+   "pytorch"
+  ],
+  "keep": []
+ },
+ "hackernews:49525483": {
+  "added": [
+   "aeron",
+   "artio",
+   "agrona"
+  ],
+  "drop": [],
+  "keep": [
+   "java"
+  ]
+ },
+ "hackernews:49526361": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49526396": {
+  "added": [
+   "distributed systems"
+  ],
+  "drop": [
+   "python",
+   "pytorch",
+   "aws"
+  ],
+  "keep": []
+ },
+ "hackernews:49527115": {
+  "added": [
+   "opentofu",
+   "terragrunt"
+  ],
+  "drop": [],
+  "keep": [
+   "terraform",
+   "pulumi",
+   "saltstack",
+   "aws",
+   "cloudformation",
+   "ansible",
+   "kubernetes",
+   "go"
+  ]
+ },
+ "hackernews:49527209": {
+  "added": [],
+  "drop": [
+   "cicd",
+   "orchestration",
+   "security tooling",
+   "finops",
+   "tracing",
+   "ha"
+  ],
+  "keep": [
+   "flux",
+   "argo",
+   "c++",
+   "ci/cd",
+   "rust",
+   "grafana",
+   "loki",
+   "prometheus",
+   "java",
+   "iac",
+   "kubernetes",
+   "gcp",
+   "go",
+   "python"
+  ]
+ },
+ "hackernews:49527354": {
+  "added": [],
+  "drop": [
+   "digital twins",
+   "physics-informed ai world models",
+   "risk",
+   "homeowner tradeoffs",
+   "machine learning surrogates",
+   "property data",
+   "pytorch",
+   "imagery",
+   "cost",
+   "python"
+  ],
+  "keep": []
+ },
+ "hackernews:49527388": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49527588": {
+  "added": [],
+  "drop": [
+   "relational databases"
+  ],
+  "keep": [
+   "gcp",
+   "git",
+   "docker",
+   "python",
+   "ci/cd",
+   "fastapi",
+   "iac"
+  ]
+ },
+ "hackernews:49528002": {
+  "added": [],
+  "drop": [],
+  "keep": [
+   "git",
+   "linux",
+   "cryptography"
+  ]
+ },
+ "hackernews:49528044": {
+  "added": [
+   "claude"
+  ],
+  "drop": [
+   "postgres",
+   "javascript"
+  ],
+  "keep": [
+   "react",
+   "azure",
+   "python",
+   "fastapi",
+   "typescript",
+   "postgresql"
+  ]
+ },
+ "hackernews:49528336": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49528413": {
+  "added": [],
+  "drop": [
+   "python",
+   "pytorch",
+   "aws"
+  ],
+  "keep": []
+ },
+ "hackernews:49529054": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49530020": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "hackernews:49530430": {
+  "added": [
+   "hpc"
+  ],
+  "drop": [
+   "python"
+  ],
+  "keep": [
+   "rust"
+  ]
+ },
+ "hackernews:49530558": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1135765": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1135767": {
+  "added": [
+   "illustrator",
+   "photoshop",
+   "indesign"
+  ],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1135789": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1135997": {
+  "added": [],
+  "drop": [
+   "pc hardware configuration",
+   "it",
+   "network communication"
+  ],
+  "keep": []
+ },
+ "remoteok:1136094": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1136097": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1136168": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1136570": {
+  "added": [],
+  "drop": [
+   "excel"
+  ],
+  "keep": []
+ },
+ "remoteok:1136770": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1136795": {
+  "added": [],
+  "drop": [
+   "postgresql",
+   "javascript",
+   "python",
+   "kubernetes",
+   "aws",
+   "pytorch"
+  ],
+  "keep": []
+ },
+ "remoteok:1136796": {
+  "added": [],
+  "drop": [
+   "cloud-native",
+   "cloud architecture",
+   "identity security platform",
+   "security",
+   "aws",
+   "pytorch",
+   "ai",
+   "postgresql",
+   "python",
+   "ai-powered intelligence",
+   "javascript"
+  ],
+  "keep": [
+   "kubernetes",
+   "distributed systems"
+  ]
+ },
+ "remoteok:1136798": {
+  "added": [],
+  "drop": [
+   "product engineering",
+   "data infrastructure",
+   "cloud infrastructure",
+   "developer platforms",
+   "security",
+   "evaluation",
+   "agent systems"
+  ],
+  "keep": [
+   "hpc",
+   "scientific computing",
+   "distributed systems"
+  ]
+ },
+ "remoteok:1137114": {
+  "added": [],
+  "drop": [
+   "pytorch",
+   "python"
+  ],
+  "keep": []
+ },
+ "remoteok:1137138": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137194": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137209": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137224": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137374": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137378": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137380": {
+  "added": [
+   "railway"
+  ],
+  "drop": [
+   "kubernetes",
+   "pytorch",
+   "python",
+   "javascript",
+   "postgresql",
+   "scikit-learn"
+  ],
+  "keep": [
+   "aws"
+  ]
+ },
+ "remoteok:1137381": {
+  "added": [
+   "canva",
+   "figma"
+  ],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137390": {
+  "added": [
+   "intercom",
+   "discord"
+  ],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137391": {
+  "added": [],
+  "drop": [],
+  "keep": []
+ },
+ "remoteok:1137394": {
+  "added": [],
+  "drop": [
+   "javascript",
+   "gui development",
+   "application design",
+   "trigger script development",
+   "python"
+  ],
+  "keep": [
+   "networking",
+   "rest api"
+  ]
+ }
+}
