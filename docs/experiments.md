@@ -828,3 +828,67 @@ The filter would have removed signal and called it noise.
 Filtering to exact agreement was never an option: it leaves 9 examples, and
 it would teach the student the regex's own coverage, which is the gold
 superset problem one layer down.
+
+---
+
+## 2026-09-19 - The retrain on gold v2 data: 0.000 to 0.485
+
+**Hypothesis.** The remaining gap is training data, not adapter capacity.
+Validation F1 had plateaued flat at 0.364 across epochs 4 and 5 on 103
+examples, which points at data rather than under-training.
+
+**Setup.** 342 examples at 30% empty, split hash `6eaa8009eb61`, no
+disagreement filter. Rank 16, alpha 32, 2 epochs, lr 2e-4, 1800 character
+input, CPU. `verify_masking()` confirmed 577 of 607 positions masked before
+the run started. 104.2 minutes.
+
+Command: the balanced split through `training.train`, log in
+`artifacts/rung_gold_v2.log`.
+
+**Validation F1 by epoch.**
+
+| epoch | micro F1 | empty | unparseable | eval loss |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 0.573 | 38% | 1 | 0.3919 |
+| 2 | 0.602 | 31% | 0 | 0.3602 |
+
+Compare epoch 1 across the three runs. Unmasked loss: 0.000 at 100% empty.
+Masked loss on 182 examples: 0.000 at 100% empty. Masked loss on 342 better
+labelled examples: **0.573 at 38% empty after a single epoch**. The model no
+longer has to escape the always-empty attractor, because the attractor is
+much weaker.
+
+**Result on the frozen 60 postings, gold v2.**
+
+| | tuned-v1 | tuned-masked | tuned-balanced | tuned-v2 |
+| --- | ---: | ---: | ---: | ---: |
+| micro F1 | 0.000 | 0.337 | 0.369 | **0.485** |
+| macro F1 | 0.567 | 0.639 | 0.653 | **0.710** |
+| precision | 0.000 | 0.674 | 0.559 | 0.516 |
+| recall | 0.000 | 0.225 | 0.275 | **0.457** |
+| empty | 100% | 85% | 82% | 77% |
+
+**Decision: the regex still ships.** `SKILL_EXTRACTOR` stays `rules`. At
+0.485 against 0.663 the student is not close enough to justify 4.2 seconds a
+posting against 5 milliseconds.
+
+**What is interesting anyway.** Its macro F1 of 0.710 beats the teacher's
+0.682, so on a per-posting basis it handles the sparse majority better than
+the model that taught it. Its recall of 0.457 is within striking distance of
+the regex's 0.500, which is the dimension a vocabulary-bound regex can never
+improve on without someone hand-writing more aliases. What it lacks is
+precision, 0.516 against 0.986.
+
+That shape is the opposite of the teacher's, which is a distillation working
+as intended in one direction: the student learned to be quieter than its
+teacher (77% empty against 55%) without learning to be as accurate.
+
+**Still climbing.** Validation F1 rose 0.573 to 0.602 between the two epochs
+and the run was stopped at two by the training budget. A third epoch was not
+run. Whether it would have closed any of the remaining 0.18 gap is unknown,
+and saying so is cheaper than guessing.
+
+**What did not get tried.** Rung 5 of the earlier plan, escalating to
+Qwen2.5-1.5B or the 3B the project plan specifies. This machine has 7.3GB of
+RAM; a 1.5B model in fp32 is about 6GB of weights before optimiser state and
+activations. Not reachable here, and recorded rather than quietly skipped.

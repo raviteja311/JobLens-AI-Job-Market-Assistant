@@ -227,6 +227,8 @@ artifacts/*
 # should not have to re-run the training to do it.
 !artifacts/skill-lora/
 !artifacts/skill-lora-masked/
+!artifacts/skill-lora-balanced/
+!artifacts/skill-lora-v2/
 
 # Except the tokenizer, which is an 11MB byte-for-byte copy of the base
 # model's and is fetched on load anyway.
@@ -238,3 +240,11 @@ artifacts/skill-lora-masked/tokenizer.json
 artifacts/skill-lora-masked/tokenizer_config.json
 artifacts/skill-lora-masked/chat_template.jinja
 artifacts/skill-lora-masked/README.md
+artifacts/skill-lora-v2/tokenizer.json
+artifacts/skill-lora-v2/tokenizer_config.json
+artifacts/skill-lora-v2/chat_template.jinja
+artifacts/skill-lora-v2/README.md
+artifacts/skill-lora-balanced/tokenizer.json
+artifacts/skill-lora-balanced/tokenizer_config.json
+artifacts/skill-lora-balanced/chat_template.jinja
+artifacts/skill-lora-balanced/README.md

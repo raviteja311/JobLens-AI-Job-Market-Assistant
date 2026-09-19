@@ -5,10 +5,11 @@ Collects real AI/ML job postings daily, then offers semantic search,
 resume matching, grounded chat with citations, and a live analytics
 dashboard.
 
-Status: Phases 0-5 complete. 465 postings from 2 live sources, hybrid search
-over pgvector scored against a hand-judged golden set, grounded chat and
-resume matching on a local LLM, and an eval suite that fails CI on a
-regression. Phase 6 (fine-tuning) is next.
+Status: Phases 0-6 complete. 465 postings from 2 live sources, hybrid search
+over pgvector, grounded chat and resume matching on a local LLM, an eval
+suite that fails CI on a regression, and a distillation experiment whose
+headline is that an 80-line regex still beats the fine-tuned model. Phase 7
+(deployment and MLOps) is next.
 
 ## Development process
 
@@ -353,7 +354,89 @@ means "we skipped it" is worse than no tick.
 
 ### Phase 6: Fine-tuning
 
-<!-- API model vs base small model vs fine-tuned: accuracy, cost, latency. -->
+Distil a 0.5B skill extractor from a bigger model, and find out what it costs
+against the 80-line regex from Phase 2. The plan calls for a frontier API
+model as the teacher; no API key is configured, so the teacher is llama3.1 8B
+over Ollama and every number below inherits that substitution.
+
+**Read recall first.** Precision and recall are not symmetric here, and
+recall is the line that compares the systems fairly.
+
+All rows, same frozen 60 postings, gold v2 (hash `256c78609120d71f`), 138
+gold mentions. Reproduce with `python -m joblens distil-eval`.
+
+| extractor | micro F1 | macro F1 | precision | recall | exact | empty | ms/call | per 1k |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| rules (Phase 2 regex) | **0.663** | **0.792** | 0.986 (69/70) | 0.500 (69/138) | 0.583 | 65% | **5** | **5 s** |
+| teacher (llama3.1 8B) | 0.634 | 0.682 | 0.551 (103/187) | **0.746** (103/138) | 0.500 | 55% | 9,512 | 2.6 h |
+| tuned-v2 (final) | 0.485 | 0.710 | 0.516 (63/122) | 0.457 (63/138) | 0.583 | 77% | 4,201 | 70 min |
+| tuned-balanced | 0.369 | 0.653 | 0.559 (38/68) | 0.275 (38/138) | 0.567 | 82% | 3,612 | 60 min |
+| tuned-masked | 0.337 | 0.639 | 0.674 (31/46) | 0.225 (31/138) | 0.567 | 85% | 3,348 | 56 min |
+| base (Qwen 0.5B) | 0.104 | 0.075 | 0.094 (16/170) | 0.116 (16/138) | 0.033 | 2% | 6,046 | 101 min |
+| tuned-v1 (collapsed) | 0.000 | 0.567 | 0.000 (0/0) | 0.000 (0/138) | 0.567 | 100% | 3,105 | 52 min |
+
+Cost per 1k is wall-clock on this laptop CPU, not an API price. Every model
+here runs locally, so the marginal dollar cost of all seven rows is zero and
+the column is really a latency budget.
+
+**The regex wins, and gold no longer flatters it.** That sentence needs the
+second half, because the first version of this table was rigged.
+
+Gold v1 was built as `rules(posting) | adjudicated(teacher(posting))`, where
+adjudication filtered teacher terms through a hand-reviewed vocabulary that
+is, in substance, the regex's own capability spec. Truth was defined as
+things the regex could have found. Gold was a superset of the regex output on
+all 60 postings, so the regex could not produce a false positive, and its
+precision came out at exactly 1.000. **That number was an identity, not a
+measurement, and it was published here as a finding.**
+
+Gold v2 is rebuilt blind: candidates from both labellers pooled and shuffled
+with provenance hidden until every decision was recorded, judged per
+(posting, term) rather than per term, plus an additive pass over all 60
+postings that added 22 skills neither labeller proposed. 206 occurrences
+judged, 116 kept, 90 dropped.
+
+One of the dropped terms came from the regex, which is the entire point. On a
+Portuguese posting it matched `excel` inside `Excelência`, because the word
+boundaries in `skills.py` are ASCII and an accented letter reads as a
+boundary. Precision is 0.986 rather than 1.000, and that 0.014 is a real bug
+that the old benchmark made structurally invisible.
+
+The circularity was worth about 0.05 F1. Against v1 the regex led the teacher
+0.753 to 0.671; against v2 it leads 0.663 to 0.634.
+
+**The honest trade is precision against coverage.** The teacher finds 103 of
+138 gold mentions, the regex 69. The regex is right about almost everything
+it says and silent about half the corpus, because it knows 80 skills. The 8B
+model finds three quarters of everything and is wrong about 45% of what it
+reports, because it pattern-matches PyTorch onto any job that smells
+technical. At 5 ms against 9.5 seconds.
+
+**The fine-tune: 0.000 to 0.485, still third.** The first run collapsed to
+answering `{"skills": []}` on all 60 postings while eval loss fell smoothly
+every epoch. The cause was `SFTConfig(completion_only_loss=True)`, which trl
+accepts and silently ignores on a conversational dataset: zero of 316
+positions were masked, so about 97% of every gradient step taught the model
+to recite the prompt back, including the prompt's own schema example. That
+example is exactly what the untuned base model returns for a Marketing
+Student Assistant.
+
+Fixing the mask took it to 0.337, rebalancing to 0.369, and doubling the
+training data to 342 examples took it to 0.485. Its macro F1 of 0.710 beats
+the teacher's 0.682, and its recall of 0.457 is close to the regex's 0.500.
+It is still not worth serving: `SKILL_EXTRACTOR` stays `rules`.
+
+**What made the difference measurable.** Checkpoints are selected on F1 from
+generated output, never on loss, because loss is the number that fell into a
+collapse. `verify_masking()` reads the first batch back and refuses to train
+if the prompt is not masked. Empty-prediction rate is a first-class column
+and the harness flags any extractor above 90% as collapsed rather than
+letting it pass as a low score. That guard has caught two things: the
+original collapse, and a teacher row that came back 0.000 because four models
+in one process drove free memory to 0.2GB and Ollama returned HTTP 500 on
+every call.
+
+Full write-ups, including the runs that failed, in `docs/experiments.md`.
 
 ### Phase 7: Deployment and MLOps
 
@@ -392,3 +475,22 @@ Kept current and honest.
   wrong the moment there are two.
 - **The test suite truncates the development database.** Point `DATABASE_URL`
   at anything you care about and `pytest` will empty it.
+- **Phase 6 has one teacher.** Every training label came from llama3.1 8B, so
+  the student inherits that model's blind spots and its habit of inventing
+  the most common skills. There is no frontier API model in the comparison
+  because no key is configured.
+- **The Phase 6 test set is 60 postings** with 138 gold mentions. Differences
+  smaller than a few points of F1 are not meaningful at that size.
+- **Gold v2 has one adjudicator and no measured agreement.** All 60 postings
+  were judged by the same person in one sitting, so a second pass would
+  measure memory rather than label quality and no kappa is reported.
+  `python -m joblens.finetune.adjudicate_cli --pass two --sample 20` reads
+  only the candidate pool, never the provenance or the first-pass file, so an
+  independent pass can produce a real figure.
+- **Skills past 1800 characters are discarded**, in production as well as in
+  the benchmark. Every extractor reads `dataset.render()` output, so a
+  technology named only in the last paragraph of a long posting is invisible
+  to all of them and absent from gold.
+- **Phase 6 training ran on CPU.** This machine has 7.3GB of RAM and a 4GB
+  GPU with no matching torch wheel, so the plan's "Qwen 2.5 3B or similar"
+  was not reachable and the student is a 0.5B model.
