@@ -20,6 +20,11 @@ class Settings(BaseSettings):
 
     app_env: str = "local"
     log_level: str = "INFO"
+    # "text" for a terminal, "json" for anything that ships logs somewhere.
+    log_format: str = "text"
+    # Largest request body the API accepts. A resume is capped at 2MB and
+    # multipart framing adds a little; anything bigger is not a resume.
+    max_body_bytes: int = 3 * 1024 * 1024
 
     database_url: str = "postgresql://joblens:joblens@localhost:5432/joblens"
 
