@@ -1,15 +1,20 @@
 # JobLens-AI-Job-Market-Assistant
 
+[![ci](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ci.yml)
+[![deploy](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml)
+[![ingest](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ingest.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ingest.yml)
+
 
 Collects real AI/ML job postings daily, then offers semantic search,
 resume matching, grounded chat with citations, and a live analytics
 dashboard.
 
-Status: Phases 0-6 complete. 465 postings from 2 live sources, hybrid search
-over pgvector, grounded chat and resume matching on a local LLM, an eval
-suite that fails CI on a regression, and a distillation experiment whose
-headline is that an 80-line regex still beats the fine-tuned model. Phase 7
-(deployment and MLOps) is next.
+Status: Phases 0-6 complete, Phase 7 complete locally. 468 postings from 2
+live sources, hybrid search over pgvector, grounded chat and resume matching
+on a local LLM, an eval suite that fails CI on a regression, a distillation
+experiment whose headline is that an 80-line regex still beats the
+fine-tuned model, and a containerised, monitored stack with a runbook. No
+public URL yet: that needs a hosting account, see Phase 7.
 
 ## Development process
 
@@ -36,6 +41,14 @@ python -m joblens embed --strategy whole --strategy section
 ```
 
 Then `make serve` for the API and `make ui` for the dashboard.
+
+Or skip the virtualenv and run the whole stack in containers:
+
+```bash
+cp .env.example .env
+docker compose up --build                    # Postgres, API on :8000, UI on :8501
+docker compose --profile monitoring up -d    # plus Prometheus :9090 and Grafana :3000
+```
 
 ## Commands
 
@@ -65,11 +78,15 @@ src/joblens/llm/     Phase 4: LLM backends, versioned prompts, call logging
 src/joblens/rag/     Phase 4: grounded chat, resume matching
 src/joblens/api/     Phase 4: FastAPI backend
 src/joblens/eval/    Phase 3+5: golden set, metrics, judge, regression gate
+src/joblens/finetune/ Phase 6: teacher labels, LoRA training, extractor benchmark
+src/joblens/observability.py  Phase 7: JSON logs, Prometheus metrics
 prompts/             versioned prompt files, one directory per prompt
 data/golden/         the judged queries everything is scored against
 tests/               pytest suite
 migrations/          schema, applied by `joblens migrate`
-docs/                devlog, experiments
+monitoring/          Phase 7: Prometheus scrape config, Grafana dashboard and alerts
+docs/                devlog, experiments, runbook
+Dockerfile           one image for the API and the UI
 ```
 
 ## Phases
@@ -440,7 +457,74 @@ Full write-ups, including the runs that failed, in `docs/experiments.md`.
 
 ### Phase 7: Deployment and MLOps
 
-<!-- Live URL, CI badge, monitoring screenshot, runbook link. -->
+Goal: a public URL and boring, reliable operations. Local half done: the
+service is containerised, observable and gated. Public URL: see
+"Not done yet" below.
+
+**Two images from one Dockerfile.** A multi-stage build installs the CPU
+torch wheel from PyTorch's own index, bakes the two sentence-transformer
+models into the image so a cold start makes no network call, strips the
+C++ headers and test binaries, and copies only the virtualenv into a
+`python:3.12-slim` runtime that runs as a non-root user. The Streamlit UI is
+a separate, torch-free target because it talks to the API over HTTP.
+
+| image | target | pushed (compressed) | on disk |
+| --- | --- | --- | --- |
+| `joblens` (API) | `runtime` | 577MB | 1.6GB |
+| `joblens-ui` (Streamlit) | `ui` | 159MB | 501MB |
+
+Of the API image's 1.6GB, torch is 564MB after trimming, the rest of the
+virtualenv (transformers, scipy, pandas, scikit-learn, pyarrow) is 716MB,
+the two baked models are 176MB and the base image is 129MB. `docker compose up --build` brings
+up Postgres, the API and the UI; `--profile monitoring` adds Prometheus and
+Grafana.
+
+**Observability.** Every request writes one JSON log line (`route`,
+`status`, `duration_ms`, `client`) and one sample into a latency histogram
+labelled by route template, so `/search?q=anything` is one series and a
+scanner probing `/wp-admin` cannot create a new one. Every LLM call lands on
+cost, count and latency counters. The facts that must survive a redeploy
+(postings, spend since midnight, when each source last ingested
+successfully) are read from Postgres on each scrape, and when Postgres is
+down the scrape reports `joblens_db_up 0` instead of failing. `/health` now
+also says when the last ingest finished and whether it succeeded.
+
+![Grafana dashboard on the local stack](docs/img/grafana-dashboard.png)
+
+Three alert rules ship with the dashboard: ingestion stale for 36 hours,
+database unreachable for 2 minutes, LLM spend over 1 USD in a day. The daily
+ingestion workflow also opens a GitHub issue labelled `ingest-failure` when
+it fails, and comments on the open one on repeat failures, because an email
+from GitHub Actions is the easiest alert in the world to miss.
+
+**CI/CD.** Pull requests run lint and tests (`ci`) and, when retrieval code
+or the golden set changes, the retrieval eval gate (`eval`). A push to `main`
+runs both of those as stages of `deploy`, then builds the image and pushes
+it to GitHub's container registry tagged with the commit SHA. What gets
+deployed is the image that passed the gate, not a rebuild.
+
+**Runbook.** [`docs/runbook.md`](docs/runbook.md) covers ingestion failed,
+LLM provider down or expensive, database slow or down, deploy and rollback,
+and the four things that broke during Phases 1 to 6 and what each taught.
+Every command in it exists in the repo.
+
+**Security basics.** Secrets come from the environment; `.env` is
+gitignored and `.dockerignore` keeps it out of the image. `/chat` and
+`/match` sit behind a per-IP rate limit. Resume uploads are capped at 2MB
+and any request declaring a body over 3MB is refused before it is read.
+Containers run as an unprivileged user with no compiler or git installed.
+
+**Not done yet, and why.**
+
+- **No public URL.** Deploying needs an account on Railway, Fly.io or Cloud
+  Run plus a hosted Postgres with pgvector, and those are the owner's to
+  create. The image, the compose file and the pipeline up to the registry
+  push are ready; the deploy step is one job away.
+- **Grafana runs locally, not on Grafana Cloud.** Same reason. The dashboard
+  and alert rules are provisioned from files and import unchanged into a
+  Grafana Cloud stack.
+- **The rate limit is still per process.** Two API replicas would each
+  allow the full budget.
 
 ### Phase 8: Packaging
 
@@ -472,7 +556,19 @@ Kept current and honest.
 - **`/chat` on a local model takes about 50 seconds an answer** on CPU, and
   llama3.1 is weaker than an API model at following the citation format.
 - **The rate limit is per process and in memory.** Correct for one process,
-  wrong the moment there are two.
+  wrong the moment there are two. Same for the in-process LLM cost counter;
+  the per-day figure comes from the database and is the one to trust.
+- **No public URL and no hosted monitoring.** Phase 7 stops at the
+  registry push. Deploying and Grafana Cloud both need accounts that are
+  the owner's to create; see the Phase 7 section for exactly what is
+  missing.
+- **The API image is 1.6GB unpacked.** 564MB of that is torch, used to
+  run two small sentence-transformer models. Exporting them to ONNX and
+  dropping torch from the runtime is the obvious next step if image size
+  ever matters; it has not been measured.
+- **The chat eval does not run in CI.** A local Llama on a GitHub runner
+  takes half an hour, so `/chat` is scored on a schedule and before a
+  release, and the deploy gate is retrieval only.
 - **The test suite truncates the development database.** Point `DATABASE_URL`
   at anything you care about and `pytest` will empty it.
 - **Phase 6 has one teacher.** Every training label came from llama3.1 8B, so

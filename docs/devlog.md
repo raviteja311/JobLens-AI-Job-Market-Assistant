@@ -6,6 +6,70 @@ Newest entry at the top.
 
 ---
 
+## Phase 7 - deployment and MLOps, the local half
+
+**Did:** a multi-stage Dockerfile with two targets (API and UI), a compose
+stack for Postgres, API, UI, Prometheus and Grafana, structured JSON logs,
+a `/metrics` endpoint with request histograms, LLM cost counters and
+database-backed ingest gauges, a provisioned Grafana dashboard with three
+alert rules, a `deploy` workflow that runs lint, tests and the retrieval
+eval before pushing the image to GitHub's registry, an ingestion failure
+alert that opens an issue, and `docs/runbook.md`. 12 new tests, 191 total.
+
+**Current state:** everything runs locally with `docker compose --profile
+monitoring up`. No public URL yet: that needs a hosting account and a
+hosted pgvector database, which are not mine to create.
+
+**What broke:**
+
+- `docker build .` builds the *last* stage of a multi-stage Dockerfile. I
+  added the UI stage at the bottom, rebuilt, and the "API" image was the
+  159MB Streamlit image with no `joblens` module in it. The API stage is
+  now last and the compose file names its target explicitly.
+- A YAML folded scalar (`>`) keeps the newline when the continuation line
+  is indented more than the first. My `sh -c "migrate && serve"` command
+  became two lines and `sh` choked on a line starting with `&&`. The
+  command is a list now.
+- A Dockerfile heredoc inside `if ... fi` is an "unterminated heredoc" to
+  BuildKit. `python -c` with a multi-statement string instead.
+- The first API image was 721MB to pull and about 2.1GB unpacked, with a
+  1.8GB virtualenv. Torch is 769MB even from the CPU index, and pip had
+  left every `.pyc` behind in the builder. Deleting `torch/include`,
+  `torch/test` and `__pycache__` took the pull to 577MB and the unpacked
+  size to 1.6GB. Splitting the UI into its own image took torch out of
+  that one entirely: 159MB to pull, 501MB unpacked.
+
+**Decided:**
+
+- The database gauges are computed on scrape, not kept in process. A
+  counter that resets on every deploy cannot answer "did last night's
+  ingest run", and that is the one question the on-call alert exists to
+  answer. Four indexed queries every 15 seconds is nothing.
+- A scrape must never fail because Postgres did. The collector yields
+  `joblens_db_up 0` and stops. The alternative, a 500 from `/metrics`, means
+  the dashboard goes blank at exactly the moment it is needed.
+- Route labels use the route template, never the path. One series per
+  query string is how a Prometheus instance runs out of memory, and a
+  scanner probing for `/wp-admin` should not get to create a series.
+- The `ci` workflow no longer fires on push to `main`; `deploy` calls it as
+  a stage instead. Otherwise every merge runs the suite twice for one
+  green tick.
+- No fallback LLM when the provider is down. An answer from a model the
+  eval suite never scored is an unscored answer. `/chat` and `/match` return
+  503; search and trends keep working.
+- The ingestion alert is a GitHub issue, not only a Grafana rule. Grafana
+  runs locally today and the issue is visible from the repo page, which is
+  where the owner already looks.
+
+**Not done, recorded:** public deploy (needs the owner's hosting account and
+a hosted pgvector Postgres), Grafana Cloud (same), AWS ECS (optional in the
+plan, and pointless before a first deploy anywhere). The deploy job is the
+one piece of the pipeline that does not exist yet.
+
+**Next:** the owner picks a host. Then Phase 8, packaging.
+
+---
+
 ## Phase 6 - fine-tuning, and a benchmark that could not fail
 
 **Did:** distilled a 0.5B skill extractor from a local llama3.1, watched it
