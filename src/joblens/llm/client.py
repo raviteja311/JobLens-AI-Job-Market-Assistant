@@ -25,7 +25,7 @@ from typing import TypeVar
 import httpx
 from pydantic import BaseModel, ValidationError
 
-from joblens import db
+from joblens import db, observability
 from joblens.config import get_settings
 from joblens.llm.prompts import Prompt
 
@@ -171,6 +171,14 @@ def _log_call(
     error: str | None,
 ) -> None:
     """Record the call. Never let logging break the request it describes."""
+    observability.record_llm_call(
+        feature=feature,
+        backend=completion.backend if completion else "unknown",
+        model=completion.model if completion else "unknown",
+        ok=ok,
+        cost_usd=completion.cost_usd if completion else 0.0,
+        latency_ms=completion.latency_ms if completion else None,
+    )
     try:
         with db.connect() as conn:
             conn.execute(

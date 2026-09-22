@@ -18,7 +18,7 @@ import logging
 import sys
 from collections.abc import Sequence
 
-from joblens import db, pipeline, sources
+from joblens import db, observability, pipeline, sources
 from joblens.config import get_settings
 
 log = logging.getLogger("joblens")
@@ -27,11 +27,7 @@ log = logging.getLogger("joblens")
 def _configure_logging(verbose: bool) -> None:
     settings = get_settings()
     level = logging.DEBUG if verbose else getattr(logging, settings.log_level, "INFO")
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s %(levelname)-7s %(name)s | %(message)s",
-        datefmt="%H:%M:%S",
-    )
+    observability.configure_logging(level, settings.log_format)
 
 
 def cmd_migrate(args: argparse.Namespace) -> int:
@@ -293,8 +289,16 @@ def cmd_spend(args: argparse.Namespace) -> int:
 def cmd_serve(args: argparse.Namespace) -> int:
     import uvicorn
 
+    # log_config=None keeps uvicorn from installing its own handlers over
+    # the ones _configure_logging just set up; access_log=False because the
+    # request middleware writes a richer line for every request already.
     uvicorn.run(
-        "joblens.api.main:app", host=args.host, port=args.port, reload=args.reload
+        "joblens.api.main:app",
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+        log_config=None,
+        access_log=False,
     )
     return 0
 

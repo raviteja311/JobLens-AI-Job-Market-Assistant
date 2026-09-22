@@ -1,9 +1,15 @@
-# Local Postgres for development and tests.
+# Local development stack.
 #
-#   docker compose up -d db
+#   docker compose up -d db                       just the database (tests)
+#   docker compose up --build                     API + UI + database
+#   docker compose --profile monitoring up -d     plus Prometheus and Grafana
 #
 # The data lives in a named volume so it survives a container restart. Wipe it
 # with `docker compose down -v` when you want to start from an empty database.
+#
+# The API talks to Ollama on the host, not in a container: an 8B model needs
+# more memory than this laptop can give a second copy of it. Set LLM_BACKEND
+# and ANTHROPIC_API_KEY in .env to use the hosted model instead.
 
 services:
   db:
@@ -12,20 +18,87 @@ services:
       - POSTGRES_USER=joblens
       - POSTGRES_PASSWORD=joblens
       - POSTGRES_DB=joblens
-
     ports:
       - "5432:5432"
-    
     volumes:
       - pgdata:/var/lib/postgresql/data
-
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U joblens"]
       interval: 5s
       timeout: 3s
       retries: 10
-      
+
+  api:
+    build:
+      context: .
+      target: runtime
+    image: joblens:local
+    # Migrations first. They are idempotent, so running them on every start
+    # is the cheapest way to never deploy code ahead of its schema.
+    command:
+      - sh
+      - -c
+      - python -m joblens migrate && python -m joblens serve --host 0.0.0.0 --port 8000
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DATABASE_URL=postgresql://joblens:joblens@db:5432/joblens
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - LOG_FORMAT=json
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+
+  ui:
+    build:
+      context: .
+      target: ui
+    image: joblens-ui:local
+    environment:
+      - JOBLENS_API=http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # Phase 7 monitoring. Off by default because most sessions do not need it
+  # and Grafana is a 300MB image; `--profile monitoring` turns it on.
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    profiles: [monitoring]
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    profiles: [monitoring]
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
 
 volumes:
   pgdata:
-  

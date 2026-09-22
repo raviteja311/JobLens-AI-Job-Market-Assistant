@@ -1,0 +1,29 @@
+# What the image must never contain. .env first: the Dockerfile copies the
+# repo root, and a secrets file that ships inside a public image is a leak
+# that no amount of "secrets in env not code" discipline undoes.
+.env
+.env.*
+!.env.example
+
+.git
+.github
+.vscode
+.pytest_cache
+.ruff_cache
+__pycache__
+*.py[cod]
+*.egg-info
+
+# Trained models and data live in the database or on a volume, not in the
+# image. The committed LoRA adapters are 35MB of Phase 6 evidence that the
+# API never loads (SKILL_EXTRACTOR=rules).
+artifacts
+data
+docs
+tests
+monitoring
+scripts
+Makefile
+docker-compose.yml
+README.md
+LICENSE

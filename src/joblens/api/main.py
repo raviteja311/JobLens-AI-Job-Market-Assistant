@@ -18,8 +18,9 @@ from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi.responses import JSONResponse, Response
 
-from joblens import db
+from joblens import db, observability
 from joblens.api import schemas
 from joblens.config import get_settings
 from joblens.ml import dataset, trends
@@ -40,6 +41,9 @@ _state: dict = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    settings = get_settings()
+    observability.ensure_logging(settings.log_level, settings.log_format)
+    observability.register_database_collector(db.connect)
     embedder = get_embedder()
     embedder.encode(["warm up"])  # pay the model load before serving traffic
     _state["embedder"] = embedder
@@ -50,10 +54,56 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="JobLens",
-    version="0.3.0",
+    version="0.4.0",
     description="Semantic job search, grounded chat and resume matching.",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def observe(request: Request, call_next):
+    """One histogram sample and one JSON log line per request.
+
+    Also the body size guard. FastAPI checks the resume against
+    MAX_RESUME_BYTES after reading it; this rejects on the declared length
+    before a byte of a 500MB upload is buffered.
+    """
+    settings = get_settings()
+    watch = observability.Stopwatch()
+    declared = request.headers.get("content-length")
+    if declared and declared.isdigit() and int(declared) > settings.max_body_bytes:
+        response: Response = JSONResponse(
+            {"detail": f"request body must be under {settings.max_body_bytes} bytes"},
+            status_code=413,
+        )
+    else:
+        try:
+            response = await call_next(request)
+        except Exception:
+            _observe(request, 500, watch.seconds)
+            raise
+    _observe(request, response.status_code, watch.seconds)
+    return response
+
+
+def _observe(request: Request, status: int, seconds: float) -> None:
+    route = observability.route_label(request.scope)
+    method = request.method
+    observability.REQUESTS.labels(method, route, str(status)).inc()
+    observability.REQUEST_LATENCY.labels(method, route).observe(seconds)
+    if route == "/metrics":
+        return  # the scraper every 15 seconds is not traffic worth a line each
+    log.info(
+        "request",
+        extra={
+            "method": method,
+            "route": route,
+            "path": request.url.path,
+            "status": status,
+            "duration_ms": round(seconds * 1000, 1),
+            "client": request.client.host if request.client else None,
+        },
+    )
 
 
 # A fixed window per client, in memory. Correct for one process and wrong the
@@ -79,20 +129,50 @@ def rate_limit(request: Request) -> None:
 
 @app.get("/health")
 def health() -> dict:
+    """Liveness plus the three facts the runbook asks for first: how much
+    data, whether last night's ingest ran, and which LLM is configured."""
     with db.connect() as conn:
         postings = conn.execute("select count(*) as n from postings").fetchone()["n"]
         chunks = conn.execute("select count(*) as n from posting_chunks").fetchone()[
             "n"
         ]
+        last_run = conn.execute("""
+            select source, status, finished_at, inserted
+              from ingestion_runs
+             where status <> 'running'
+             order by started_at desc
+             limit 1
+            """).fetchone()
     settings = get_settings()
     return {
         "status": "ok",
+        "version": app.version,
         "postings": postings,
         "chunks": chunks,
         "embedder": _state["embedder"].name if "embedder" in _state else None,
         "llm_backend": settings.llm_backend,
         "llm_enabled": settings.llm_enabled,
+        "last_ingest": (
+            {
+                "source": last_run["source"],
+                "status": last_run["status"],
+                "finished_at": (
+                    last_run["finished_at"].isoformat()
+                    if last_run["finished_at"]
+                    else None
+                ),
+                "inserted": last_run["inserted"],
+            }
+            if last_run
+            else None
+        ),
     }
+
+
+@app.get("/metrics", include_in_schema=False)
+def metrics() -> Response:
+    payload, content_type = observability.metrics_payload()
+    return Response(payload, media_type=content_type)
 
 
 @app.get("/search", response_model=schemas.SearchResponse)

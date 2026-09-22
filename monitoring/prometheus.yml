@@ -1,0 +1,14 @@
+# Scrapes the API every 15 seconds. The database gauges are computed on each
+# scrape from four indexed queries, so this interval is cheap; do not drop it
+# below 5s without looking at the collector first.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: joblens-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:8000"]
+        labels:
+          env: local

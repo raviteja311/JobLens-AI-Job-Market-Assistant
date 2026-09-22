@@ -21,6 +21,8 @@ dependencies = [
     "python-multipart >= 0.0.9",
     "pypdf >= 5.0",
     "streamlit >= 1.37",
+    # Phase 7. Request histograms and LLM cost counters on /metrics.
+    "prometheus-client >= 0.20",
 ]
 
 [project.optional-dependencies]

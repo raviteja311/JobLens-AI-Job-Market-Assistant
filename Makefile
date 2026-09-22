@@ -4,7 +4,8 @@
 PY ?= python
 
 .PHONY: install migrate ingest transform stats skills train cluster trends \
-	embed dedup serve ui eval calibrate test test-db lint format check
+	embed dedup serve ui eval calibrate test test-db lint format check \
+	image up down monitoring-up logs
 
 install:
 	$(PY) -m pip install -e ".[dev]"
@@ -100,3 +101,20 @@ format:
 	$(PY) -m black src tests
 
 check: lint test
+
+# Phase 7. One image serves the API and the UI; the command picks which.
+image:
+	docker build -t joblens:local .
+
+up:
+	docker compose up -d --build db api ui
+
+down:
+	docker compose down
+
+# The API plus Prometheus and Grafana at http://localhost:3000.
+monitoring-up:
+	docker compose --profile monitoring up -d --build
+
+logs:
+	docker compose logs -f api
