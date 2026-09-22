@@ -1,9 +1,11 @@
 name: ci
 
+# Pull requests run this directly. Pushes to main run it as the first
+# stage of deploy.yml, so it is callable and does not also fire on push,
+# which would run every test twice per merge.
 on:
-  push:
-    branches: [main]
   pull_request:
+  workflow_call:
 
 jobs:
   test:

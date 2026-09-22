@@ -12,6 +12,10 @@ on:
         description: postings per source
         default: "200"
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   ingest:
     runs-on: ubuntu-latest
@@ -40,3 +44,27 @@ jobs:
       - name: summary
         if: always()
         run: python -m joblens stats >> "$GITHUB_STEP_SUMMARY"
+
+      # The alert. A scheduled workflow that fails sends an email to whoever
+      # last touched it and nothing else, which is easy to miss for a week.
+      # An open issue is visible on the repo page and in the runbook, and
+      # repeat failures thread onto it instead of opening one a day.
+      - name: alert on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create ingest-failure --color B60205 --force \
+            --description "the daily ingestion run failed" >/dev/null
+          existing=$(gh issue list --label ingest-failure --state open \
+            --json number --jq '.[0].number')
+          body="Ingestion run failed: $RUN_URL
+
+          Runbook: docs/runbook.md, section \"Ingestion failed\"."
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --label ingest-failure \
+              --title "Ingestion failed on $(date -u +%F)" --body "$body"
+          fi

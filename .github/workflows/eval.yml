@@ -15,6 +15,7 @@ on:
       - "prompts/**"
       - "data/golden/**"
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   retrieval:

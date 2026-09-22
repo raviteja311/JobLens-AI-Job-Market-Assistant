@@ -1,0 +1,76 @@
+name: deploy
+
+# The pipeline for main. Lint and tests, then the retrieval eval gate, then
+# the image. Each stage is the same workflow a pull request runs, called
+# here, so a green tick on main means exactly what a green tick on a PR
+# meant and nothing was skipped for speed.
+#
+# The image goes to GitHub's registry under this repository. The deploy job
+# pulls that tag, so what runs in production is byte for byte the image the
+# eval gate passed, not a rebuild that happened to have the same source.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time. A second merge while the first is mid-deploy waits
+# for it rather than racing it.
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  eval:
+    uses: ./.github/workflows/eval.yml
+
+  image:
+    needs: [test, eval]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      tag: ${{ steps.meta.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/joblens
+          tags: |
+            type=sha,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: image summary
+        run: |
+          {
+            echo "### image"
+            echo
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
