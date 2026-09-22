@@ -16,7 +16,10 @@ jobs:
     # only way the upsert and run-log behaviour stays covered.
     services:
       postgres:
-        image: postgres:16
+        # pgvector, not plain postgres: the search migrations create the
+        # vector extension, and on postgres:16 every db test fails with
+        # 'extension "vector" is not available'. It did, for three phases.
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: joblens
           POSTGRES_PASSWORD: joblens

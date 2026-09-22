@@ -35,14 +35,31 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - run: pip install -e .
+      # No database, no run. Until a hosted Postgres exists and its URL is in
+      # the DATABASE_URL secret there is nothing to ingest into, and a daily
+      # red run for a known cause would drown the alert below in noise.
+      - name: check configuration
+        id: config
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DATABASE_URL secret is not set; skipping ingestion. See docs/runbook.md."
+            echo "Skipped: DATABASE_URL secret is not set." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - run: python -m joblens migrate
+      - if: steps.config.outputs.configured == 'true'
+        run: pip install -e .
 
-      - run: python -m joblens ingest --limit ${{ inputs.limit || 200 }}
+      - if: steps.config.outputs.configured == 'true'
+        run: python -m joblens migrate
+
+      - if: steps.config.outputs.configured == 'true'
+        run: python -m joblens ingest --limit ${{ inputs.limit || 200 }}
 
       - name: summary
-        if: always()
+        if: always() && steps.config.outputs.configured == 'true'
         run: python -m joblens stats >> "$GITHUB_STEP_SUMMARY"
 
       # The alert. A scheduled workflow that fails sends an email to whoever
