@@ -1,0 +1,109 @@
+# The two pages that matter for a scraper with a public URL. Everything else
+# on the dashboard is for looking at, these two are for waking up to.
+#
+# "Ingestion stale" fires when a source has not completed a successful run
+# in 36 hours. The schedule is daily at 06:00 UTC, so 36 hours means one
+# missed run plus a generous late start, not a flapping alert every time
+# GitHub's scheduler is twenty minutes behind. noDataState is Alerting on
+# purpose: no data means the API is down or the database is unreachable,
+# and either is worse than a late ingest.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: joblens
+    folder: JobLens
+    interval: 1m
+    rules:
+      - uid: joblens-ingest-stale
+        title: Ingestion stale
+        condition: C
+        for: 5m
+        noDataState: Alerting
+        execErrState: Error
+        labels:
+          severity: warning
+          service: joblens
+        annotations:
+          summary: "{{ $labels.source }} has not ingested successfully in 36 hours"
+          runbook_url: https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/blob/main/docs/runbook.md#ingestion-failed
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              expr: time() - max by (source) (joblens_ingest_last_success_timestamp_seconds)
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [129600]
+
+      - uid: joblens-db-down
+        title: Database unreachable from the API
+        condition: C
+        for: 2m
+        noDataState: Alerting
+        execErrState: Error
+        labels:
+          severity: critical
+          service: joblens
+        annotations:
+          summary: "the API cannot query Postgres"
+          runbook_url: https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/blob/main/docs/runbook.md#database-slow-or-down
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              expr: min(joblens_db_up)
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: lt
+                    params: [1]
+
+      - uid: joblens-llm-spend
+        title: LLM spend today over budget
+        condition: C
+        for: 0s
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+          service: joblens
+        annotations:
+          summary: "LLM calls have cost more than 1 USD since midnight UTC"
+          runbook_url: https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/blob/main/docs/runbook.md#llm-provider-down-or-expensive
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              expr: max(joblens_llm_cost_usd_today)
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [1]
