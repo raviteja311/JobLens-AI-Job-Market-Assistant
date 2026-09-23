@@ -6,6 +6,61 @@ Newest entry at the top.
 
 ---
 
+## Phase 8 - packaging, as far as a repo can package itself
+
+**Did:** rewrote the README top as a landing page (pitch, demo, live URL
+status, Mermaid architecture, the two results tables, three-command
+quickstart), wrote the Playwright script in `scripts/` that records the demo
+GIF from the real UI, wrote three blog post drafts from the devlog and
+experiments, drafted three LinkedIn posts and a headline, and filled in the
+plan's resume bullets with the real numbers.
+
+**Decided:** retitle two of the three blog posts. The plan's titles were
+"Fine-tuning a 3B model to replace an API call" and "What scraping 10k job
+postings taught me". The model was 0.5B, the teacher was local, and the
+corpus is 468 postings. A title that promises a number the post cannot
+deliver is the exact thing the rest of this repo argues against. The posts
+say what the plan called them and why they are called something else.
+
+**Decided:** the resume bullets file has a section for the three plan
+bullets that cannot be claimed. "Matched API accuracy at a fraction of the
+cost" did not happen; "served real users with p95 under Z ms" needs a
+deployment and users. Writing down what a bullet is not allowed to say is
+cheaper than being asked about it in an interview.
+
+**Decided:** the demo GIF records Search and Trends only. Chat and matching
+take about 50 seconds an answer on the local model. A GIF that cuts away and
+comes back with an answer would be implying a latency the system does not
+have. The README states the 50 seconds instead.
+
+**Decided:** the demo is a script, not a one-off recording. The UI will
+change, and a GIF from three phases ago is a small lie on the landing page.
+`python scripts/demo_gif.py` against the compose stack regenerates it in
+about a minute.
+
+**What broke:** Playwright's Python package pinned a browser build that was
+not the one already on the machine, and downloading another 150MB browser
+for a GIF felt wrong. Playwright can drive the system Edge through
+`channel="msedge"`, so the script does that by default and takes a flag for
+Playwright's own Chromium.
+
+**What broke, second:** Docker Desktop on this machine stopped starting
+mid-phase. Every service crashes renaming its Unix socket file with Windows
+error 1920, and the pending Docker Desktop update or a reboot is the fix.
+The demo GIF is therefore not recorded yet; the script is, and the README
+says so instead of showing a broken image.
+
+**Not done, recorded:** the demo GIF recording (see above), the demo video
+(needs a voice), pinning the repo,
+publishing the posts, updating LinkedIn and the resume. Those are actions on
+accounts, and the drafts are in the repo ready for them. The public dataset
+from the stretch goals needs a permissions check with each board first.
+
+**Next:** the owner's decisions from Phase 7 (hosting, Grafana Cloud), then
+the stretch goals if there is appetite. The plan is otherwise complete.
+
+---
+
 ## Phase 7 - deployment and MLOps, the local half
 
 **Did:** a multi-stage Dockerfile with two targets (API and UI), a compose

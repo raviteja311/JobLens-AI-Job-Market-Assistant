@@ -1,20 +1,95 @@
-# JobLens-AI-Job-Market-Assistant
+# JobLens
 
 [![ci](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ci.yml)
 [![deploy](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml)
 [![ingest](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ingest.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ingest.yml)
 
+**Real AI/ML job postings, collected daily, searchable by meaning, matched
+against your resume, and answerable with citations.** Every claim on this page
+has a number next to it, and the numbers that did not go the way the plan
+said are here too.
 
-Collects real AI/ML job postings daily, then offers semantic search,
-resume matching, grounded chat with citations, and a live analytics
-dashboard.
+**Demo GIF:** recorded from the running UI by `python scripts/demo_gif.py`
+(Search across three queries, then the Trends tab). Recording pending: Docker
+on the build machine is down for a system update, and a mockup is not a demo.
 
-Status: Phases 0-6 complete, Phase 7 complete locally. 468 postings from 2
-live sources, hybrid search over pgvector, grounded chat and resume matching
-on a local LLM, an eval suite that fails CI on a regression, a distillation
-experiment whose headline is that an 80-line regex still beats the
-fine-tuned model, and a containerised, monitored stack with a runbook. No
-public URL yet: that needs a hosting account, see Phase 7.
+**Live URL:** not deployed yet. The API image is published at
+`ghcr.io/raviteja311/joblens`, the pipeline that builds it is green, and the
+deploy step is waiting on a hosting account. See Phase 7. Until then, three
+commands run the whole thing:
+
+```bash
+cp .env.example .env
+docker compose up --build         # Postgres, API on :8000, UI on :8501
+open http://localhost:8501
+```
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph sources [Job boards]
+        HN[Hacker News Who is hiring]
+        RO[RemoteOK]
+        AD[Adzuna, optional]
+    end
+    sources -->|daily, GitHub Actions| ING[Ingestion pipeline<br/>fetch, parse, clean, dedup]
+    ING --> RAW[(raw_postings<br/>bronze)]
+    RAW -->|transform| PG[(postings<br/>silver)]
+    PG --> ML[Classic ML<br/>skills regex, clustering, trends]
+    PG --> EMB[Embedding pipeline<br/>chunk, MiniLM, pgvector]
+    EMB --> VEC[(posting_chunks<br/>HNSW)]
+    PG & VEC & ML --> API[FastAPI<br/>/search /chat /match /trends /metrics]
+    API -->|Ollama or Anthropic| LLM[LLM backend]
+    API --> UI[Streamlit UI]
+    API --> PROM[Prometheus + Grafana]
+    GOLD[Golden sets<br/>retrieval, chat, skills] --> EVAL[Eval harness<br/>fails CI on regression]
+    EVAL -.scores.-> API
+```
+
+## Results
+
+Two tables carry the project. Both are reproduced with `make eval` and
+`make distil-eval`; the full write-ups, including the runs that failed, are
+in [docs/experiments.md](docs/experiments.md).
+
+**Retrieval**, 15 judged queries over 465 postings. Hybrid lost to plain
+vector search, which was not the expected result; reranking was the real
+gain.
+
+| configuration | recall@5 | recall@10 | MRR | nDCG@10 | ms/query |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.299 | 0.358 | 0.406 | 0.328 | 25 |
+| vector (whole) | 0.569 | 0.692 | 0.773 | 0.598 | 34 |
+| vector (section) | 0.491 | 0.813 | 0.734 | 0.684 | 35 |
+| hybrid (whole) | 0.438 | 0.666 | 0.761 | 0.620 | 94 |
+| hybrid + rerank | 0.497 | 0.725 | **0.900** | **0.692** | 3145 |
+
+**Skill extraction**, 60 blind-judged postings with 138 gold mentions. The
+fine-tuned student recovered from a 0.000 collapse to 0.485, and the 80-line
+regex it was meant to replace still ships.
+
+| extractor | micro F1 | precision | recall | ms/call |
+| --- | ---: | ---: | ---: | ---: |
+| rules (Phase 2 regex) | **0.663** | **0.986** | 0.500 | **5** |
+| teacher (llama3.1 8B) | 0.634 | 0.551 | **0.746** | 9,512 |
+| tuned-v2 (Qwen 0.5B + LoRA) | 0.485 | 0.516 | 0.457 | 4,201 |
+| base (Qwen 0.5B) | 0.104 | 0.094 | 0.116 | 6,046 |
+| tuned-v1 (collapsed) | 0.000 | 0.000 | 0.000 | 3,105 |
+
+**Chat**, 8 questions of which half are unanswerable from the corpus:
+refusal accuracy 1.00 (gated in CI, floor 0.75), citation rate 0.75, judge
+scores uncalibrated and labelled as such.
+
+## Status
+
+Phases 0 to 7 of the [12-week plan](docs/devlog.md) are complete, Phase 7
+locally. 468 postings from 2 live sources, hybrid search over pgvector,
+grounded chat and resume matching on a local LLM, an eval suite that fails
+CI on a regression, a distillation experiment whose headline is that a regex
+won, and a containerised, monitored stack with a runbook. Phase 8 is this
+page, the [three blog drafts](docs/blog/) and the
+[resume bullets](docs/resume-bullets.md).
 
 ## Development process
 
@@ -85,7 +160,8 @@ data/golden/         the judged queries everything is scored against
 tests/               pytest suite
 migrations/          schema, applied by `joblens migrate`
 monitoring/          Phase 7: Prometheus scrape config, Grafana dashboard and alerts
-docs/                devlog, experiments, runbook
+docs/                devlog, experiments, runbook, blog drafts, resume bullets
+scripts/demo_gif.py  records the README demo from the running UI
 Dockerfile           one image for the API and the UI
 ```
 
@@ -528,7 +604,29 @@ Containers run as an unprivileged user with no compiler or git installed.
 
 ### Phase 8: Packaging
 
-<!-- Demo video, blog posts, dataset. -->
+The plan: README as a landing page, a demo GIF, a demo video, three blog
+posts from the devlog, LinkedIn posts, updated resume. Done here, in the
+repo, as drafts where publishing is a human's call:
+
+- **This README** is the landing page: pitch, demo, architecture, the two
+  results tables, quickstart, all above the fold.
+- **`scripts/demo_gif.py`** records the demo GIF from the real UI: it
+  drives Streamlit in a headless browser and stitches the frames. Search and
+  Trends only: chat and matching take about 50 seconds an answer on the
+  local model. The recording itself is pending, see above.
+- **Three blog drafts** in [`docs/blog/`](docs/blog/), one per plan title,
+  retitled to what actually happened: the model was 0.5B not 3B, and the
+  corpus is 468 postings not 10k. Every number in them is from
+  `docs/experiments.md`.
+- **LinkedIn drafts and a headline** in [`docs/blog/linkedin.md`](docs/blog/linkedin.md).
+- **Resume bullets** in [`docs/resume-bullets.md`](docs/resume-bullets.md),
+  with the plan's five bullets filled in from real numbers and the three
+  that cannot be claimed yet marked as such.
+
+**Not done, and why:** the demo video needs a voice, and pinning the repo,
+publishing the posts and updating a LinkedIn profile are actions on
+accounts that are not mine. The public dataset from the stretch goals needs
+a permissions check with each source first.
 
 ## Limitations
 
