@@ -91,8 +91,11 @@ landed, and note the cause in `docs/devlog.md` if it was new.
 
 **How you find out.**
 
-- `/chat` and `/match` return 503 `no LLM backend configured`, or hang and
-  return 500.
+- `/chat` and `/match` return 503. The detail says which case: `no LLM
+  backend configured`, `ollama backend unreachable: ...` when the process
+  is down or the container cannot route to it, or `ollama backend returned
+  HTTP 500: ...` when the model failed to load, which on this machine means
+  memory.
 - The Grafana alert "LLM spend today over budget" fires (more than 1 USD
   since midnight UTC).
 - `joblens_llm_calls_total{ok="false"}` is climbing on the dashboard.

@@ -89,7 +89,9 @@ with chat_tab:
         if payload.status_code == 429:
             st.warning("Rate limited. Try again in a minute.")
         elif payload.status_code == 503:
-            st.warning("No LLM backend configured.")
+            # Either no backend is configured or the configured one is down;
+            # the API says which.
+            st.warning(payload.json().get("detail", "LLM backend unavailable."))
         else:
             payload.raise_for_status()
             body = payload.json()

@@ -6,6 +6,7 @@ here (JSON extraction, retry-on-validation-error, refusal detection) is about
 the model's intelligence.
 """
 
+import httpx
 import pytest
 from pydantic import BaseModel, Field
 
@@ -151,3 +152,47 @@ def test_v2_adds_the_scope_rule_v1_was_missing():
     # v1 answered "this is the highest salary in the database" from six
     # retrieved postings. v2 exists to stop that.
     assert "across the database" in prompts.load("chat_answer", "v2").template
+
+
+class DownBackend:
+    name = "ollama"
+
+    def complete(self, prompt, max_tokens, json_mode):
+        raise httpx.ConnectError("[Errno 101] Network is unreachable")
+
+
+def test_an_unreachable_backend_is_its_own_error_not_a_stack_trace(monkeypatch):
+    monkeypatch.setattr(client, "get_backend", lambda: DownBackend())
+    monkeypatch.setattr(client, "_log_call", lambda **kwargs: None)
+    with pytest.raises(client.BackendUnavailable, match="ollama backend unreachable"):
+        client.complete("prompt", feature="test")
+
+
+def test_other_backend_failures_still_propagate(monkeypatch):
+    class Broken:
+        name = "stub"
+
+        def complete(self, prompt, max_tokens, json_mode):
+            raise ValueError("malformed body")
+
+    monkeypatch.setattr(client, "get_backend", lambda: Broken())
+    monkeypatch.setattr(client, "_log_call", lambda **kwargs: None)
+    with pytest.raises(ValueError, match="malformed body"):
+        client.complete("prompt", feature="test")
+
+
+def test_a_backend_5xx_is_reported_as_unavailable_with_its_body(monkeypatch):
+    class Overloaded:
+        name = "ollama"
+
+        def complete(self, prompt, max_tokens, json_mode):
+            request = httpx.Request("POST", "http://ollama/api/generate")
+            response = httpx.Response(
+                500, request=request, text="model requires more system memory"
+            )
+            raise httpx.HTTPStatusError("500", request=request, response=response)
+
+    monkeypatch.setattr(client, "get_backend", lambda: Overloaded())
+    monkeypatch.setattr(client, "_log_call", lambda **kwargs: None)
+    with pytest.raises(client.BackendUnavailable, match="HTTP 500.*system memory"):
+        client.complete("prompt", feature="test")
