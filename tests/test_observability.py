@@ -247,3 +247,18 @@ def test_health_reports_which_llm_is_configured_and_the_version(client):
     # Health needs the database; with it down the endpoint fails loudly
     # rather than returning "ok" for a service that cannot serve.
     assert client.get("/health").status_code == 500
+
+
+def test_chat_returns_503_when_the_llm_backend_is_down(client, monkeypatch):
+    from joblens.llm.client import BackendUnavailable
+
+    def down(*args, **kwargs):
+        raise BackendUnavailable("ollama backend unreachable: connection refused")
+
+    monkeypatch.setattr(api.chat_rag, "ask", down)
+    # The fixture's database is down too; /chat opens a connection first, so
+    # swap in one that yields without connecting.
+    monkeypatch.setattr(api.db, "connect", _up)
+    response = client.post("/chat", json={"question": "who is hiring?"})
+    assert response.status_code == 503
+    assert "unreachable" in response.json()["detail"]

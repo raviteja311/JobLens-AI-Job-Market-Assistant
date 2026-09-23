@@ -40,6 +40,15 @@ PRICING = {
 }
 
 
+class BackendUnavailable(RuntimeError):
+    """The configured LLM backend could not be reached.
+
+    Ollama not running, the Anthropic API timing out, DNS failing inside a
+    container: none of these are bugs in the request, and none should come
+    back to a user as a 500 with a stack trace. The API maps this to 503.
+    """
+
+
 @dataclass
 class Completion:
     text: str
@@ -236,6 +245,17 @@ def complete(
             attempts=1,
             error=str(exc),
         )
+        if isinstance(exc, httpx.TransportError):
+            raise BackendUnavailable(
+                f"{backend.name} backend unreachable: {exc}"
+            ) from exc
+        if isinstance(exc, httpx.HTTPStatusError):
+            # Ollama answers 500 when the model fails to load, usually for
+            # lack of memory. That is the backend's problem, not the caller's.
+            raise BackendUnavailable(
+                f"{backend.name} backend returned HTTP "
+                f"{exc.response.status_code}: {exc.response.text[:200]}"
+            ) from exc
         raise
     _log_call(
         feature=feature,

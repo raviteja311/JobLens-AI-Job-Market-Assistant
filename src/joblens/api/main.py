@@ -23,6 +23,7 @@ from fastapi.responses import JSONResponse, Response
 from joblens import db, observability
 from joblens.api import schemas
 from joblens.config import get_settings
+from joblens.llm.client import BackendUnavailable
 from joblens.ml import dataset, trends
 from joblens.rag import chat as chat_rag
 from joblens.rag import resume as resume_rag
@@ -232,13 +233,16 @@ def chat(request: schemas.ChatRequest) -> schemas.ChatResponse:
     settings = get_settings()
     if not settings.llm_enabled:
         raise HTTPException(503, "no LLM backend configured")
-    with db.connect() as conn:
-        answer = chat_rag.ask(
-            conn,
-            request.question,
-            embedder=_state.get("embedder"),
-            limit=request.limit,
-        )
+    try:
+        with db.connect() as conn:
+            answer = chat_rag.ask(
+                conn,
+                request.question,
+                embedder=_state.get("embedder"),
+                limit=request.limit,
+            )
+    except BackendUnavailable as exc:
+        raise HTTPException(503, str(exc)) from exc
     return schemas.ChatResponse(
         question=answer.question,
         answer=answer.answer,
@@ -280,8 +284,13 @@ async def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
 
-    with db.connect() as conn:
-        report = resume_rag.match_resume(conn, text, embedder=_state.get("embedder"))
+    try:
+        with db.connect() as conn:
+            report = resume_rag.match_resume(
+                conn, text, embedder=_state.get("embedder")
+            )
+    except BackendUnavailable as exc:
+        raise HTTPException(503, str(exc)) from exc
     return schemas.MatchResponse(
         resume_skills=report.profile.skills,
         matches=[
