@@ -57,7 +57,9 @@ def record(url: str, channel: str | None) -> list[Image.Image]:
         time.sleep(2)
         shot(page, frames, hold=3)
 
-        box = page.get_by_label("Search", exact=True)
+        # The tab and the text input are both labelled "Search"; the role
+        # disambiguates without relying on Streamlit's generated ids.
+        box = page.get_by_role("textbox", name="Search")
         for query in QUERIES:
             box.fill("")
             for ch in query:
