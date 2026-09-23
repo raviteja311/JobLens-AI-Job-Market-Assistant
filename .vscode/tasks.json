@@ -1,0 +1,61 @@
+{
+    // Terminal > Run Task. The Docker tasks need Docker Desktop running.
+    "version": "2.0.0",
+    "options": {
+        "env": {
+            "SSL_CERT_FILE": "C:\\Users\\jetti\\miniconda3\\envs\\joblens\\Lib\\site-packages\\certifi\\cacert.pem"
+        }
+    },
+    "tasks": [
+        {
+            "label": "db: up",
+            "type": "shell",
+            "command": "docker compose up -d db",
+            "problemMatcher": []
+        },
+        {
+            "label": "data: migrate + ingest + embed",
+            "type": "shell",
+            "command": "${command:python.interpreterPath} -m joblens migrate && ${command:python.interpreterPath} -m joblens ingest --limit 400 && ${command:python.interpreterPath} -m joblens embed --strategy whole --strategy section",
+            "dependsOn": "db: up",
+            "problemMatcher": []
+        },
+        {
+            "label": "stack: up (docker compose, API + UI)",
+            "type": "shell",
+            "command": "docker compose up --build -d db api ui",
+            "problemMatcher": []
+        },
+        {
+            "label": "stack: up with monitoring",
+            "type": "shell",
+            "command": "docker compose --profile monitoring up --build -d",
+            "problemMatcher": []
+        },
+        {
+            "label": "stack: down",
+            "type": "shell",
+            "command": "docker compose --profile monitoring down",
+            "problemMatcher": []
+        },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "${command:python.interpreterPath} -m pytest -q",
+            "group": { "kind": "test", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "lint",
+            "type": "shell",
+            "command": "${command:python.interpreterPath} -m ruff check src tests && ${command:python.interpreterPath} -m black --check src tests",
+            "problemMatcher": []
+        },
+        {
+            "label": "eval: retrieval",
+            "type": "shell",
+            "command": "${command:python.interpreterPath} -m joblens eval --suite retrieval",
+            "problemMatcher": []
+        }
+    ]
+}

@@ -3,5 +3,7 @@
     "python.defaultInterpreterPath": "C:\\Users\\jetti\\miniconda3\\envs\\joblens\\python.exe",
     "python.analysis.diagnosticSeverityOverrides": {
         "reportOptionalMemberAccess": "none"
-    }
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda"
 }

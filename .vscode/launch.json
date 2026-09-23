@@ -1,0 +1,67 @@
+{
+    // F5 targets. "API + UI" starts both; the database comes from the
+    // "db: up" task, which the API config runs first.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "API (uvicorn, reload)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "joblens",
+            "args": ["serve", "--reload"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "preLaunchTask": "db: up",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src",
+                "SSL_CERT_FILE": "C:\\Users\\jetti\\miniconda3\\envs\\joblens\\Lib\\site-packages\\certifi\\cacert.pem"
+            }
+        },
+        {
+            "name": "UI (streamlit)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "args": ["run", "app.py", "--server.headless", "true"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "JOBLENS_API": "http://127.0.0.1:8000"
+            }
+        },
+        {
+            "name": "Tests (pytest)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["-q", "-m", "not slow"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "SSL_CERT_FILE": "C:\\Users\\jetti\\miniconda3\\envs\\joblens\\Lib\\site-packages\\certifi\\cacert.pem"
+            }
+        },
+        {
+            "name": "CLI: stats",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "joblens",
+            "args": ["stats"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "API + UI",
+            "configurations": ["API (uvicorn, reload)", "UI (streamlit)"],
+            "stopAll": true
+        }
+    ]
+}
