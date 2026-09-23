@@ -45,13 +45,19 @@ for a GIF felt wrong. Playwright can drive the system Edge through
 Playwright's own Chromium.
 
 **What broke, second:** Docker Desktop on this machine stopped starting
-mid-phase. Every service crashes renaming its Unix socket file with Windows
-error 1920, and the pending Docker Desktop update or a reboot is the fix.
-The demo GIF is therefore not recorded yet; the script is, and the README
-says so instead of showing a broken image.
+mid-phase. Every service crashed renaming its Unix socket file with Windows
+error 1920, a clean run directory did not help, and disabling one feature
+just moved the crash to the next service. Applying the Docker Desktop
+update it had already downloaded (4.90.0 to 4.92.0) fixed it. The demo GIF
+was recorded the same day, one commit after the landing page shipped with
+an honest placeholder.
 
-**Not done, recorded:** the demo GIF recording (see above), the demo video
-(needs a voice), pinning the repo,
+**What broke, third:** the first recording showed raw `<b>` tags in every
+snippet, because `ts_headline` marks matches with them and `st.text`
+prints them literally. A demo GIF is a good way to find the UI bugs you
+have stopped seeing. Two lines in `app.py`.
+
+**Not done, recorded:** the demo video (needs a voice), pinning the repo,
 publishing the posts, updating LinkedIn and the resume. Those are actions on
 accounts, and the drafts are in the repo ready for them. The public dataset
 from the stretch goals needs a permissions check with each board first.

@@ -9,9 +9,11 @@ against your resume, and answerable with citations.** Every claim on this page
 has a number next to it, and the numbers that did not go the way the plan
 said are here too.
 
-**Demo GIF:** recorded from the running UI by `python scripts/demo_gif.py`
-(Search across three queries, then the Trends tab). Recording pending: Docker
-on the build machine is down for a system update, and a mockup is not a demo.
+![JobLens demo: three searches including the pgvector case, then the trends dashboard](docs/img/demo.gif)
+
+*Recorded from the running UI by `python scripts/demo_gif.py`. Search and
+Trends only: chat and resume matching take about 50 seconds an answer on the
+local model.*
 
 **Live URL:** not deployed yet. The API image is published at
 `ghcr.io/raviteja311/joblens`, the pipeline that builds it is green, and the
@@ -610,10 +612,10 @@ repo, as drafts where publishing is a human's call:
 
 - **This README** is the landing page: pitch, demo, architecture, the two
   results tables, quickstart, all above the fold.
-- **`scripts/demo_gif.py`** records the demo GIF from the real UI: it
-  drives Streamlit in a headless browser and stitches the frames. Search and
-  Trends only: chat and matching take about 50 seconds an answer on the
-  local model. The recording itself is pending, see above.
+- **`docs/img/demo.gif`** is recorded from the real UI by
+  `scripts/demo_gif.py`, which drives Streamlit in a headless browser and
+  stitches the frames: 6 distinct screens, 287KB. Search and Trends only:
+  chat and matching take about 50 seconds an answer on the local model.
 - **Three blog drafts** in [`docs/blog/`](docs/blog/), one per plan title,
   retitled to what actually happened: the model was 0.5B not 3B, and the
   corpus is 468 postings not 10k. Every number in them is from

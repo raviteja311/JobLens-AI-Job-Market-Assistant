@@ -10,6 +10,7 @@ can look healthy while the deployed endpoint is broken.
 from __future__ import annotations
 
 import os
+import re
 
 import httpx
 import pandas as pd
@@ -67,7 +68,8 @@ with search_tab:
             # cannot explain a result is a search UI nobody trusts.
             st.caption(f"{where}  ·  score {result['score']:.4f}  ·  {result['ranks']}")
             if result["snippet"]:
-                st.text(result["snippet"][:300])
+                # ts_headline marks matches with <b>; st.text would show the tags.
+                st.text(re.sub(r"</?b>", "", result["snippet"])[:300])
             st.divider()
 
 
