@@ -3,7 +3,7 @@
 The project plan listed five bullets to fill in "with your real numbers".
 Here they are filled in, and where the real number does not exist yet the
 bullet says so rather than borrowing one. Every figure links back to the
-README section or experiment that produced it. Dates are as of 2026-09-22.
+README section or experiment that produced it. Dates are as of 2026-09-26.
 
 ## Bullets that are true today
 
@@ -11,15 +11,17 @@ README section or experiment that produced it. Dates are as of 2026-09-22.
   daily from 2 sources (Hacker News "Who is hiring", RemoteOK) into a
   bronze/silver Postgres schema with content-hash and embedding dedup,
   salary parsing across six currencies, and idempotent re-processing from
-  raw payloads; 468 postings collected, 34 of 400 malformed comments per
+  raw payloads; 466 postings collected, 34 of 400 malformed comments per
   fetch detected and counted rather than dropped. *(Phase 1, Phase 3)*
 
 - **Built a retrieval golden set and eval harness** for a pgvector RAG
-  system, 60 queries with 15 hand-judged on a 0-2 scale; measured that hybrid
-  search underperformed plain vector retrieval (recall@10 0.666 vs 0.692)
-  and that cross-encoder reranking raised MRR from 0.773 to 0.900, and
-  shipped the configuration the numbers supported rather than the one the
-  literature recommended. *(Phase 3)*
+  system: 58 judged queries, 1,379 candidates pooled from every retriever and
+  graded 0-2 from the full posting text; measured that hybrid search
+  underperformed plain vector retrieval (recall@10 0.548 vs 0.653, nDCG@10
+  0.555 vs 0.612) and that cross-encoder reranking bought MRR 0.794 at 130x
+  the latency, and showed the ranking survives a full corpus rebuild.
+  *(Phase 3)* Say, if asked: the grades were made by an LLM reading each
+  posting, and a human pass over them is still to do.
 
 - **Built an LLM evaluation suite** (retrieval metrics, LLM-as-judge with a
   Cohen's kappa calibration check, structural refusal detection) that runs in
@@ -44,9 +46,12 @@ README section or experiment that produced it. Dates are as of 2026-09-22.
 ## Bullets from the plan that cannot be claimed yet, and why
 
 - *"Improved retrieval quality from X% to Y% recall@10 by tuning chunking,
-  hybrid search, and reranking."* The honest version is above: section
-  chunking raised recall@10 from 0.692 to 0.813 and reranking raised MRR to
-  0.900, but hybrid search lowered recall. Do not claim a single X to Y.
+  hybrid search, and reranking."* The honest version is above: the best
+  configuration is the plain one (whole-posting vector search, recall@10
+  0.653 against keyword's 0.402), hybrid and section chunking both lowered
+  recall, and reranking only wins MRR. The earlier 15-query figures (section
+  recall@10 0.813, reranker MRR 0.900) were graded from snippets and fell on
+  the 58-query set; do not quote them. There is no single X to Y.
 
 - *"Fine-tuned a small open model with LoRA, matching GPT/Claude API accuracy
   at a fraction of the per-request cost."* No API model was in the
@@ -77,3 +82,9 @@ The ones that land best in an interview:
    devlog)*
 6. `docker build .` builds the last stage, and my API image was the UI.
    *(Phase 7 devlog)*
+7. A test run wiped the dev corpus fifteen minutes after the golden set was
+   scored, and the rebuild became a robustness test: retrieval survived,
+   the salary importance ranking did not. *(2026-09-26 devlog)*
+8. Four times the queries, graded from full text, moved every retrieval
+   number down: the 15-query table had been graded from the retriever's own
+   snippets. *(2026-09-26 experiments)*

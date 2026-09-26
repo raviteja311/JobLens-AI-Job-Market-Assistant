@@ -2,8 +2,9 @@
 
 *Draft for publication. Every number is from `docs/experiments.md` and the
 README of [JobLens](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant),
-measured on a 465-posting corpus on 2026-09-17. The corpus grows daily, so
-re-running today gives slightly different figures and the same decisions.*
+measured on the 466-posting corpus on 2026-09-26. The first draft quoted a
+15-query table from 2026-09-17; the section "The first table was optimistic"
+says what happened to it.*
 
 ---
 
@@ -23,9 +24,13 @@ strategies and a cross-encoder reranker, and no way to say which was better
 except by typing queries and squinting.
 
 So the first deliverable of the search phase was not a retriever. It was 60
-real queries in a YAML file, of which I judged 15 by hand on a 0, 1, 2 scale:
-no, acceptable, exactly what was asked. Fifteen is small and the README says
-so. It was still enough to overturn my assumptions twice.
+real queries in a YAML file, graded on a 0, 1, 2 scale: no, acceptable,
+exactly what was asked. I judged the first 15 by hand from titles and
+snippets. The full set came later: every candidate any retriever put in its
+top 10, 1,274 of them, graded from the full posting text by an LLM (Claude)
+following the same rubric, with the grader recorded on every query. Two
+queries turned out to have no relevant posting at all, which leaves 58. A
+human pass over the grades is still to do, and the file says so.
 
 Two design choices mattered more than the size.
 
@@ -34,8 +39,8 @@ I was testing. If you only label what your retriever returns, you score it
 against its own blind spots and it can never look bad.
 
 **Judgements key on the source's own identifier**, never on the database
-primary key. The test suite truncates the development database, and a
-re-ingest into an empty table renumbers every posting. A golden set keyed on
+primary key. A re-ingest into an empty table renumbers every posting, and
+that is not hypothetical: a test run once emptied the development database. A golden set keyed on
 `posting.id` would have silently pointed every judgement at a different job
 the first time someone ran `pytest`. That bug would have produced numbers
 that looked fine.
@@ -61,14 +66,14 @@ noticing that searching for "pgvector" returned marketing jobs.
 
 | configuration | recall@5 | recall@10 | MRR | nDCG@10 | ms/query |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.299 | 0.358 | 0.406 | 0.328 | 25 |
-| vector (whole posting) | 0.569 | 0.692 | 0.773 | 0.598 | 34 |
-| vector (sections) | 0.491 | 0.813 | 0.734 | 0.684 | 35 |
-| hybrid (whole) | 0.438 | 0.666 | 0.761 | 0.620 | 94 |
-| hybrid (sections) | 0.430 | 0.646 | 0.736 | 0.600 | 93 |
-| hybrid + rerank | 0.497 | 0.725 | **0.900** | **0.692** | 3145 |
+| keyword | 0.224 | 0.402 | 0.537 | 0.390 | 10 |
+| vector (whole posting) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
+| vector (sections) | 0.347 | 0.590 | 0.734 | 0.581 | 17 |
+| hybrid (whole) | 0.366 | 0.548 | 0.781 | 0.555 | 46 |
+| hybrid (sections) | 0.319 | 0.527 | 0.729 | 0.533 | 47 |
+| hybrid + rerank | 0.355 | 0.553 | **0.794** | 0.577 | 1956 |
 
-Hybrid lost to plain vector search on recall@5, recall@10 and MRR. The plan
+Hybrid lost to plain vector search on recall@5, recall@10 and nDCG. The plan
 said hybrid would win. Every write-up I had read said hybrid would win. The
 mechanism is not mysterious once you see it: fusing a noisy retriever with a
 good one by rank means the noisy one's rank-1 junk gets the same weight as
@@ -83,14 +88,36 @@ posts I do not believe.
 Hybrid stayed the default anyway, and the reason is a single query. Search
 for "pgvector" and vector retrieval returns Marketing Manager and ON SITE
 TORONTO, because the embedding of "pgvector" is mostly "database". Keyword
-retrieval returns the one posting that names it, at rank 1. Two of fifteen
+retrieval returns the one posting that names it, at rank 1. A handful of
 queries look like that, so the average cannot see them. Hybrid is insurance
 for the query type embeddings cannot handle, paid for with a measurable cost
 on ordinary queries. That trade-off is written in the limitations section,
 which is where it belongs.
 
-The reranker was the real improvement: MRR from 0.773 to 0.900. It costs
-3.1 seconds a query on CPU, so it is off by default and on behind a flag.
+The reranker buys the best MRR, 0.794 against hybrid's 0.781, and nothing
+else: recall and nDCG fall below plain vector search, because it only
+reorders what the first stage found. It costs two seconds a query on CPU, so
+it is off by default and on behind a flag.
+
+## The first table was optimistic
+
+The first version of this post had a different table, from the 15 queries
+I judged by hand from snippets. In it the reranker won everything, MRR 0.900
+and nDCG 0.692, and section chunking lifted recall@10 to 0.813. At 58
+queries graded from full text, every number fell and the top reordered.
+
+Two reasons, both about the old set rather than the retrievers. At fifteen
+queries one query is 7% of the score. And grading from the snippet a
+retriever chose is grading the retriever's argument for itself: a posting
+whose snippet mentions the query term looks relevant even when the full text
+says it is a marketing role that happens to name the tool.
+
+Then the corpus was rebuilt from scratch, by accident, and 7% of the judged
+postings had expired. I graded only the 105 new candidates that appeared in
+the top 10s and re-ran. Every column had the same winner as before except
+recall@5, where the reranker's 0.373 became vector search's 0.374. That is
+the result I trust: not the numbers, which moved, but the ordering, which
+survived a rebuild.
 
 ## Evaluating the chat endpoint: the metric was wrong before the system was
 
@@ -164,11 +191,11 @@ release. A green tick that means "we skipped it" is worse than no tick.
 ## What the harness cannot see
 
 - Recall is recall over the candidate pool. A posting no retriever surfaces
-  is never judged and never counted as missed. At 465 postings the gap is
+  is never judged and never counted as missed. At 466 postings the gap is
   small; it would not be at 50,000.
-- Fifteen judged queries, graded from titles and snippets rather than full
-  postings. Differences of a few points in the table above are not
-  meaningful.
+- The grades are an LLM's reading of each posting, not a person's. The
+  ordering has survived a rebuild; the exact values should not be quoted
+  to two decimals until a human has checked the grade-2 judgements.
 - The judge is uncalibrated and shares a model with the system under test.
 
 ## The one paragraph I would keep

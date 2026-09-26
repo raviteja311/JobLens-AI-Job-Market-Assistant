@@ -678,6 +678,9 @@ repo, as drafts where publishing is a human's call:
 - **Resume bullets** in [`docs/resume-bullets.md`](docs/resume-bullets.md),
   with the plan's five bullets filled in from real numbers and the three
   that cannot be claimed yet marked as such.
+- **A demo video script** in [`docs/demo-video-script.md`](docs/demo-video-script.md):
+  2.5 minutes, timed per screen, with the rare-term search checked against
+  the current corpus.
 
 **Not done, and why:** the demo video needs a voice, and pinning the repo,
 publishing the posts and updating a LinkedIn profile are actions on

@@ -32,9 +32,10 @@ contains all six words of "remote machine learning engineer working on
 LLMs". Tests passed. Results looked fine. The harness said 0.
 
 The second thing it told me was that hybrid search, once it worked, lost
-to plain vector search on recall@5, recall@10 and MRR. Every write-up says
-hybrid wins. On my 15 judged queries it came third. Reranking was the real
-gain: MRR 0.77 to 0.90, at 3 seconds a query.
+to plain vector search: recall@10 0.55 against 0.65 across 58 judged
+queries. Every write-up says hybrid wins. On mine it came third. Reranking
+won exactly one column, MRR, at 130 times the latency. And my first 15-query
+table, graded from snippets, had been flattering everything.
 
 The third thing was about me. My refusal detector for the chat endpoint was
 a list of phrases, and it had scored three correct refusals as failures. I
@@ -43,8 +44,9 @@ with the output. The version that shipped is structural: a refusal cites no
 sources, an answer cites at least one.
 
 What I learned:
-- Build the golden set before the clever retriever. Fifteen judged queries
-  overturned two assumptions.
+- Build the golden set before the clever retriever, and make it bigger than
+  feels necessary. Fifteen queries overturned two assumptions; 58 overturned
+  some of the fifteen's conclusions.
 - Key judgements on the source's id, never the database's. A re-ingest
   renumbers everything and the numbers still look fine.
 - If a metric is easy to fix by adding a case, the metric is wrong.
@@ -112,8 +114,8 @@ Eight things 468 real postings taught me that a Kaggle CSV never would:
    corpus twice without a single new network request.
 3. A parser's skip count is a metric. 34 of 400 Hacker News comments are
    not postings; if that becomes 100, something broke.
-4. Only 23% of postings state a salary. Five models could not beat
-   predicting the median. There is no salary endpoint, on purpose.
+4. Only 23% of postings state a salary. The best of five models is still
+   off by about $60k. There is no salary endpoint, on purpose.
 5. 37% of locations are unusable. Every aggregate on the dashboard carries
    its coverage next to it.
 6. Two dedup methods found 26 pairs each with only 19 in common. That is
