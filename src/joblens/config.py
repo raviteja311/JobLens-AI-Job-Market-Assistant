@@ -6,6 +6,7 @@ in CI and on a server. Nothing headcoded in the modules themselves.
 
 """
 
+import os
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -80,6 +81,13 @@ class Settings(BaseSettings):
     # is loaded into pandas to build it, and it changes once a day.
     trends_cache_seconds: float = 300.0
 
+    # Load the embedding and reranker models from the local Hugging Face cache
+    # without asking the Hub for newer versions. The Docker image sets this
+    # itself because its models are baked in; locally it saves about 20
+    # seconds of HEAD requests per start. If the cache is ever deleted, model
+    # loading fails until this is turned off again.
+    hf_hub_offline: bool = False
+
     @property
     def adzuna_enabled(self) -> bool:
         return bool(self.adzuna_app_id and self.adzuna_app_key)
@@ -93,4 +101,12 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    settings = Settings()
+    # huggingface_hub reads HF_HUB_OFFLINE from the process environment, once,
+    # when it is first imported, and pydantic reads .env without exporting
+    # it. So a value that lives only in .env has to be copied across here,
+    # before any model code is imported. An explicit environment variable
+    # still wins.
+    if settings.hf_hub_offline:
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
+    return settings

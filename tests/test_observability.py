@@ -263,3 +263,50 @@ def test_chat_returns_503_when_the_llm_backend_is_down(client, monkeypatch):
     response = client.post("/chat", json={"question": "who is hiring?"})
     assert response.status_code == 503
     assert "unreachable" in response.json()["detail"]
+
+
+def test_httpx_request_lines_are_hidden_unless_verbose():
+    import logging
+
+    observability.configure_logging("INFO")
+    assert logging.getLogger("httpx").getEffectiveLevel() == logging.WARNING
+    observability.configure_logging("DEBUG")
+    assert logging.getLogger("httpx").getEffectiveLevel() == logging.DEBUG
+    observability.configure_logging("INFO")
+
+
+def _settings_with(monkeypatch, offline: bool):
+    from joblens import config
+
+    real = config.Settings
+    monkeypatch.setattr(
+        config, "Settings", lambda: real(hf_hub_offline=offline, _env_file=None)
+    )
+    config.get_settings.cache_clear()
+    return config.get_settings
+
+
+def test_hf_hub_offline_in_settings_reaches_the_environment(monkeypatch):
+    import os
+
+    # setenv first so monkeypatch restores "absent" afterwards.
+    monkeypatch.setenv("HF_HUB_OFFLINE", "")
+    monkeypatch.delenv("HF_HUB_OFFLINE")
+    get_settings = _settings_with(monkeypatch, offline=True)
+    try:
+        get_settings()
+        assert os.environ["HF_HUB_OFFLINE"] == "1"
+    finally:
+        get_settings.cache_clear()
+
+
+def test_an_explicit_hf_hub_offline_environment_value_wins(monkeypatch):
+    import os
+
+    monkeypatch.setenv("HF_HUB_OFFLINE", "0")
+    get_settings = _settings_with(monkeypatch, offline=True)
+    try:
+        get_settings()
+        assert os.environ["HF_HUB_OFFLINE"] == "0"
+    finally:
+        get_settings.cache_clear()

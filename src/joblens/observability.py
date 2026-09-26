@@ -113,6 +113,14 @@ def configure_logging(level: int | str = logging.INFO, fmt: str = "text") -> Non
     # uvicorn's own access line duplicates the one the middleware writes,
     # and its error logger propagates to root anyway.
     logging.getLogger("uvicorn.access").disabled = True
+    # httpx logs every request at INFO, which on startup is about sixty
+    # Hugging Face HEADs and during ingest one line per page fetched. The
+    # pipeline logs its own per-source summary, so outside --verbose these
+    # only bury the lines that matter.
+    for name in ("httpx", "httpcore"):
+        logging.getLogger(name).setLevel(
+            logging.NOTSET if level <= logging.DEBUG else logging.WARNING
+        )
 
 
 def ensure_logging(level: int | str = logging.INFO, fmt: str = "text") -> None:
