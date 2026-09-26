@@ -1,8 +1,9 @@
 # JobLens
 
 [![ci](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ci.yml)
-[![deploy](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml)
+[![image](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/deploy.yml)
 [![ingest](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ingest.yml/badge.svg)](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant/actions/workflows/ingest.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 **Real AI/ML job postings, collected daily, searchable by meaning, matched
 against your resume, and answerable with citations.** Every claim on this page
@@ -51,8 +52,8 @@ flowchart LR
 
 ## Results
 
-Two tables carry the project. Both are reproduced with `make eval` and
-`make distil-eval`; the full write-ups, including the runs that failed, are
+Two tables carry the project. Both come from `make eval` and
+`make distil-eval` (the gold v2 skill rows from a rescore, see Phase 6); the full write-ups, including the runs that failed, are
 in [docs/experiments.md](docs/experiments.md).
 
 **Retrieval**, 58 judged queries over 466 postings, 1,379 graded
@@ -81,8 +82,8 @@ regex it was meant to replace still ships.
 | base (Qwen 0.5B) | 0.104 | 0.094 | 0.116 | 6,046 |
 | tuned-v1 (collapsed) | 0.000 | 0.000 | 0.000 | 3,105 |
 
-**Chat**, last scored on 8 questions of which half are unanswerable from the
-corpus: refusal accuracy 1.00 (gated in CI, floor 0.75), citation rate 0.75,
+**Chat**, last scored on 8 questions including up to 3 the corpus cannot
+answer: refusal accuracy 1.00 (gated in CI, floor 0.75), citation rate 0.75,
 judge scores uncalibrated and labelled as such. The chat golden set has since
 grown to 20 questions (5 must be refused) and has not been re-scored.
 
@@ -149,6 +150,9 @@ python -m joblens spend                # what the LLM calls have cost
 python -m joblens serve                # the API
 ```
 
+`make test` runs the pytest suite (252 tests across 20 modules); `make test-db`
+fails instead of skipping when Postgres is unreachable.
+
 ## Repo structure
 
 ```
@@ -168,7 +172,7 @@ migrations/          schema, applied by `joblens migrate`
 monitoring/          Phase 7: Prometheus scrape config, Grafana dashboard and alerts
 docs/                devlog, experiments, runbook, blog drafts, resume bullets
 scripts/demo_gif.py  records the README demo from the running UI
-Dockerfile           one image for the API and the UI
+Dockerfile           two image targets: the API and the UI
 ```
 
 ## Phases
@@ -187,7 +191,7 @@ network.
 
 | source | postings | API key | notes |
 | --- | ---: | --- | --- |
-| Hacker News "Who is hiring" | 366 | none | free-text comments, no schema at all |
+| Hacker News "Who is hiring" | 367 | none | free-text comments, no schema at all |
 | RemoteOK | 99 | none | structured, entirely remote |
 | Adzuna | 0 | required | registered but skipped without a key |
 
@@ -198,42 +202,44 @@ re-runs over the raw layer instead of waiting two weeks to re-collect.
 
 **Cleaning** strips HTML with the stdlib, normalises locations against a
 lookup table rather than a geocoder, and parses salary out of free text:
-ranges, `up to`, `from`, hourly and monthly rates, six currencies, and the
+ranges, `up to`, `from`, hourly and monthly rates, seven currency symbols and nine ISO codes, and the
 strings that mean "we are not telling you". Hourly and monthly figures are
-annualised only when the period was actually stated; a guessed period is how a
-$60/hr contract ends up in the data as a $60 salary.
+annualised. When no period is stated, one is inferred from the size of the
+number (a bare `65` is read as hourly); that guess is the riskiest step, since a
+wrong one is how a $60/hr contract ends up in the data as a $60 salary.
 
 **Dedup** is an exact match on a normalised content hash of title, company and
-location, with seniority words removed. It finds 26 duplicates. Phase 3 adds a
+location, with seniority words removed. It finds 28 duplicates. Phase 3 adds a
 second, different signal rather than replacing it.
 
 **Reliability.** Retries with backoff on 429 and 5xx, fails fast on other 4xx.
 One source failing does not stop the others. Every run writes to
-`ingestion_runs` with counts and any error. 34 of 400 Hacker News comments are
-replies rather than postings and are counted as skipped, not dropped silently.
+`ingestion_runs` with counts and any error. 33 of 400 Hacker News comments are
+replies rather than postings; they are counted as skipped in the run log, not
+dropped silently.
 
 **Schedule.** `.github/workflows/ingest.yml` runs daily at 06:00 UTC and is
 idempotent, so a missed slot costs that day's postings and nothing else.
 
 ### Phase 2: Classic ML layer
 
-Everything here runs on the Phase 1 corpus. No LLM calls, no embeddings. These
+Everything here runs on the Phase 1 corpus. No LLM calls, and no embeddings except in
+the clustering comparison below, which reads the Phase 3 vectors. These
 are the baselines Phases 3 and 6 have to beat, so they stay in the repo
 permanently. Full write-ups in `docs/experiments.md`.
 
 **Skill extraction.** An alias table over 80 canonical skills with
 case-insensitive regex, plus a TF-IDF keyword extractor for the terms the
 table does not know about yet. Coverage, the share of postings where at least
-one known skill is found, is **58.9%**.
+one known skill is found, is **59.0%**.
 
 | skill | postings | share |
 | --- | ---: | ---: |
-| python | 112 | 24.1% |
-| typescript | 83 | 17.8% |
-| postgresql | 71 | 15.3% |
-| llm | 59 | 12.7% |
-| aws | 51 | 11.0% |
-| kubernetes | 48 | 10.3% |
+| python | 110 | 23.6% |
+| typescript | 86 | 18.5% |
+| postgresql | 72 | 15.5% |
+| llm | 61 | 13.1% |
+| kubernetes | 50 | 10.7% |
 
 **Salary regression: better than the baseline, not good enough to serve.**
 The first run, 106 postings with a salary that parsed, 5-fold CV, MAE as the
@@ -279,9 +285,9 @@ this on a single 28-row test split, and one re-ingest flipped its ranking;
 the write-up is in `docs/experiments.md`.
 
 **Clustering.** TF-IDF and k-means, k chosen by silhouette, clusters labelled
-from their own centroid terms. k=10 gives nameable families: `founding
-engineer`, `forward deployed engineer`, `open source / developer`, `ml / ai`,
-`san francisco onsite`, `rails / toronto`.
+from their own centroid terms. k=10 gives nameable families such as
+`founding / ai`, `deployed engineer / forward deployed` and
+`software / engineers`.
 
 The first version produced a 99-posting cluster defined by the terms
 `applicants`, `rmjcuni4xmjgumja5`, `read`, `word`, `human`. RemoteOK appends
@@ -292,20 +298,19 @@ second cluster meaning "uses Ashby". Stripping it made the clusters obviously
 better and the silhouette score slightly **worse**, which is the argument for
 building the golden dataset before trusting any unsupervised metric.
 
-The same k-means on the Phase 3 embeddings (`cluster --compare`) picks k=4
-and agrees with the TF-IDF partition at an adjusted Rand index of **0.064**,
-barely above chance (0.066, with k=6, on the rebuilt corpus). Reading the clusters explains it: TF-IDF splits on
-surface tokens and gave nine groups including `ai / agents`, `ml / models`
-and `uk / latam`; embeddings settle on four broad families and find the
-healthcare group with 57 postings where TF-IDF found 10. The comparison
+The same k-means on the Phase 3 embeddings (`cluster --compare`) picks k=6
+and agrees with the TF-IDF partition (k=10) at an adjusted Rand index of
+**0.066**, barely above chance. Reading the clusters explains it: TF-IDF splits
+on surface tokens, while embeddings settle on a few broad families and find a
+healthcare group of 45 postings. The comparison
 also exposed a cleaning bug: 18 Hacker News postings with a URL in the
 title had formed an `https / www` cluster, so `posting_text` now strips
 noise from titles as well as descriptions. TF-IDF stays on the dashboard
-because nine nameable groups beat four vague ones; the embedding run is the
+because ten nameable groups beat six vague ones; the embedding run is the
 sanity check.
 
-**Trends.** Top skills over time, demand by region, remote share, median
-advertised salary by skill. Every share is reported against the postings that
+**Trends.** Top skills, demand by region, remote share and median
+advertised salary. Every share is reported against the postings that
 could have answered the question: 65% are remote, but only 23% state a salary.
 
 ### Phase 3: Embeddings and semantic search
@@ -452,7 +457,7 @@ regression. An eval that only prints numbers is a report; this one is a test.
 
 **Retrieval** is scored against the golden set above. **Chat** is scored
 against the QA pairs in `data/golden/chat.yaml`. The scorecard below was run
-when the set had 8 questions, half of them questions the corpus genuinely
+when the set had 8 questions, up to 3 of them questions the corpus genuinely
 cannot answer; it has since grown to 20 (5 must be refused) and has not been
 re-scored.
 
@@ -500,8 +505,8 @@ scores the judge against hand-scored answers in `data/golden/judgements.yaml`
 and reports agreement and Cohen's kappa. Kappa and not raw agreement because
 the grades are skewed towards 2: a judge that answers "2" to everything scores
 about 70% agreement and a kappa of zero, and only one of those numbers says it
-is useless. **This has not been run**: it needs 20 answers scored by hand, and
-`Calibration.trustworthy` returns False until they exist. The judge scores
+is useless. **It has been run and failed**: 20 hand-scored answers give a faithfulness
+kappa of 0.00, so `Calibration.trustworthy` returns False. The judge scores
 below are therefore uncalibrated and should be read as a smoke test, not as a
 quality measurement.
 
@@ -538,7 +543,8 @@ over Ollama and every number below inherits that substitution.
 recall is the line that compares the systems fairly.
 
 All rows, same frozen 60 postings, gold v2 (hash `256c78609120d71f`), 138
-gold mentions. Reproduce with `python -m joblens distil-eval`.
+gold mentions. `python -m joblens distil-eval` reproduces the gold v1 run;
+the gold v2 rows come from rescoring against the updated gold set.
 
 | extractor | micro F1 | macro F1 | precision | recall | exact | empty | ms/call | per 1k |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -705,7 +711,7 @@ repo, as drafts where publishing is a human's call:
   chat and matching take about 50 seconds an answer on the local model.
 - **Three blog drafts** in [`docs/blog/`](docs/blog/), one per plan title,
   retitled to what actually happened: the model was 0.5B not 3B, and the
-  corpus is 468 postings not 10k. Every number in them is from
+  corpus is 466 postings not 10k. Every number in them is from
   `docs/experiments.md`.
 - **LinkedIn drafts and a headline** in [`docs/blog/linkedin.md`](docs/blog/linkedin.md).
 - **Resume bullets** in [`docs/resume-bullets.md`](docs/resume-bullets.md),
@@ -724,7 +730,7 @@ a permissions check with each source first.
 
 Kept current and honest.
 
-- **The corpus is small and skewed.** 465 postings from 2 sources, 79% of them
+- **The corpus is small and skewed.** 466 postings from 2 sources, 79% of them
   Hacker News comments, which over-represents startups and US remote work. Any
   "the market wants X" claim from this data is really "these two boards wanted
   X this month".
@@ -735,7 +741,7 @@ Kept current and honest.
   0 and 1 judgements have not had a human pass, and there is no second
   reviewer, so no inter-rater agreement is reported.
 - **Recall is recall over the pool**, not over the corpus. A posting no
-  retriever surfaces is never judged and never counted as missed. At 465
+  retriever surfaces is never judged and never counted as missed. At 466
   postings the gap is small; it would not be at 50,000.
 - **The LLM judge is uncalibrated.** See Phase 5.
 - **Hybrid retrieval is worse than vector alone** on these queries. It is kept
@@ -789,3 +795,11 @@ Kept current and honest.
 - **Phase 6 training ran on CPU.** This machine has 7.3GB of RAM and a 4GB
   GPU with no matching torch wheel, so the plan's "Qwen 2.5 3B or similar"
   was not reachable and the student is a 0.5B model.
+
+## License
+
+Apache 2.0, see [LICENSE](LICENSE).
+
+## Author
+
+**Jetti Raviteja** · [Portfolio](https://portfolio-website-drab-six-15.vercel.app) · [GitHub](https://github.com/raviteja311) · [LinkedIn](https://www.linkedin.com/in/jettiraviteja/)
