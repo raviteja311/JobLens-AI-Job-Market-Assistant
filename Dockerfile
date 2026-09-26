@@ -61,7 +61,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --system joblens \
     && useradd --system --gid joblens --home /app --no-create-home joblens \
-    && pip install "streamlit>=1.37" "httpx>=0.27" "pandas>=2.2" \
+    && pip install "streamlit>=1.64,<2" "httpx>=0.27" "pandas>=2.2" \
     && find /usr/local/lib/python3.12 -type d -name __pycache__ -prune -exec rm -rf {} +
 
 WORKDIR /app

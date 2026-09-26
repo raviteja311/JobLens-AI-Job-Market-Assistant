@@ -18,8 +18,9 @@ import streamlit as st
 
 API = os.environ.get("JOBLENS_API", "http://127.0.0.1:8000")
 TIMEOUT = 300.0
+SERVE_COMMAND = "python -m joblens serve"
 
-st.set_page_config(page_title="JobLens", page_icon="•", layout="wide")
+st.set_page_config(page_title="JobLens", page_icon=":material/work:", layout="wide")
 
 
 def api_get(path: str, **params):
@@ -28,138 +29,313 @@ def api_get(path: str, **params):
     return response.json()
 
 
+# Search and trends are read-only and the corpus changes once a day, so a
+# repeated query or a tab switch should not cost another round trip. Chat
+# and match are never cached: each call is an LLM answer the user asked for.
+@st.cache_data(ttl=300, max_entries=200, show_spinner=False)
+def cached_search(q: str, mode: str, strategy: str, rerank: bool) -> dict:
+    return api_get(
+        "/search", q=q, mode=mode, strategy=strategy, limit=10, rerank=rerank
+    )
+
+
+@st.cache_data(ttl=300, max_entries=10, show_spinner=False)
+def cached_trends(days: int) -> dict:
+    return api_get("/trends", days=days)
+
+
+def md(text: str) -> str:
+    """Escape the characters that would turn a job title into Markdown."""
+    return re.sub(r"([\\`*_\[\]<>#|~$])", r"\\\1", text or "")
+
+
+def badges(items: list[str], color: str) -> str:
+    return " ".join(f":{color}-badge[{md(item)}]" for item in items)
+
+
+def found_by(ranks: dict[str, int]) -> str:
+    # Which retriever found it and at what rank. A search UI that cannot
+    # explain a result is a search UI nobody trusts.
+    return " · ".join(f"{name} #{rank}" for name, rank in sorted(ranks.items()))
+
+
+def snippet_text(snippet: str) -> str:
+    # ts_headline marks matches with <b>, the first line of a whole-posting
+    # chunk repeats the company and title already shown above it, and the
+    # bodies are full of application URLs.
+    text = re.sub(r"</?b>", "", snippet or "").strip()
+    lines = text.splitlines()
+    if len(lines) > 1 and lines[0].count("|") >= 2:
+        text = " ".join(lines[1:])
+    # Application links are noise in a preview; the title already links out.
+    # A bracketed "[Apply here: <url>]" goes whole, then any bare URL.
+    text = re.sub(r"\[[^\]]*(?:https?://|www\.)[^\]]*\]?", "", text)
+    text = re.sub(r"(?:https?://|www\.)\S+", "", text)
+    text = " ".join(text.split())
+    return text[:280] + ("..." if len(text) > 280 else "")
+
+
+def show_limited(response: httpx.Response, fallback: str) -> bool:
+    """Render the API's own reason for a 429/422/503. True if it did."""
+    if response.status_code == 429:
+        st.warning("Rate limited. Try again in a minute.", icon=":material/timer:")
+        return True
+    if response.status_code in (422, 503):
+        st.warning(response.json().get("detail", fallback), icon=":material/warning:")
+        return True
+    return False
+
+
 st.title("JobLens")
 
 try:
     health = api_get("/health")
 except Exception as exc:  # noqa: BLE001 - the whole page depends on this
-    st.error(f"Cannot reach the API at {API}. Start it with `make serve`.\n\n{exc}")
+    st.error(
+        f"Cannot reach the API at {API}. Start it in another terminal with "
+        f"`{SERVE_COMMAND}` and refresh; it takes about 45 seconds to load "
+        f"its models.\n\n{exc}",
+        icon=":material/cloud_off:",
+    )
     st.stop()
 
-cols = st.columns(4)
-cols[0].metric("postings", health["postings"])
-cols[1].metric("chunks", health["chunks"])
-cols[2].metric("embedder", health["embedder"] or "-")
-cols[3].metric("LLM", health["llm_backend"] if health["llm_enabled"] else "off")
+# Grey either way: /health knows which backend is configured, not whether it
+# is up right now, and a green badge next to a dead Ollama is a small lie.
+llm_badge = (
+    f":gray-badge[:material/smart_toy: LLM: {health['llm_backend']}]"
+    if health["llm_enabled"]
+    else ":gray-badge[:material/smart_toy: LLM off]"
+)
+st.markdown(
+    f"Real AI/ML job postings, searchable by meaning. "
+    f":blue-badge[{health['postings']} postings] {llm_badge}"
+)
 
 search_tab, chat_tab, match_tab, trends_tab = st.tabs(
-    ["Search", "Chat", "Resume match", "Trends"]
+    [
+        ":material/search: Search",
+        ":material/chat: Chat",
+        ":material/description: Resume match",
+        ":material/bar_chart: Trends",
+    ],
+    on_change="rerun",
+    key="view",
 )
 
 
-with search_tab:
-    query = st.text_input("Search", "remote machine learning engineer")
-    left, middle, right = st.columns(3)
-    mode = left.selectbox("mode", ["hybrid", "vector", "keyword"])
-    strategy = middle.selectbox("chunking", ["whole", "section"])
-    rerank = right.checkbox("cross-encoder rerank", help="slower, better ordering")
-
-    if query:
-        payload = api_get(
-            "/search", q=query, mode=mode, strategy=strategy, limit=10, rerank=rerank
+if search_tab.open:
+    query = st.text_input(
+        "What are you looking for?",
+        "remote machine learning engineer",
+        placeholder="e.g. remote LLM roles that need PyTorch",
+    )
+    with st.container(horizontal=True, vertical_alignment="bottom"):
+        mode = st.segmented_control(
+            "Retrieval",
+            ["hybrid", "vector", "keyword"],
+            default="hybrid",
+            required=True,
+            help="Hybrid adds keyword search to vector search, which catches rare "
+            "terms like tool names that embeddings blur together.",
         )
-        st.caption(f"{len(payload['results'])} results in {payload['took_ms']:.0f}ms")
-        for result in payload["results"]:
-            where = "remote" if result["is_remote"] else (result["location"] or "")
-            st.markdown(
-                f"**[{result['title']}]({result['url']})** at {result['company']}"
-            )
-            # Showing which retriever found it, because a search UI that
-            # cannot explain a result is a search UI nobody trusts.
-            st.caption(f"{where}  ·  score {result['score']:.4f}  ·  {result['ranks']}")
-            if result["snippet"]:
-                # ts_headline marks matches with <b>; st.text would show the tags.
-                st.text(re.sub(r"</?b>", "", result["snippet"])[:300])
-            st.divider()
+        strategy = st.segmented_control(
+            "Chunking", ["whole", "section"], default="whole", required=True
+        )
+        rerank = st.toggle(
+            "Rerank",
+            help="A cross-encoder reorders the results. Better top result, "
+            "about 2 seconds slower.",
+        )
 
-
-with chat_tab:
-    st.caption(
-        "Answers come only from the retrieved postings. When nothing relevant "
-        "is found it says so instead of guessing."
-    )
-    question = st.text_input(
-        "Ask about the job market", "who is hiring Rust engineers?"
-    )
-    if st.button("Ask", type="primary"):
-        with st.spinner("retrieving and answering"):
-            payload = httpx.post(
-                f"{API}/chat", json={"question": question, "limit": 6}, timeout=TIMEOUT
-            )
-        if payload.status_code == 429:
-            st.warning("Rate limited. Try again in a minute.")
-        elif payload.status_code == 503:
-            # Either no backend is configured or the configured one is down;
-            # the API says which.
-            st.warning(payload.json().get("detail", "LLM backend unavailable."))
-        else:
-            payload.raise_for_status()
-            body = payload.json()
-            st.markdown(body["answer"])
-            if not body["grounded"]:
-                st.warning("Not grounded: the answer cites no source.")
-            for citation in body["citations"]:
-                st.caption(
-                    f"[{citation['n']}] [{citation['title']}]({citation['url']}) "
-                    f"at {citation['company']}"
+    if query.strip():
+        payload = cached_search(query.strip(), mode, strategy, rerank)
+        results = payload["results"]
+        st.caption(f"{len(results)} results in {payload['took_ms']:.0f} ms")
+        if not results:
+            st.info("No postings matched. Try fewer or broader words.")
+        for result in results:
+            with st.container(border=True):
+                st.markdown(
+                    f"**[{md(result['title'])}]({result['url']})** · "
+                    f"{md(result['company'])}"
                 )
-            st.caption(f"{body['took_ms']}ms  ·  ${body['cost_usd']:.5f}")
+                tags = []
+                if result["is_remote"]:
+                    tags.append(":green-badge[:material/home_work: remote]")
+                if result["location"]:
+                    tags.append(
+                        f":gray-badge[:material/location_on: {md(result['location'])}]"
+                    )
+                meta = " ".join(tags)
+                if result["ranks"]:
+                    meta += f"  :small[found by {found_by(result['ranks'])}]"
+                if meta:
+                    st.markdown(meta)
+                if result["snippet"]:
+                    st.caption(snippet_text(result["snippet"]))
 
 
-with match_tab:
+if chat_tab.open:
     st.caption(
-        "Upload a resume. The useful column is what the posting wants "
-        "that your resume does not mention."
+        "Answers come only from the retrieved postings, with a numbered source "
+        "for every claim. When nothing relevant is found it says so instead of "
+        "guessing."
     )
-    upload = st.file_uploader("Resume (PDF or text)", type=["pdf", "txt", "md"])
-    if upload and st.button("Match", type="primary"):
-        with st.spinner("extracting skills and scoring postings"):
+    example = st.pills(
+        "Examples",
+        [
+            "who is hiring Rust engineers?",
+            "which roles involve building RAG systems or LLM agents?",
+            "which companies say they offer visa sponsorship?",
+        ],
+        label_visibility="collapsed",
+    )
+    with st.form("chat", border=False):
+        with st.container(horizontal=True, vertical_alignment="bottom"):
+            question = st.text_input(
+                "Ask about the job market",
+                example or "who is hiring Rust engineers?",
+            )
+            asked = st.form_submit_button("Ask", type="primary", icon=":material/send:")
+    if asked and question.strip():
+        with st.spinner(
+            "Retrieving and answering. About 50 seconds on the local model."
+        ):
+            response = httpx.post(
+                f"{API}/chat",
+                json={"question": question.strip(), "limit": 6},
+                timeout=TIMEOUT,
+            )
+        if not show_limited(response, "LLM backend unavailable."):
+            response.raise_for_status()
+            body = response.json()
+            with st.container(border=True):
+                st.markdown(body["answer"])
+                if not body["grounded"]:
+                    st.caption(
+                        ":orange-badge[:material/info: no sources cited] The "
+                        "postings did not answer this, and the reply says so."
+                    )
+                if body["citations"]:
+                    st.markdown("**Sources**")
+                    for citation in body["citations"]:
+                        st.markdown(
+                            f"{citation['n']}. [{md(citation['title'])}]"
+                            f"({citation['url']}) · {md(citation['company'])}"
+                        )
+            st.caption(f"{body['took_ms'] / 1000:.1f} s · ${body['cost_usd']:.5f}")
+
+
+if match_tab.open:
+    st.caption(
+        "Upload a resume to rank postings against it. The most useful part is "
+        "what each posting wants that your resume does not mention."
+    )
+    # The API rejects anything over 2 MB (MAX_RESUME_BYTES); saying so here
+    # beats letting someone upload 50 MB and get a 413.
+    upload = st.file_uploader(
+        "Resume (PDF or text)", type=["pdf", "txt", "md"], max_upload_size=2
+    )
+    if upload and st.button("Match my resume", type="primary", icon=":material/bolt:"):
+        with st.spinner("Extracting skills and scoring postings. This takes a minute."):
             response = httpx.post(
                 f"{API}/match",
                 files={"file": (upload.name, upload.getvalue())},
                 timeout=TIMEOUT,
             )
-        if response.status_code == 429:
-            st.warning("Rate limited. Try again in a minute.")
-        elif response.status_code in (422, 503):
-            st.warning(response.json().get("detail", "could not process that file"))
-        else:
+        if not show_limited(response, "Could not process that file."):
             response.raise_for_status()
             body = response.json()
-            st.write("**Skills found:** " + ", ".join(body["resume_skills"]))
+            st.markdown(
+                "**Skills found in your resume:** "
+                + (badges(body["resume_skills"], "blue") or "none")
+            )
             for match in body["matches"]:
-                st.markdown(
-                    f"**{match['fit_score']}/100 · "
-                    f"[{match['title']}]({match['url']})** at {match['company']}"
-                )
-                st.write(match["reasoning"])
-                st.caption("matched: " + (", ".join(match["matched_skills"]) or "none"))
-                st.caption("missing: " + (", ".join(match["missing_skills"]) or "none"))
-                st.divider()
-            st.caption(f"{body['took_ms']}ms  ·  ${body['cost_usd']:.5f}")
+                with st.container(border=True):
+                    info, score = st.columns([5, 1], vertical_alignment="center")
+                    with info:
+                        st.markdown(
+                            f"**[{md(match['title'])}]({match['url']})** · "
+                            f"{md(match['company'])}"
+                        )
+                        st.write(match["reasoning"])
+                    score.metric("Fit", f"{match['fit_score']}/100")
+                    st.markdown(
+                        "You have: "
+                        + (badges(match["matched_skills"], "green") or ":small[none]")
+                    )
+                    st.markdown(
+                        "Missing: "
+                        + (badges(match["missing_skills"], "orange") or ":small[none]")
+                    )
+            st.caption(f"{body['took_ms'] / 1000:.1f} s · ${body['cost_usd']:.5f}")
 
 
-with trends_tab:
-    days = st.slider("window (days)", 7, 365, 90)
-    summary = api_get("/trends", days=days)
+if trends_tab.open:
+    days = st.segmented_control(
+        "Window",
+        [30, 90, 180, 365],
+        default=90,
+        required=True,
+        format_func=lambda d: f"{d} days",
+    )
+    summary = cached_trends(days)
     if not summary.get("postings"):
         st.info("No postings in this window.")
     else:
-        row = st.columns(4)
-        row[0].metric("postings", summary["postings"])
-        row[1].metric("remote", f"{summary['remote_share']:.0%}")
-        row[2].metric("state a salary", f"{summary['salary_coverage']:.0%}")
-        row[3].metric(
-            "median salary",
-            (
-                f"${summary['median_salary_usd']:,}"
-                if summary["median_salary_usd"]
-                else "-"
-            ),
-        )
-        skills = pd.DataFrame(summary["top_skills"])
-        if not skills.empty:
-            st.bar_chart(skills.set_index("skill")["postings"])
-        regions = pd.DataFrame(summary["top_regions"])
-        if not regions.empty:
-            st.dataframe(regions, hide_index=True, use_container_width=True)
+        with st.container(horizontal=True):
+            st.metric("Postings", summary["postings"], border=True)
+            st.metric("Remote", f"{summary['remote_share']:.0%}", border=True)
+            st.metric(
+                "State a salary",
+                f"{summary['salary_coverage']:.0%}",
+                border=True,
+                help="Every figure on this tab is reported against the postings "
+                "that could answer it; most postings never state pay.",
+            )
+            st.metric(
+                "Median salary",
+                (
+                    f"${summary['median_salary_usd']:,}"
+                    if summary["median_salary_usd"]
+                    else "-"
+                ),
+                border=True,
+                help=f"Across the {summary['with_salary']} postings that state one.",
+            )
+
+        skills_col, regions_col = st.columns([3, 2])
+        with skills_col:
+            st.subheader("Most requested skills")
+            skills = pd.DataFrame(summary["top_skills"])
+            if not skills.empty:
+                st.bar_chart(
+                    skills,
+                    x="skill",
+                    y="postings",
+                    horizontal=True,
+                    sort="-postings",
+                    # With horizontal=True the axes swap, and their labels
+                    # swap with them.
+                    x_label="",
+                    y_label="postings",
+                )
+        with regions_col:
+            st.subheader("Where the jobs are")
+            regions = pd.DataFrame(summary["top_regions"])
+            if not regions.empty:
+                regions["region"] = regions["region"].replace("unknown", "not stated")
+                regions["remote_share"] = (regions["remote_share"] * 100).round()
+                st.dataframe(
+                    regions,
+                    hide_index=True,
+                    column_config={
+                        "region": st.column_config.TextColumn("Region"),
+                        "postings": st.column_config.NumberColumn("Postings"),
+                        "remote_share": st.column_config.ProgressColumn(
+                            "Remote", format="%d%%", min_value=0, max_value=100
+                        ),
+                    },
+                )
+        sources = " · ".join(f"{name} {n}" for name, n in summary["sources"].items())
+        st.caption(f"Sources: {sources}. Updated daily.")

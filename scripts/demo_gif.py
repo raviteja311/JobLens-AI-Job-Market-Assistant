@@ -29,7 +29,10 @@ OUT = ROOT / "docs" / "img" / "demo.gif"
 QUERIES = [
     "remote machine learning engineer",
     "rust backend for a fintech",
-    "pgvector",
+    # A rare term: vector search misses both postings that name it, hybrid
+    # ranks them first and second. pgvector was the example until its only
+    # posting expired.
+    "vLLM",
 ]
 
 
@@ -57,9 +60,8 @@ def record(url: str, channel: str | None) -> list[Image.Image]:
         time.sleep(2)
         shot(page, frames, hold=3)
 
-        # The tab and the text input are both labelled "Search"; the role
-        # disambiguates without relying on Streamlit's generated ids.
-        box = page.get_by_role("textbox", name="Search")
+        # Found by role and label rather than Streamlit's generated ids.
+        box = page.get_by_role("textbox", name="What are you looking for?")
         for query in QUERIES:
             box.fill("")
             for ch in query:

@@ -9,7 +9,7 @@ against your resume, and answerable with citations.** Every claim on this page
 has a number next to it, and the numbers that did not go the way the plan
 said are here too.
 
-![JobLens demo: three searches including the pgvector case, then the trends dashboard](docs/img/demo.gif)
+![JobLens demo: three searches including the rare-term vLLM case, then the trends dashboard](docs/img/demo.gif)
 
 *Recorded from the running UI by `python scripts/demo_gif.py`. Search and
 Trends only: chat and resume matching take about 50 seconds an answer on the
