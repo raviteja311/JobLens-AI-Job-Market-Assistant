@@ -51,6 +51,25 @@ def test_absurd_salaries_are_dropped():
     assert salary_model.training_frame(frame).empty
 
 
+def test_every_bound_must_be_plausible_not_only_the_midpoint():
+    # "100-200k" misread as 100 to 200,000 has a believable midpoint (100,050)
+    # and a floor no salary has; it used to reach training.
+    frame = pd.DataFrame(
+        {
+            "title": ["ML Engineer", "ML Engineer"],
+            "description": ["Python", "Python"],
+            "location": [None, None],
+            "is_remote": [True, True],
+            "source": ["hackernews", "hackernews"],
+            "salary_min_year": [100, 100_000],
+            "salary_max_year": [200_000, 200_000],
+            "salary_currency": ["USD", "USD"],
+        }
+    )
+    usable = salary_model.training_frame(frame)
+    assert usable["salary_min_year"].tolist() == [100_000]
+
+
 def test_unknown_currency_is_dropped_not_assumed_to_be_dollars():
     frame = pd.DataFrame(
         {

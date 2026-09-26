@@ -63,11 +63,11 @@ corpus was rebuilt from scratch and 7% of the judged postings expired.
 
 | configuration | recall@5 | recall@10 | MRR | nDCG@10 | ms/query |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.224 | 0.402 | 0.537 | 0.390 | 10 |
+| keyword | 0.216 | 0.388 | 0.550 | 0.385 | 10 |
 | vector (whole) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
-| vector (section) | 0.347 | 0.590 | 0.734 | 0.581 | 17 |
-| hybrid (whole) | 0.366 | 0.548 | 0.781 | 0.555 | 46 |
-| hybrid + rerank | 0.355 | 0.553 | **0.794** | 0.577 | 1956 |
+| vector (section) | 0.333 | 0.536 | 0.743 | 0.547 | 17 |
+| hybrid (whole) | 0.367 | 0.547 | 0.770 | 0.553 | 46 |
+| hybrid + rerank | 0.362 | 0.553 | **0.797** | 0.577 | 1956 |
 
 **Skill extraction**, 60 blind-judged postings with 138 gold mentions. The
 fine-tuned student recovered from a 0.000 collapse to 0.485, and the 80-line
@@ -81,9 +81,10 @@ regex it was meant to replace still ships.
 | base (Qwen 0.5B) | 0.104 | 0.094 | 0.116 | 6,046 |
 | tuned-v1 (collapsed) | 0.000 | 0.000 | 0.000 | 3,105 |
 
-**Chat**, 8 questions of which half are unanswerable from the corpus:
-refusal accuracy 1.00 (gated in CI, floor 0.75), citation rate 0.75, judge
-scores uncalibrated and labelled as such.
+**Chat**, last scored on 8 questions of which half are unanswerable from the
+corpus: refusal accuracy 1.00 (gated in CI, floor 0.75), citation rate 0.75,
+judge scores uncalibrated and labelled as such. The chat golden set has since
+grown to 20 questions (5 must be refused) and has not been re-scored.
 
 ## Status
 
@@ -111,6 +112,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 pre-commit install
+# Phase 6 fine-tuning only: pip install -e ".[dev,finetune]"
 
 cp .env.example .env
 docker compose up -d db
@@ -233,9 +235,9 @@ one known skill is found, is **58.9%**.
 | aws | 51 | 11.0% |
 | kubernetes | 48 | 10.3% |
 
-**Salary regression: the baseline won.** 106 postings with a salary that
-parsed, 5-fold CV, MAE as the headline because a few 750k postings dominate
-RMSE.
+**Salary regression: better than the baseline, not good enough to serve.**
+The first run, 106 postings with a salary that parsed, 5-fold CV, MAE as the
+headline because a few 750k postings dominate RMSE:
 
 | model | MAE (USD) | RMSE (USD) | R2 | vs median |
 | --- | ---: | ---: | ---: | ---: |
@@ -245,15 +247,32 @@ RMSE.
 | random_forest | 68,563 | 97,385 | -0.340 | -7.1% |
 | gradient_boosting | 78,292 | 113,514 | -1.113 | -22.3% |
 
-The ridge's 1.8% edge is inside the noise, and its top features are `money`,
+The ridge's 1.8% edge was inside the noise, and its top features were `money`,
 `worth` and `meaningful`, which is what 106 rows against 14,000 TF-IDF columns
-looks like. Seven more configurations were tried; all converge towards the
-baseline rather than past it. **There is no salary prediction endpoint** and
-there will not be one until there are roughly 500 salary-disclosing postings.
+looks like.
+
+Part of that noise turned out to be the parser. A range with one unit suffix
+("$150 - 210K", "100-200k CHF") stored its minimum without the `k`, and
+"$130,000 CAD" was stored as USD. 24 of the 113 salary-stating postings had a
+minimum about 1,000 times too small, which dragged their training target, the
+midpoint, down by tens of thousands of dollars. With the parser fixed and each
+bound checked separately (2026-09-26, 109 usable postings):
+
+| model | MAE (USD) | RMSE (USD) | R2 | vs median |
+| --- | ---: | ---: | ---: | ---: |
+| ridge | 49,383 | 69,449 | 0.307 | +16.8% |
+| ridge_log | 51,414 | 76,265 | 0.246 | +13.4% |
+| random_forest | 54,561 | 80,851 | 0.053 | +8.1% |
+| median | 59,386 | 93,682 | -0.044 | +0.0% |
+| gradient_boosting | 63,717 | 97,238 | -0.910 | -7.3% |
+
+The ridge now clearly beats the median, and it is still off by about $49k on
+an average posting. **There is no salary prediction endpoint** and there will
+not be one until there are roughly 500 salary-disclosing postings.
 
 Permutation importance on the held-out rows of every CV fold
 (`train-salary --importance`) says where what little signal there is lives:
-shuffling the text costs the ridge **14.4k** of MAE (sd 10.7k), and every
+shuffling the text costs the ridge **13.6k** of MAE (sd 8.7k), and every
 other column is within one standard deviation of nothing. The text is the
 only column that matters, and it is not enough. The first version measured
 this on a single 28-row test split, and one re-ingest flipped its ranking;
@@ -314,14 +333,16 @@ before timing:
 
 | configuration | recall@5 | recall@10 | mrr | ndcg@10 | ms/query |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.224 | 0.402 | 0.537 | 0.390 | 10 |
+| keyword | 0.216 | 0.388 | 0.550 | 0.385 | 10 |
 | vector (whole) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
-| vector (section) | 0.347 | 0.590 | 0.734 | 0.581 | 17 |
-| hybrid (whole) | 0.366 | 0.548 | 0.781 | 0.555 | 46 |
-| hybrid (section) | 0.319 | 0.527 | 0.729 | 0.533 | 47 |
-| hybrid + rerank | 0.355 | 0.553 | **0.794** | 0.577 | 1956 |
+| vector (section) | 0.333 | 0.536 | 0.743 | 0.547 | 17 |
+| hybrid (whole) | 0.367 | 0.547 | 0.770 | 0.553 | 46 |
+| hybrid (section) | 0.311 | 0.504 | 0.754 | 0.527 | 47 |
+| hybrid + rerank | 0.362 | 0.553 | **0.797** | 0.577 | 1956 |
 
-These are from the rebuilt corpus. The first 58-query run, on the corpus a
+These are from the rebuilt corpus (metrics re-measured 2026-09-26 after the
+section-chunking fix; the ms/query column is from the previous warm run,
+because this one was timed with other services loaded). The first 58-query run, on the corpus a
 test run later emptied, had the same winners on every column except
 recall@5, which moved from the reranker (0.373) to whole-posting vector
 search (0.374); `docs/experiments.md` has
@@ -352,15 +373,19 @@ ordinary queries. That is the honest summary and it is in the limitations.
 golden query is currently unanswerable and sits out of the average; the
 case is kept because the next such term will arrive with the next ingest.)
 
-**Reranking buys precision at the top, not depth.** MRR 0.781 to 0.794 over
+**Reranking buys precision at the top, not depth.** MRR 0.770 to 0.797 over
 hybrid, the only column it wins, at two seconds a query on CPU, while recall@10 and nDCG
 drop below plain vector search because the reranker only sees the snippet
 the first stage selected. It is off by default and on behind `--rerank`.
 
 **Chunking.** On the full golden set whole-posting vectors win at every
-depth (recall@10 0.658 vs 0.590); the section advantage on depth that the
+depth (recall@10 0.653 vs 0.536); the section advantage on depth that the
 15-query set showed did not survive four times the queries. `whole` is the
-default.
+default. The section numbers are from 2026-09-26, after a fix: `section`
+used to collapse every newline before looking for paragraph breaks, so it
+was really cutting fixed 900-character windows. Splitting on real
+paragraphs made it do what it says and made it worse (recall@10 0.590 to
+0.536), which is recorded in `docs/experiments.md` rather than reverted.
 
 **Dedup.** Embedding similarity at 0.93 finds 26 pairs, of which 19 overlap
 the Phase 1 hash. Each method finds 7 the other misses, because the hash reads
@@ -378,9 +403,13 @@ be worse than leaving it blank.
 citations. The part worth reading is what happens when retrieval finds
 nothing: the model is never called. A RAG system that always answers is easy
 to build and useless, because its answer to a question the corpus cannot
-address is indistinguishable from a real one. `MIN_SCORE` in
+address is indistinguishable from a real one. `MIN_SIMILARITY` in
 `src/joblens/rag/chat.py` is that switch and is the first thing to check when
-someone reports a hallucination.
+someone reports a hallucination. It gates on the raw cosine similarity of the
+best-matching posting (0.30): the earlier gate used the fused hybrid score,
+which a single rank-1 hit always clears, so it never fired. The new floor
+catches clearly off-topic questions; near-topic ones the corpus cannot answer
+are refused by the model and caught by the citation check.
 
 **`/match`** takes a resume PDF, extracts skills with a schema-validated LLM
 call, retrieves candidate jobs, and scores each one for fit with matched and
@@ -420,8 +449,10 @@ model call behind it is someone else's free inference endpoint.
 regression. An eval that only prints numbers is a report; this one is a test.
 
 **Retrieval** is scored against the golden set above. **Chat** is scored
-against 8 QA pairs in `data/golden/chat.yaml`, half of which are questions the
-corpus genuinely cannot answer.
+against the QA pairs in `data/golden/chat.yaml`. The scorecard below was run
+when the set had 8 questions, half of them questions the corpus genuinely
+cannot answer; it has since grown to 20 (5 must be refused) and has not been
+re-scored.
 
 Scorecard, 8 questions, `chat_answer/v2`, llama3.1 local, 12 minutes:
 
@@ -695,11 +726,12 @@ Kept current and honest.
   Hacker News comments, which over-represents startups and US remote work. Any
   "the market wants X" claim from this data is really "these two boards wanted
   X this month".
-- **The golden set was graded by a model, not a person.** All 60 queries are
-  judged from the full posting text (1,274 judgements), but the grader was
-  Claude reading the postings, and the file says so on every query. Every
-  retrieval number on this page rests on that. A human pass over the 227
-  grade-2 judgements is what would remove the caveat.
+- **The golden set was graded by a model and reviewed by one person.** All 60
+  queries are judged from the full posting text (1,379 judgements), graded by
+  Claude reading the postings; the owner then reviewed the 232 grade-2
+  judgements still in the corpus and kept all of them (2026-09-26). The grade
+  0 and 1 judgements have not had a human pass, and there is no second
+  reviewer, so no inter-rater agreement is reported.
 - **Recall is recall over the pool**, not over the corpus. A posting no
   retriever surfaces is never judged and never counted as missed. At 465
   postings the gap is small; it would not be at 50,000.

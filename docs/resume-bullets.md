@@ -17,11 +17,12 @@ README section or experiment that produced it. Dates are as of 2026-09-26.
 - **Built a retrieval golden set and eval harness** for a pgvector RAG
   system: 58 judged queries, 1,379 candidates pooled from every retriever and
   graded 0-2 from the full posting text; measured that hybrid search
-  underperformed plain vector retrieval (recall@10 0.548 vs 0.653, nDCG@10
-  0.555 vs 0.612) and that cross-encoder reranking bought MRR 0.794 at 130x
+  underperformed plain vector retrieval (recall@10 0.547 vs 0.653, nDCG@10
+  0.553 vs 0.612) and that cross-encoder reranking bought MRR 0.797 at 130x
   the latency, and showed the ranking survives a full corpus rebuild.
   *(Phase 3)* Say, if asked: the grades were made by an LLM reading each
-  posting, and a human pass over them is still to do.
+  posting, and I reviewed the 232 grade-2 judgements myself and kept them
+  all; the grade 0 and 1 judgements have had no human pass.
 
 - **Built an LLM evaluation suite** (retrieval metrics, LLM-as-judge with a
   Cohen's kappa calibration check, structural refusal detection) that runs in
@@ -48,7 +49,7 @@ README section or experiment that produced it. Dates are as of 2026-09-26.
 - *"Improved retrieval quality from X% to Y% recall@10 by tuning chunking,
   hybrid search, and reranking."* The honest version is above: the best
   configuration is the plain one (whole-posting vector search, recall@10
-  0.653 against keyword's 0.402), hybrid and section chunking both lowered
+  0.653 against keyword's 0.388), hybrid and section chunking both lowered
   recall, and reranking only wins MRR. The earlier 15-query figures (section
   recall@10 0.813, reranker MRR 0.900) were graded from snippets and fell on
   the 58-query set; do not quote them. There is no single X to Y.

@@ -26,8 +26,8 @@ return the list of technologies named in it. The reasoning is shallow, the
 output is a JSON list, the vocabulary is nearly closed. If any task should
 distil, this one should.
 
-- **Student:** Qwen2.5-0.5B-Instruct with LoRA, rank 16, alpha 32, on
-  attention and MLP projections. CPU only: the laptop has a 4GB GPU with no
+- **Student:** Qwen2.5-0.5B-Instruct with LoRA, rank 16, alpha 32, on the
+  attention projections only (`q_proj`, `k_proj`, `v_proj`, `o_proj`). CPU only: the laptop has a 4GB GPU with no
   matching torch wheel and 7.3GB of RAM, which is why the plan's "3B or
   similar" was not reachable.
 - **Teacher:** llama3.1 8B over Ollama. The plan calls for a frontier API

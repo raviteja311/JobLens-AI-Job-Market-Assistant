@@ -36,6 +36,16 @@ dev = [
     "black",
     "pre-commit",
 ]
+# Phase 6 only: teacher labelling, LoRA training and the extractor benchmark
+# (src/joblens/finetune/). Heavy, CPU torch is enough for the 0.5B student.
+# Ranges are the major versions the committed adapters were trained with.
+finetune = [
+    "transformers >= 5.0, < 6",
+    "peft >= 0.21, < 1",
+    "trl >= 1.0, < 2",
+    "datasets >= 5.0, < 6",
+    "torch >= 2.4, < 3",
+]
 
 [tool.ruff]
 # Matches black's default so the two tools do not disagree.

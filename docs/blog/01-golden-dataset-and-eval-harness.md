@@ -29,8 +29,10 @@ exactly what was asked. I judged the first 15 by hand from titles and
 snippets. The full set came later: every candidate any retriever put in its
 top 10, 1,274 of them, graded from the full posting text by an LLM (Claude)
 following the same rubric, with the grader recorded on every query. Two
-queries turned out to have no relevant posting at all, which leaves 58. A
-human pass over the grades is still to do, and the file says so.
+queries turned out to have no relevant posting at all, which leaves 58. I
+then reviewed the 232 grade-2 judgements by hand and kept every one; the
+grade 0 and 1 judgements have not had a human pass, and the file records who
+graded what.
 
 Two design choices mattered more than the size.
 
@@ -66,12 +68,12 @@ noticing that searching for "pgvector" returned marketing jobs.
 
 | configuration | recall@5 | recall@10 | MRR | nDCG@10 | ms/query |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.224 | 0.402 | 0.537 | 0.390 | 10 |
+| keyword | 0.216 | 0.388 | 0.550 | 0.385 | 10 |
 | vector (whole posting) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
-| vector (sections) | 0.347 | 0.590 | 0.734 | 0.581 | 17 |
-| hybrid (whole) | 0.366 | 0.548 | 0.781 | 0.555 | 46 |
-| hybrid (sections) | 0.319 | 0.527 | 0.729 | 0.533 | 47 |
-| hybrid + rerank | 0.355 | 0.553 | **0.794** | 0.577 | 1956 |
+| vector (sections) | 0.333 | 0.536 | 0.743 | 0.547 | 17 |
+| hybrid (whole) | 0.367 | 0.547 | 0.770 | 0.553 | 46 |
+| hybrid (sections) | 0.311 | 0.504 | 0.754 | 0.527 | 47 |
+| hybrid + rerank | 0.362 | 0.553 | **0.797** | 0.577 | 1956 |
 
 Hybrid lost to plain vector search on recall@5, recall@10 and nDCG. The plan
 said hybrid would win. Every write-up I had read said hybrid would win. The
@@ -94,7 +96,7 @@ for the query type embeddings cannot handle, paid for with a measurable cost
 on ordinary queries. That trade-off is written in the limitations section,
 which is where it belongs.
 
-The reranker buys the best MRR, 0.794 against hybrid's 0.781, and nothing
+The reranker buys the best MRR, 0.797 against hybrid's 0.770, and nothing
 else: recall and nDCG fall below plain vector search, because it only
 reorders what the first stage found. It costs two seconds a query on CPU, so
 it is off by default and on behind a flag.
@@ -127,8 +129,9 @@ threshold, the model is never called. A RAG system that always answers is
 easy to build and useless, because its answer to a question the corpus
 cannot address is indistinguishable from a real one.
 
-So the chat golden set is 8 questions, half of which the corpus genuinely
-cannot answer. "What is the capital of Peru?" is in there on purpose. The
+So the chat golden set started as 8 questions, half of which the corpus
+genuinely cannot answer (it has since grown to 20, five of them must-refuse,
+and the numbers below are from the 8-question run). "What is the capital of Peru?" is in there on purpose. The
 headline metric is refusal accuracy: did the system decline exactly the
 questions it should have declined.
 
@@ -193,9 +196,10 @@ release. A green tick that means "we skipped it" is worse than no tick.
 - Recall is recall over the candidate pool. A posting no retriever surfaces
   is never judged and never counted as missed. At 466 postings the gap is
   small; it would not be at 50,000.
-- The grades are an LLM's reading of each posting, not a person's. The
-  ordering has survived a rebuild; the exact values should not be quoted
-  to two decimals until a human has checked the grade-2 judgements.
+- The grades are an LLM's reading of each posting, with one person's review
+  of the grade-2 judgements only. The ordering has survived a rebuild; the
+  exact values should not be quoted to two decimals without a second
+  reviewer and a human pass over the rest.
 - The judge is uncalibrated and shares a model with the system under test.
 
 ## The one paragraph I would keep

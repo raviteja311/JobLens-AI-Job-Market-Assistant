@@ -101,15 +101,18 @@ median by more than noise. The ridge regression's top features were `money`,
 salary prediction endpoint, and the README says there will not be one until
 there are roughly 500 salary-disclosing postings.
 
-Nine days later, at 109 rows, the ridge beat the median by 10.5%, and it
-is still wrong by about $60k on an average posting. The more useful lesson
+Nine days later, at 109 rows and with a salary parser bug fixed (one unit
+suffix on a range, as in "$150 - 210K", had been stored as a minimum of
+150, on 24 of 113 postings), the ridge beat the median by 16.8%, and it is
+still wrong by about $49k on an average posting. The more useful lesson
 came from asking which input mattered. Permutation importance on one 25%
 test split said the text, by a wide margin. The corpus was then rebuilt from
 the boards, one priced row fewer and the rest mostly the same, and the same
 command said the source column.
 A 25% split of 110 rows is 28 postings; the ranking had never been measured.
 Scored across all five folds, the text is first again, with an error bar
-from about 4k to 25k and every other column indistinguishable from zero.
+from about 5k to 22k (after the parser fix) and every other column
+indistinguishable from zero.
 
 **Lesson:** the honest output of a salary model on 106 rows is "not enough
 data". Ship that. And any ranking you pull out of that little data needs its

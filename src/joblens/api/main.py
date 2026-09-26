@@ -33,6 +33,9 @@ from joblens.search.embeddings import get_embedder
 log = logging.getLogger(__name__)
 
 MAX_RESUME_BYTES = 2 * 1024 * 1024
+# The same list the UI's uploader allows. Anything else used to be decoded as
+# UTF-8 and sent to the LLM, so a renamed binary cost a model call.
+RESUME_TYPES = (".pdf", ".txt", ".md")
 
 # Module-level so the default is not a call in the signature.
 RESUME_FILE = File(...)
@@ -302,6 +305,12 @@ def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
     LLM calls; as `async def` it ran on the event loop and every other
     request, /health included, waited behind it. A plain `def` runs in the
     threadpool instead."""
+    filename = (file.filename or "").lower()
+    if not filename.endswith(RESUME_TYPES):
+        raise HTTPException(
+            415,
+            f"resume must be one of {', '.join(RESUME_TYPES)}; got {file.filename!r}",
+        )
     settings = get_settings()
     if not settings.llm_enabled:
         raise HTTPException(503, "no LLM backend configured")
@@ -309,10 +318,13 @@ def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
     data = file.file.read()
     if len(data) > MAX_RESUME_BYTES:
         raise HTTPException(413, "resume must be under 2MB")
+    if not filename.endswith(".pdf") and b"\x00" in data:
+        # A text file does not contain NUL bytes; a binary renamed to .txt does.
+        raise HTTPException(422, "that file is not plain text")
     try:
         text = (
             resume_rag.pdf_to_text(data)
-            if (file.filename or "").lower().endswith(".pdf")
+            if filename.endswith(".pdf")
             else data.decode("utf-8", errors="replace")[: resume_rag.MAX_RESUME_CHARS]
         )
     except ValueError as exc:

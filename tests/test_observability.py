@@ -310,3 +310,21 @@ def test_an_explicit_hf_hub_offline_environment_value_wins(monkeypatch):
         assert os.environ["HF_HUB_OFFLINE"] == "0"
     finally:
         get_settings.cache_clear()
+
+
+def test_match_refuses_file_types_the_ui_would_not_upload(client):
+    # Anything not named .pdf used to be decoded as text and sent to the LLM.
+    response = client.post(
+        "/match",
+        files={"file": ("setup.exe", b"MZ\x90\x00binary", "application/octet-stream")},
+    )
+    assert response.status_code == 415
+    assert ".pdf, .txt, .md" in response.json()["detail"]
+
+
+def test_match_refuses_a_binary_renamed_to_txt(client):
+    response = client.post(
+        "/match", files={"file": ("resume.txt", b"MZ\x90\x00binary", "text/plain")}
+    )
+    assert response.status_code == 422
+    assert "not plain text" in response.json()["detail"]

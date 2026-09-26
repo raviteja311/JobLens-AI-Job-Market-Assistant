@@ -1,6 +1,6 @@
 """RAG over the postings: retrieve, ground, cite, and refuse when empty.
 
-The interesting part of this file is `MIN_SCORE` and what happens below it.
+The interesting part of this file is `MIN_SIMILARITY` and what happens below it.
 A RAG system that always answers is easy to build and useless: ask it
 something the corpus cannot answer and it will produce a fluent paragraph
 about the job market in general, which is exactly the output a user cannot
@@ -26,10 +26,22 @@ from joblens.search.embeddings import Embedder
 
 log = logging.getLogger(__name__)
 
-# Below this hybrid RRF score nothing retrieved is worth answering from.
-# Calibrated against the golden set: queries the corpus genuinely cannot
-# answer score under it, real ones score above.
-MIN_SCORE = 0.016
+# Below this cosine similarity between the question and its best-matching
+# posting, nothing retrieved is worth answering from and the model is not
+# called.
+#
+# It is a raw vector similarity on purpose. The gate used to be a hybrid RRF
+# score of 0.016, but a single retriever's rank-1 hit alone scores 1/61 =
+# 0.0164 and vector search always returns neighbours, so every question in
+# data/golden/chat.yaml passed it, "what is the capital of Peru?" included.
+# Measured on that set (466 postings, whole-posting vectors): the 15
+# answerable questions have a best similarity of 0.408 to 0.633; the 5 that
+# must be refused have 0.163 to 0.421. No threshold separates them all
+# (the Elon Musk question sits inside the answerable range), so 0.30 is set
+# to catch the clearly off-topic with a wide margin and never refuse a real
+# question. Near-topic questions the corpus cannot answer are left to the
+# model's own refusal, which the citation check then catches.
+MIN_SIMILARITY = 0.30
 
 NO_ANSWER = (
     "I could not find postings that answer that. This corpus is {n} job "
@@ -90,15 +102,20 @@ _CITATION = re.compile(r"\[(\d+)\]")
 
 
 def collect_sources(conn, question: str, embedder: Embedder | None, limit: int):
+    strategy = get_settings().chunk_strategy
+    best = retrieval.vector_search(
+        conn, question, embedder=embedder, strategy=strategy, limit=1
+    )
+    if not best or best[0].score < MIN_SIMILARITY:
+        return []
     hits = retrieval.search(
         conn,
         question,
         mode="hybrid",
         embedder=embedder,
-        strategy=get_settings().chunk_strategy,
+        strategy=strategy,
         limit=limit,
     )
-    hits = [h for h in hits if h.score >= MIN_SCORE]
     if not hits:
         return []
     rows = conn.execute(

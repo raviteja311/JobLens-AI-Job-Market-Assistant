@@ -50,10 +50,15 @@ def chunk_whole(
     return [Chunk(posting_id, "whole", 0, content[: MAX_CHARS * 2])]
 
 
-# Blank lines are what job boards actually use to separate sections. Headings
-# ("Requirements:", "What you'll do") are a bonus when they exist and absent
-# from most Hacker News comments, so they cannot be the primary split.
-_PARAGRAPH = re.compile(r"\n\s*\n")
+# Line breaks are what job boards actually use to separate sections: RemoteOK
+# descriptions put blank lines between paragraphs, and Hacker News comments
+# arrive with one newline per <p> (362 of 367 have no blank line at all).
+# Headings ("Requirements:", "What you'll do") are a bonus when they exist and
+# absent from most Hacker News comments, so they cannot be the primary split.
+# The split has to happen on the raw description, before `strip_noise`, which
+# collapses every newline into a space; splitting afterwards found nothing to
+# split on and produced fixed 900-character windows that cut words in half.
+_PARAGRAPH = re.compile(r"\n+")
 
 
 def chunk_sections(
@@ -66,15 +71,15 @@ def chunk_sections(
     the caller has no idea which job it came from; the prefix costs a few
     tokens and makes each chunk independently meaningful.
     """
-    body = strip_noise(description)
     header = _header(title, company)
-    if not body:
+    paragraphs = [strip_noise(p) for p in _PARAGRAPH.split(description or "")]
+    paragraphs = [p for p in paragraphs if p]
+    if not paragraphs:
         return [Chunk(posting_id, "section", 0, header)]
 
     chunks: list[str] = []
     current = ""
-    for paragraph in _PARAGRAPH.split(body):
-        paragraph = paragraph.strip()
+    for paragraph in paragraphs:
         if not paragraph:
             continue
         if len(current) + len(paragraph) + 1 <= MAX_CHARS:

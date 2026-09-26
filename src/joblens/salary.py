@@ -29,6 +29,8 @@ CURRENCY_SYMBOLS = {
     "¥": "JPY",
     "C$": "CAD",
     "A$": "AUD",
+    "CA$": "CAD",
+    "AU$": "AUD",
 }
 
 CURRENCY_CODES = {"USD", "GBP", "EUR", "INR", "CAD", "AUD", "JPY", "CHF", "SEK"}
@@ -100,15 +102,20 @@ def _to_number(raw: str) -> float:
 
 
 def _detect_currency(text: str) -> str | None:
-    for symbol in ("C$", "A$"):
+    # Longest prefixes first: "CA$" contains "A$", and "AU$" (as Hacker News
+    # posters write it) contains neither "A$" nor "C$".
+    for symbol in ("AU$", "CA$", "C$", "A$"):
         if symbol in text:
             return CURRENCY_SYMBOLS[symbol]
-    for symbol, code in CURRENCY_SYMBOLS.items():
-        if len(symbol) == 1 and symbol in text:
-            return code
+    # An ISO code beats a bare symbol: "$130,000 CAD" is Canadian dollars, and
+    # "$" alone only says "some dollar". Checking the symbol first stored every
+    # "$... CAD" posting as USD.
     upper = text.upper()
     for code in CURRENCY_CODES:
         if re.search(rf"\b{code}\b", upper):
+            return code
+    for symbol, code in CURRENCY_SYMBOLS.items():
+        if len(symbol) == 1 and symbol in text:
             return code
     return None
 
@@ -153,9 +160,16 @@ def parse_salary(text: str | None) -> Salary:
     range_match = re.search(rf"({NUMBER}){RANGE_SEPARATOR}({NUMBER})", body)
 
     if range_match and not UPPER_BOUND_ONLY.match(body.strip()):
-        low = _to_number(range_match.group(1))
-        high = _to_number(range_match.group(2))
+        low_raw, high_raw = range_match.group(1), range_match.group(2)
+        low = _to_number(low_raw)
+        high = _to_number(high_raw)
 
+        # One unit suffix usually covers both ends of a range: "100-200k" and
+        # "$150 - 210K" mean 100k-200k and 150k-210k. Reading the first number
+        # bare stored those as 100 and 150.
+        if high_raw.strip()[-1] in "kK" and low_raw.strip()[-1] not in "kK":
+            if low < 1000:
+                low *= 1000
         if high < 1000 <= low:
             high *= 1000
         if low > high:

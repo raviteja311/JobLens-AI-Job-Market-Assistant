@@ -76,9 +76,9 @@ Cut to the pre-recorded answer.*
 
 *Ask* `what is the capital of Peru?`*, show the refusal.*
 
-> And when the postings cannot answer, it says so instead of guessing. Half
-> the chat test set is questions like this, and refusal accuracy is gated
-> in CI.
+> And when the postings cannot answer, it says so instead of guessing. A
+> quarter of the chat test set is questions like this, and refusal accuracy
+> is gated in CI.
 
 ## 1:55 - 2:20 Resume match
 

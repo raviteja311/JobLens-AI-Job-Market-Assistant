@@ -17,6 +17,17 @@ from joblens.salary import Salary, parse_salary
         ("₹18,00,000 per annum", Salary(1800000, 1800000, "year", "INR")),
         ("USD 140000", Salary(140000, 140000, "year", "USD")),
         ("$8,000 per month", Salary(8000, 8000, "month", "USD")),
+        # One suffix covers both ends of the range. Real salary_raw strings
+        # that were stored with a floor of 100 and 150.
+        ("100-200k CHF", Salary(100000, 200000, "year", "CHF")),
+        ("$150 - 210K", Salary(150000, 210000, "year", "USD")),
+        # An ISO code after the amount beats the bare "$". Both were stored
+        # as USD.
+        ("$130,000 – $210,000 CAD", Salary(130000, 210000, "year", "CAD")),
+        ("$109K–$136K CAD", Salary(109000, 136000, "year", "CAD")),
+        # "AU$" contains neither "A$" nor "C$"; it was read as a bare "$".
+        ("AU$120–160k", Salary(120000, 160000, "year", "AUD")),
+        ("CA$90,000", Salary(90000, 90000, "year", "CAD")),
     ],
 )
 def test_parses_common_shapes(text, expected):

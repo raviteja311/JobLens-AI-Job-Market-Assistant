@@ -82,7 +82,15 @@ def training_frame(frame: pd.DataFrame) -> pd.DataFrame:
     # An unrecognised currency code is dropped, not assumed to be dollars.
     work["salary_usd"] = midpoint * rate
 
-    usable = work["salary_usd"].between(MIN_ANNUAL_USD, MAX_ANNUAL_USD)
+    # Each stated bound has to be plausible, not only the midpoint: a range
+    # misread as 100 to 200,000 has a believable midpoint and a nonsense floor.
+    low = work["salary_min_year"] * rate
+    high = work["salary_max_year"] * rate
+    usable = (
+        work["salary_usd"].between(MIN_ANNUAL_USD, MAX_ANNUAL_USD)
+        & (low.isna() | (low >= MIN_ANNUAL_USD))
+        & (high.isna() | (high <= MAX_ANNUAL_USD))
+    )
     return work.loc[usable].reset_index(drop=True)
 
 

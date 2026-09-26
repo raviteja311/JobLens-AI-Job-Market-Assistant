@@ -1185,3 +1185,84 @@ The same session also merged the owner's review of the 232 grade-2
 retrieval judgements into `data/golden/retrieval.yaml`: all 232 were kept,
 no grade changed, and each affected query's note now records the review. The
 retrieval numbers are unchanged because no grade moved.
+
+---
+
+## 2026-09-26 - Five defects found by writing the documentation, and what fixing them changed
+
+**How they were found.** Writing a file-by-file technical document meant
+checking every claim in the README against the code and the database. Five
+claims did not hold. Each was fixed with a regression test, and the affected
+measurements were re-run on the same 466-posting corpus.
+
+**1. Salary ranges with one unit suffix.** `salary.parse_salary` read
+"$150 - 210K" as 150 to 210,000: the `k` scaled only the second number.
+The same happened to 24 of the 113 postings that state a salary (21%), all
+from Hacker News, where "$200-250K + equity" is the house style. Two
+"$... CAD" salaries were also stored as USD because the `$` symbol was
+checked before the ISO code, and "AU$" was not recognised at all. Fixed in
+`salary.py`; `transform --source hackernews` re-parsed the stored payloads
+with no network call. `ml/salary_model.training_frame` now also checks each
+bound separately, so a misread range cannot pass on a plausible midpoint.
+
+The salary model was training on those broken midpoints. Re-run, same folds:
+
+| | before the fix | after |
+| --- | ---: | ---: |
+| ridge MAE (USD) | 59,779 | 49,383 |
+| ridge R2 | 0.130 | 0.307 |
+| ridge vs median | +10.5% | +16.8% |
+| text permutation importance | +14,350 (sd 10,659) | +13,580 (sd 8,729) |
+| trends median salary (90 days) | 170,000 | 182,000 |
+
+The decision does not change: $49k average error is not servable, and there
+is still no salary endpoint. What changed is that the model is now clearly
+better than the baseline, and part of the earlier "nothing beats the
+median" result was a parser bug.
+
+**2. The chat relevance gate never fired.** `MIN_SCORE = 0.016` was
+compared with the fused RRF score, and a single retriever's rank-1 hit
+alone scores 1/61 = 0.0164. On the 20 chat golden questions every one
+passed, "what is the capital of Peru?" included. The gate now reads the raw
+cosine similarity of the best-matching posting, `MIN_SIMILARITY = 0.30`,
+chosen from measurements on the same 20 questions: answerable 0.408 to
+0.633, must-refuse 0.163 to 0.421. No threshold separates them all, so 0.30
+catches the clearly off-topic (Peru, 0.163) without refusing any real
+question; near-topic refusals stay with the model and the citation check.
+
+**3. Section chunking did not split on sections.** `chunk_sections` split
+on blank lines after `strip_noise` had turned every newline into a space,
+so "section" chunks were fixed 900-character windows that cut words. The
+split now runs on the raw description, on line breaks (RemoteOK uses blank
+lines, Hacker News one newline per paragraph), and each piece is cleaned
+afterwards. 1,036 chunks became 1,138.
+
+Retrieval, re-embedded and re-scored:
+
+| configuration | recall@10 before | after | nDCG@10 before | after |
+| --- | ---: | ---: | ---: | ---: |
+| vector (section) | 0.590 | 0.536 | 0.581 | 0.547 |
+| hybrid (section) | 0.527 | 0.504 | 0.533 | 0.527 |
+| vector (whole) | 0.653 | 0.653 | 0.612 | 0.612 |
+
+The fix made section chunking do what its name says, and it retrieves
+worse. Fixed windows overlap topics that paragraph chunks keep apart, and a
+query that spans "what the company does" and "what the role needs" matched
+the windows better. `whole` was already the default and is unaffected. The
+fix stays because the old behaviour was an accident that the docs described
+as a design; if windows are better, they should be implemented as windows,
+on purpose. Keyword search moved slightly (recall@10 0.402 to 0.388) with
+no code change, most likely tie order in `ts_rank_cd` after the re-parse
+rewrote the rows.
+
+**4. `/match` accepted any file.** Only the UI restricted uploads; the API
+decoded anything not named `.pdf` as text and sent it to the LLM. It now
+returns 415 for other extensions and 422 for a "text" file containing NUL
+bytes, both before any model call.
+
+**5. Fine-tuning dependencies were undeclared.** `transformers`, `peft`,
+`trl`, `datasets` and `torch` are now an optional `finetune` extra in
+`pyproject.toml`.
+
+**Decision.** All five fixed and tested. The eval gate still passes. The
+section-chunking regression is recorded, not reverted.

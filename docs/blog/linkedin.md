@@ -115,7 +115,7 @@ Eight things 468 real postings taught me that a Kaggle CSV never would:
 3. A parser's skip count is a metric. 34 of 400 Hacker News comments are
    not postings; if that becomes 100, something broke.
 4. Only 23% of postings state a salary. The best of five models is still
-   off by about $60k. There is no salary endpoint, on purpose.
+   off by about $49k. There is no salary endpoint, on purpose.
 5. 37% of locations are unusable. Every aggregate on the dashboard carries
    its coverage next to it.
 6. Two dedup methods found 26 pairs each with only 19 in common. That is

@@ -88,11 +88,11 @@ def source_line(citation: dict) -> str:
 
 
 def show_limited(response: httpx.Response, fallback: str) -> bool:
-    """Render the API's own reason for a 429/422/503. True if it did."""
+    """Render the API's own reason for a 429/413/415/422/503. True if it did."""
     if response.status_code == 429:
         st.warning("Rate limited. Try again in a minute.", icon=":material/timer:")
         return True
-    if response.status_code in (422, 503):
+    if response.status_code in (413, 415, 422, 503):
         detail = response.json().get("detail", fallback)
         if response.status_code == 503 and detail.startswith(
             "ollama backend unreachable"

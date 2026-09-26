@@ -6,6 +6,30 @@ Newest entry at the top.
 
 ---
 
+## 2026-09-26 - Documentation as an audit
+
+**Did:** wrote a full file-by-file technical document of the repository,
+which meant checking every README claim against the code and the database.
+
+**What broke:** five claims did not hold. A salary parser bug had corrupted
+the minimum on 21% of salary-stating postings, and the salary model had been
+learning from it. The chat relevance gate compared a fused rank score with a
+threshold every rank-1 hit clears, so it never fired. Section chunking was
+cutting fixed windows because the text had been cleaned before it was
+split. `/match` accepted any file type. The fine-tuning libraries were not
+declared.
+
+**Decided:** fix all five with regression tests and re-measure. The salary
+model improved (ridge +16.8% over the median, from +10.5%). Section
+chunking got worse once it split on real paragraphs (recall@10 0.590 to
+0.536); the fix stays and the regression is written up, because the old
+behaviour was an accident the docs described as a design.
+
+**Lesson:** documenting a system claim by claim is an audit. Five of the
+defects were in code that had tests; none of the tests checked the claim.
+
+---
+
 ## 2026-09-26 - Closing Phase 2 and 3 leftovers, and a wiped corpus
 
 **Did:** k-means on the embeddings next to TF-IDF (`cluster --compare`),

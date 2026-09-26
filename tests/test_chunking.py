@@ -77,3 +77,17 @@ def test_unknown_strategy_names_the_known_ones():
         assert "whole" in str(exc) and "section" in str(exc)
     else:
         raise AssertionError("expected ValueError")
+
+
+def test_sections_break_at_paragraphs_in_both_board_styles():
+    # RemoteOK separates paragraphs with blank lines, Hacker News with single
+    # newlines. The split used to run after strip_noise had collapsed every
+    # newline, so both became fixed 900-character windows cutting words.
+    first = "Company intro sentence goes here. " * 15  # about 510 characters
+    second = "Requirements: Rust and Postgres experience wanted. " * 10
+    for separator in ("\n\n", "\n"):
+        chunks = chunking.chunk_sections(1, "Role", "Co", first + separator + second)
+        bodies = [c.content.split(". ", 1)[1] for c in chunks]
+        assert len(bodies) == 2
+        assert bodies[0].endswith("goes here.")
+        assert bodies[1].startswith("Requirements:")
