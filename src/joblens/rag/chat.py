@@ -19,6 +19,7 @@ import time
 from dataclasses import dataclass, field
 
 from joblens.cleaning import strip_noise
+from joblens.config import get_settings
 from joblens.llm import client, prompts
 from joblens.search import retrieval
 from joblens.search.embeddings import Embedder
@@ -31,10 +32,21 @@ log = logging.getLogger(__name__)
 MIN_SCORE = 0.016
 
 NO_ANSWER = (
-    "I could not find postings that answer that. This corpus is 465 job "
+    "I could not find postings that answer that. This corpus is {n} job "
     "postings from Hacker News and RemoteOK, so it will not know about a "
     "company or a technology that none of them mention."
 )
+
+
+def no_answer(conn) -> str:
+    """The refusal, with the real corpus size rather than a number that was
+    true the week it was typed."""
+    try:
+        n = conn.execute("select count(*) as n from postings").fetchone()["n"]
+    except Exception:  # noqa: BLE001 - the refusal must not fail on a count
+        n = "a few hundred"
+    return NO_ANSWER.format(n=n)
+
 
 # How much of each posting the model gets to read. Enough for requirements,
 # short enough that eight sources fit in a small local model's context.
@@ -79,7 +91,12 @@ _CITATION = re.compile(r"\[(\d+)\]")
 
 def collect_sources(conn, question: str, embedder: Embedder | None, limit: int):
     hits = retrieval.search(
-        conn, question, mode="hybrid", embedder=embedder, strategy="whole", limit=limit
+        conn,
+        question,
+        mode="hybrid",
+        embedder=embedder,
+        strategy=get_settings().chunk_strategy,
+        limit=limit,
     )
     hits = [h for h in hits if h.score >= MIN_SCORE]
     if not hits:
@@ -118,15 +135,18 @@ def ask(
         # No model call at all. Cheaper, faster, and it cannot hallucinate.
         return ChatAnswer(
             question=question,
-            answer=NO_ANSWER,
+            answer=no_answer(conn),
             sources=[],
             grounded=False,
             took_ms=int((time.perf_counter() - began) * 1000),
         )
 
     prompt = prompts.load("chat_answer", prompt_version)
+    # Fenced and stripped of fence tags: the postings are scraped text and
+    # the question is user text, and neither gets to rewrite the rules.
     rendered = prompt.render(
-        sources="\n\n".join(s.render() for s in sources), question=question
+        sources=prompts.untagged("\n\n".join(s.render() for s in sources)),
+        question=prompts.untagged(question),
     )
     completion = client.complete(
         rendered, feature="chat", prompt=prompt, max_tokens=600

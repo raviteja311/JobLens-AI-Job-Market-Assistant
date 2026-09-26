@@ -90,6 +90,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     LOG_FORMAT=json \
     LOG_LEVEL=INFO
 
+# With the models baked in, startup must never touch huggingface.co: the
+# library otherwise HEADs the Hub for every file even on a warm cache, and
+# a Hub outage or an egress rule turns into a slow or stalled boot.
+ARG BAKE_MODELS=1
+ENV HF_HUB_OFFLINE=${BAKE_MODELS}
+
 # curl for the healthcheck, nothing else. No compiler, no git.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \

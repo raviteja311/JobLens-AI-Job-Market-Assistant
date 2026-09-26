@@ -196,6 +196,7 @@ class _StubEmbedder:
 @pytest.fixture
 def client(monkeypatch):
     monkeypatch.setattr(api, "get_embedder", lambda: _StubEmbedder())
+    monkeypatch.setattr(api, "warm_reranker", lambda: None)
     monkeypatch.setattr(api.db, "connect", _down)
     with TestClient(api.app, raise_server_exceptions=False) as client:
         yield client

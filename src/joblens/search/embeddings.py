@@ -168,7 +168,9 @@ class ApiEmbedder:
         return matrix / np.clip(norms, 1e-9, None)
 
 
-def get_embedder(name: str = "local") -> Embedder:
+def get_embedder(name: str | None = None) -> Embedder:
+    """The embedder by name, or the one EMBEDDER names when no name is given."""
+    name = name or get_settings().embedder
     if name == "local":
         return LocalEmbedder()
     if name == "api":

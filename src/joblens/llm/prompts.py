@@ -13,11 +13,24 @@ JSON examples full of braces, and every brace would have to be doubled.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from string import Template
 
 PROMPTS_DIR = Path(__file__).resolve().parents[3] / "prompts"
+
+# The delimiters the prompts use to fence untrusted text. Anything that looks
+# like one of them inside the data is removed before rendering, so a posting
+# cannot close the fence and continue as if it were the prompt.
+_FENCE_TAGS = re.compile(
+    r"</?\s*(?:sources|question|resume|candidate|posting)\s*>", re.IGNORECASE
+)
+
+
+def untagged(text: object) -> str:
+    """Scraped or uploaded text, made safe to place inside a fence."""
+    return _FENCE_TAGS.sub(" ", str(text or ""))
 
 
 @dataclass(frozen=True)

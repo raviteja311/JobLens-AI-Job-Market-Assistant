@@ -251,3 +251,24 @@ column if not exists`) so an older image runs against a newer schema. Run
   id across runs is broken after the next `pytest`. Key on
   `(source, source_id)` instead, as the golden set and the finetune labels
   now do.
+
+## Exposing the stack beyond localhost
+
+Two defaults exist for a laptop and must change before anyone else can reach
+the ports.
+
+- **The rate limit keys on the client address.** Behind a reverse proxy or a
+  PaaS every request arrives from the proxy, so all users share one budget of
+  ten LLM calls a minute. Set `FORWARDED_ALLOW_IPS` to the proxy's address
+  (or `*` where only the platform can reach the container) so uvicorn takes
+  the client from `X-Forwarded-For`. Leave it unset when the API is reached
+  directly: then anyone could spoof the header and dodge the limit.
+- **Grafana runs as an anonymous admin with the login form disabled.** Set
+  `GRAFANA_ANONYMOUS=false` and a real `GRAFANA_ADMIN_PASSWORD` in `.env`
+  before the monitoring profile is reachable from another machine.
+
+Prompts fence the scraped postings and the uploaded resume in tags and tell
+the model that text inside them is data. A posting that says "ignore your
+rules" still reaches the model; the fence and the rule are what stop it from
+working, and the chat eval (`python -m joblens ab v2 v3`) is how a prompt
+change is checked before it ships.

@@ -17,9 +17,12 @@ import io
 import logging
 import time
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 
 from pydantic import BaseModel, Field, field_validator
 
+from joblens.config import get_settings
 from joblens.llm import client, prompts
 from joblens.ml.skills import extract_skills
 from joblens.search import retrieval
@@ -110,13 +113,38 @@ def extract_profile(resume_text: str, prompt_version: str | None = None):
     """LLM skill extraction, validated. The Phase 2 table is the baseline."""
     prompt = prompts.load("resume_skills", prompt_version)
     result = client.complete_structured(
-        prompt.render(resume=resume_text),
+        prompt.render(resume=prompts.untagged(resume_text)),
         ResumeProfile,
         feature="resume_skills",
         prompt=prompt,
         max_tokens=800,
     )
     return result
+
+
+@lru_cache
+def _configured_extractor():
+    """The extractor SKILL_EXTRACTOR names, loaded once per process.
+
+    None for "rules", which keeps the zero-cost dictionary path exactly as
+    it was. Anything else comes from the Phase 6 registry, so the fine-tuned
+    student or the teacher can be dropped into this slot by config alone.
+    """
+    settings = get_settings()
+    if settings.skill_extractor == "rules":
+        return None
+    from joblens.finetune.extract import get_extractor
+
+    adapter = Path(settings.skill_adapter_path) if settings.skill_adapter_path else None
+    return get_extractor(settings.skill_extractor, adapter)
+
+
+def control_skills(resume_text: str) -> list[str]:
+    """The second opinion on the resume, from whichever extractor is configured."""
+    extractor = _configured_extractor()
+    if extractor is None:
+        return extract_skills(resume_text)
+    return extractor.extract("Resume", resume_text)
 
 
 def match_resume(
@@ -133,14 +161,20 @@ def match_resume(
     profile = extracted.value
     cost = extracted.completion.cost_usd
 
-    # The Phase 2 dictionary runs on the same text. It costs nothing and it is
-    # the control: when the two disagree badly, one of them is wrong and the
-    # logs say which call produced the disagreement.
-    rule_based = extract_skills(resume_text)
+    # A second extractor runs on the same text. By default it is the Phase 2
+    # dictionary, which costs nothing and is the control: when the two
+    # disagree badly, one of them is wrong and the logs say which call
+    # produced the disagreement.
+    rule_based = control_skills(resume_text)
 
     query = " ".join(profile.skills[:15]) or resume_text[:400]
     hits = retrieval.search(
-        conn, query, mode="hybrid", embedder=embedder, strategy="whole", limit=limit
+        conn,
+        query,
+        mode="hybrid",
+        embedder=embedder,
+        strategy=get_settings().chunk_strategy,
+        limit=limit,
     )
     if not hits:
         return MatchReport(
@@ -161,12 +195,12 @@ def match_resume(
     for hit in hits:
         row = details.get(hit.posting_id, {})
         rendered = prompt.render(
-            skills=", ".join(profile.skills) or "none listed",
-            summary=profile.summary or "not stated",
-            title=hit.title,
-            company=hit.company,
-            location=row.get("location") or "not stated",
-            description=(row.get("description") or "")[:2000],
+            skills=prompts.untagged(", ".join(profile.skills) or "none listed"),
+            summary=prompts.untagged(profile.summary or "not stated"),
+            title=prompts.untagged(hit.title),
+            company=prompts.untagged(hit.company),
+            location=prompts.untagged(row.get("location") or "not stated"),
+            description=prompts.untagged((row.get("description") or "")[:2000]),
         )
         try:
             result = client.complete_structured(

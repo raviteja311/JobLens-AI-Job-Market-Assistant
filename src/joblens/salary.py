@@ -49,7 +49,13 @@ PERIOD_PATTERNS = [
 NUMBER = r"\d{1,3}(?:[,\s]\d{2,3})+(?:\.\d+)?\s*[kK]?|\d+(?:\.\d+)?\s*[kK]?"
 RANGE_SEPARATOR = r"\s*(?:--|-|–|—|to|and)\s*[\$£€₹¥]?\s*"
 UPPER_BOUND_ONLY = re.compile(r"\bup\s+to\b", re.I)
-LOWER_BOUND_ONLY = re.compile(r"\b(?:from|starting\s+at|upwards\s+of|\+)\b", re.I)
+# A plus glued to the number ("$100k+") means "and up". A plus with a space
+# before it ("$150,000 + equity") introduces a supplement and the figure is a
+# point value; `\b` cannot express that, which is why the old `\+` branch
+# never matched anything.
+LOWER_BOUND_ONLY = re.compile(
+    r"\b(?:from|starting\s+at|upwards\s+of)\b|(?<=[0-9kK])\+", re.I
+)
 # Strings that mean "we are not telling you".
 NON_NUMERIC_NOISE = re.compile(
     r"\b(?:competitive|negotiable|doe|depending\s+on\s+experience|market\s+rate|tbd)\b",

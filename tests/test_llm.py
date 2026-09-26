@@ -143,9 +143,32 @@ def test_detection_does_not_depend_on_how_the_refusal_is_worded():
         assert generation.is_refusal(cited=set(), sources=5)
 
 
+class _CountConn:
+    def __init__(self, n):
+        self.n = n
+
+    def execute(self, *args):
+        conn = self
+
+        class Cursor:
+            def fetchone(self):
+                return {"n": conn.n}
+
+        return Cursor()
+
+
 def test_no_answer_text_is_honest_about_the_corpus():
-    assert "465" in chat_rag.NO_ANSWER
-    assert "could not find" in chat_rag.NO_ANSWER.lower()
+    text = chat_rag.no_answer(_CountConn(468))
+    assert "468 job postings" in text
+    assert "could not find" in text.lower()
+
+
+def test_no_answer_survives_a_database_error():
+    class Broken:
+        def execute(self, *args):
+            raise RuntimeError("connection lost")
+
+    assert "a few hundred" in chat_rag.no_answer(Broken())
 
 
 def test_v2_adds_the_scope_rule_v1_was_missing():

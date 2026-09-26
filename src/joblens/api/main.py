@@ -27,7 +27,7 @@ from joblens.llm.client import BackendUnavailable
 from joblens.ml import dataset, trends
 from joblens.rag import chat as chat_rag
 from joblens.rag import resume as resume_rag
-from joblens.search import retrieval
+from joblens.search import rerank, retrieval
 from joblens.search.embeddings import get_embedder
 
 log = logging.getLogger(__name__)
@@ -38,6 +38,12 @@ MAX_RESUME_BYTES = 2 * 1024 * 1024
 RESUME_FILE = File(...)
 
 _state: dict = {}
+
+
+def warm_reranker() -> None:
+    """Load the cross-encoder now, so the first reranked search does not."""
+    rerank._load()
+    log.info("cross-encoder %s ready", rerank.CROSS_ENCODER_MODEL)
 
 
 @asynccontextmanager
@@ -51,8 +57,11 @@ async def lifespan(app: FastAPI):
     embedder.encode(["warm up"])  # pay the model load before serving traffic
     _state["embedder"] = embedder
     log.info("embedder %s ready", embedder.name)
+    if settings.rerank_warmup:
+        warm_reranker()
     yield
     _state.clear()
+    _trends_cache.clear()
 
 
 app = FastAPI(
@@ -188,11 +197,13 @@ def metrics() -> Response:
 def search(
     q: str = Query(min_length=2, max_length=300),
     mode: str = Query("hybrid", pattern="^(keyword|vector|hybrid)$"),
-    strategy: str = Query("whole", pattern="^(whole|section)$"),
+    strategy: str | None = Query(None, pattern="^(whole|section)$"),
     limit: int = Query(10, ge=1, le=50),
     rerank: bool = False,
 ) -> schemas.SearchResponse:
     began = time.perf_counter()
+    # No strategy in the query means the configured one, not always "whole".
+    strategy = strategy or get_settings().chunk_strategy
     with db.connect() as conn:
         hits = retrieval.search(
             conn,
@@ -225,11 +236,22 @@ def search(
     )
 
 
+# /trends loads every posting into pandas and takes seconds. The corpus
+# changes once a day, so the summary is kept per window for a few minutes.
+_trends_cache: dict[int, tuple[float, dict]] = {}
+
+
 @app.get("/trends")
 def get_trends(days: int = Query(90, ge=1, le=365)) -> dict:
+    ttl = get_settings().trends_cache_seconds
+    cached = _trends_cache.get(days)
+    if cached and time.monotonic() - cached[0] < ttl:
+        return cached[1]
     with db.connect() as conn:
         frame = dataset.load_postings(conn=conn)
-    return trends.summary(frame, days=days)
+    summary = trends.summary(frame, days=days)
+    _trends_cache[days] = (time.monotonic(), summary)
+    return summary
 
 
 @app.post(

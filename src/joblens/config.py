@@ -65,6 +65,21 @@ class Settings(BaseSettings):
     # window. Small on purpose: this is a personal project with a public URL.
     rate_limit_per_minute: int = 10
 
+    # Which upstream addresses uvicorn trusts to set X-Forwarded-For. The
+    # rate limit keys on the client address, so behind a proxy this must name
+    # the proxy (or "*" on a platform that guarantees one) or every user
+    # shares one bucket. None keeps uvicorn's default of 127.0.0.1 only.
+    forwarded_allow_ips: str | None = None
+
+    # Load the cross-encoder at startup rather than on the first reranked
+    # search, which otherwise pays the model load (20 seconds on this CPU)
+    # inside a user's request. Off is for tests and memory-starved hosts.
+    rerank_warmup: bool = True
+
+    # How long /trends may serve the same summary. The whole postings table
+    # is loaded into pandas to build it, and it changes once a day.
+    trends_cache_seconds: float = 300.0
+
     @property
     def adzuna_enabled(self) -> bool:
         return bool(self.adzuna_app_id and self.adzuna_app_key)

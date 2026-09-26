@@ -3,26 +3,29 @@ name = "joblens"
 version = "0.1.0"
 description = "AI job market assistant"
 requires-python = ">=3.12"
+# Upper bounds stop at the next major version. Without them a fresh install
+# or a CI run picks up whatever shipped that morning, and the first sign of a
+# breaking release is a red build with no code change behind it.
 dependencies = [
-    "httpx >= 0.27",
-    "psycopg[binary] >= 3.2",
-    "pydantic >= 2.7",
-    "pydantic-settings >= 2.2",
+    "httpx >= 0.27, < 1",
+    "psycopg[binary] >= 3.2, < 4",
+    "pydantic >= 2.7, < 3",
+    "pydantic-settings >= 2.2, < 3",
     # Phase 2 onwards. Kept in the base install rather than an extra so that
     # `python -m joblens trends` works on a fresh clone without a second step.
-    "pandas >= 2.2",
-    "scikit-learn >= 1.5",
-    "joblib >= 1.4",
+    "pandas >= 2.2, < 4",
+    "scikit-learn >= 1.5, < 2",
+    "joblib >= 1.4, < 2",
     # Phase 3 onwards.
-    "sentence-transformers >= 3.0",
-    "pyyaml >= 6.0",
-    "fastapi >= 0.115",
-    "uvicorn[standard] >= 0.30",
-    "python-multipart >= 0.0.9",
-    "pypdf >= 5.0",
-    "streamlit >= 1.37",
+    "sentence-transformers >= 3.0, < 7",
+    "pyyaml >= 6.0, < 7",
+    "fastapi >= 0.115, < 1",
+    "uvicorn[standard] >= 0.30, < 1",
+    "python-multipart >= 0.0.9, < 1",
+    "pypdf >= 5.0, < 7",
+    "streamlit >= 1.37, < 2",
     # Phase 7. Request histograms and LLM cost counters on /metrics.
-    "prometheus-client >= 0.20",
+    "prometheus-client >= 0.20, < 1",
 ]
 
 [project.optional-dependencies]

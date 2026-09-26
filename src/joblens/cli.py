@@ -292,6 +292,7 @@ def cmd_serve(args: argparse.Namespace) -> int:
     # log_config=None keeps uvicorn from installing its own handlers over
     # the ones _configure_logging just set up; access_log=False because the
     # request middleware writes a richer line for every request already.
+    settings = get_settings()
     uvicorn.run(
         "joblens.api.main:app",
         host=args.host,
@@ -299,6 +300,11 @@ def cmd_serve(args: argparse.Namespace) -> int:
         reload=args.reload,
         log_config=None,
         access_log=False,
+        # X-Forwarded-For is honoured only from these addresses, so the
+        # rate limit sees the real client behind a trusted proxy and cannot
+        # be spoofed by a header from anyone else.
+        proxy_headers=True,
+        forwarded_allow_ips=settings.forwarded_allow_ips,
     )
     return 0
 
@@ -385,7 +391,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     embed = sub.add_parser("embed", help="build the vector index")
     embed.add_argument("--strategy", action="append", choices=["whole", "section"])
-    embed.add_argument("--embedder", default="local", choices=["local", "api"])
+    embed.add_argument(
+        "--embedder",
+        default=None,
+        choices=["local", "api"],
+        help="default: the EMBEDDER setting",
+    )
     embed.add_argument("--rebuild", action="store_true")
     embed.set_defaults(func=cmd_embed)
 
