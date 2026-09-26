@@ -47,7 +47,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49159942: 1
@@ -100,7 +101,9 @@ queries:
   note: negation, which retrieval does not handle and the eval should show | judged by Claude
     Fable 5.1 on 2026-09-26 from the full posting text of every candidate any retriever surfaced
     in its top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26
-    re-ingest judged by Claude Opus 5.5 from the same pool dump; not human-verified
+    re-ingest judged by Claude Opus 5.5 from the same pool dump; not human-verified | grade-2
+    judgements reviewed by the project owner on 2026-09-26 against the full posting text;
+    all 232 kept
   verified: true
   judgements:
     hackernews:49164461: 0
@@ -157,7 +160,8 @@ queries:
 - id: q06
   query: founding engineer at a seed stage startup
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156711: 0
@@ -183,7 +187,8 @@ queries:
 - id: q07
   query: platform engineering with Kubernetes and Terraform
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156711: 2
@@ -210,7 +215,8 @@ queries:
 - id: q08
   query: backend engineer Rust
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156711: 0
@@ -237,7 +243,9 @@ queries:
 - id: q09
   query: roles in San Francisco that are onsite
   note: location plus modality | judged by Claude Fable 5.1 on 2026-09-26 from the full posting
-    text of every candidate any retriever surfaced in its top 10; not human-verified
+    text of every candidate any retriever surfaced in its top 10; not human-verified | grade-2
+    judgements reviewed by the project owner on 2026-09-26 against the full posting text;
+    all 232 kept
   verified: true
   judgements:
     hackernews:49156730: 2
@@ -263,7 +271,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156711: 0
@@ -330,7 +339,8 @@ queries:
   note: vague phrasing, no keyword overlap, vector should win | judged by Claude Fable 5.1
     on 2026-09-26 from the full posting text of every candidate any retriever surfaced in
     its top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest
-    judged by Claude Opus 5.5 from the same pool dump; not human-verified
+    judged by Claude Opus 5.5 from the same pool dump; not human-verified | grade-2 judgements
+    reviewed by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156711: 1
@@ -394,7 +404,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49158131: 1
@@ -421,7 +432,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156737: 1
@@ -451,7 +463,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156689: 0
@@ -514,7 +527,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49158886: 0
@@ -547,7 +561,8 @@ queries:
 - id: q19
   query: research scientist publishing papers
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49163308: 1
@@ -575,7 +590,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156702: 0
@@ -607,7 +623,8 @@ queries:
 - id: q21
   query: security engineer
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157095: 0
@@ -634,7 +651,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156845: 0
@@ -668,7 +686,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49158703: 0
@@ -701,7 +720,8 @@ queries:
   note: short token that stems badly, a known weak spot | judged by Claude Fable 5.1 on 2026-09-26
     from the full posting text of every candidate any retriever surfaced in its top 10; not
     human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest judged by
-    Claude Opus 5.5 from the same pool dump; not human-verified
+    Claude Opus 5.5 from the same pool dump; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49163458: 1
@@ -732,7 +752,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49159028: 0
@@ -765,7 +786,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156737: 2
@@ -797,7 +819,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49169017: 2
@@ -823,7 +846,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157178: 2
@@ -852,7 +876,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49162509: 2
@@ -885,7 +910,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156724: 2
@@ -915,7 +941,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49165353: 0
@@ -944,7 +971,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49159686: 0
@@ -975,7 +1003,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156716: 0
@@ -1043,7 +1072,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157647: 2
@@ -1068,7 +1098,8 @@ queries:
 - id: q36
   query: infrastructure and site reliability engineering
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156711: 2
@@ -1134,7 +1165,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157129: 0
@@ -1165,7 +1197,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156845: 0
@@ -1260,7 +1293,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156711: 1
@@ -1292,7 +1326,8 @@ queries:
 - id: q43
   query: mobile app development iOS or Android
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157437: 0
@@ -1319,7 +1354,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156730: 0
@@ -1350,7 +1386,8 @@ queries:
   note: the thing Phase 5 is about, and rare in the corpus | judged by Claude Fable 5.1 on
     2026-09-26 from the full posting text of every candidate any retriever surfaced in its
     top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest
-    judged by Claude Opus 5.5 from the same pool dump; not human-verified
+    judged by Claude Opus 5.5 from the same pool dump; not human-verified | grade-2 judgements
+    reviewed by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49163301: 0
@@ -1414,7 +1451,8 @@ queries:
 - id: q47
   query: hardware or embedded systems
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156689: 0
@@ -1507,7 +1545,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157178: 0
@@ -1541,7 +1580,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156689: 0
@@ -1574,7 +1614,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156737: 0
@@ -1603,7 +1644,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156689: 0
@@ -1633,7 +1675,8 @@ queries:
 - id: q54
   query: robotics
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49159686: 1
@@ -1654,7 +1697,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156819: 0
@@ -1686,7 +1730,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49161851: 2
@@ -1719,7 +1764,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49156702: 0
@@ -1751,7 +1797,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157674: 2
@@ -1780,7 +1827,8 @@ queries:
 - id: q59
   query: LangChain or LlamaIndex
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
+    by the project owner on 2026-09-26 against the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49157646: 2
@@ -1807,7 +1855,8 @@ queries:
   note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
     any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
     after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
+    the full posting text; all 232 kept
   verified: true
   judgements:
     hackernews:49160993: 0

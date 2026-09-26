@@ -112,8 +112,8 @@ scored:
   - 1
   - 4
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c02
   question: what skills do the machine learning roles ask for most often?
@@ -203,8 +203,8 @@ scored:
   - 5
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c03
   question: are there any founding engineer roles, and where are they based?
@@ -280,8 +280,8 @@ scored:
   - 5
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c04
   question: what is the capital of Peru?
@@ -333,8 +333,8 @@ scored:
     \ AWS, Terraform) - $135-$155k - (worldwide remote)"
   cited: []
   must_refuse: true
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c05
   question: which of these companies was founded by Elon Musk?
@@ -400,8 +400,8 @@ scored:
     \ shipping production systems."
   cited: []
   must_refuse: true
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c06
   question: are there remote jobs that mention Kubernetes?
@@ -484,8 +484,8 @@ scored:
   - 5
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c07
   question: what salary do the data engineer roles offer?
@@ -557,8 +557,8 @@ scored:
   cited:
   - 1
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c08
   question: which posting pays the highest salary across the whole database?
@@ -625,8 +625,8 @@ scored:
   - 3
   - 5
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c09
   question: which postings offer hourly contract rates, and what are the rates?
@@ -709,8 +709,8 @@ scored:
   cited:
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c10
   question: are there any internships or entry-level engineering roles?
@@ -781,8 +781,8 @@ scored:
     \ who want to work on on building trustworthy and responsible AI systems. Apply: trustible.ai/careers"
   cited: []
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c11
   question: which jobs are based in Germany, and in which cities?
@@ -872,8 +872,8 @@ scored:
   - 4
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c12
   question: which companies say they offer visa sponsorship?
@@ -960,8 +960,8 @@ scored:
   - 3
   - 4
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c13
   question: what does a founding engineer role involve, according to these postings?
@@ -1052,8 +1052,8 @@ scored:
   - 4
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c14
   question: which roles ask for Kubernetes experience?
@@ -1138,8 +1138,8 @@ scored:
   - 1
   - 3
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c15
   question: are there healthcare or clinical software roles?
@@ -1222,8 +1222,8 @@ scored:
   - 5
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c16
   question: of the postings you can see, which pays the most?
@@ -1288,8 +1288,8 @@ scored:
   cited:
   - 1
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c17
   question: which roles involve building RAG systems or LLM agents?
@@ -1380,8 +1380,8 @@ scored:
   - 3
   - 6
   must_refuse: false
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c18
   question: what are the visa requirements for working in Canada?
@@ -1463,8 +1463,8 @@ scored:
   - 1
   - 6
   must_refuse: true
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c19
   question: which of these companies are publicly traded?
@@ -1553,8 +1553,8 @@ scored:
   - 1
   - 2
   must_refuse: true
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''
 - id: c20
   question: which programming language should I learn first to get hired?
@@ -1623,6 +1623,6 @@ scored:
   - 5
   - 6
   must_refuse: true
-  faithfulness: null
-  completeness: null
+  faithfulness: 2
+  completeness: 2
   note: ''

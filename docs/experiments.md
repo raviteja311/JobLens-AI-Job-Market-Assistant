@@ -1142,3 +1142,46 @@ that is quoted.
 3. Any importance or ranking claim on the salary data is scored across
    folds with the spread reported, because 110 rows cannot support a single
    split.
+
+---
+
+## 2026-09-26 - Judge calibration: 20 hand scores, and why they cannot calibrate it
+
+**Hypothesis.** The LLM judge (llama3.1 8B, `prompts/judge_answer`) agrees
+with a person often enough to trust its faithfulness and completeness
+scores, measured as Cohen's kappa of at least 0.4 on 20 hand-scored answers.
+
+**Setup.** 20 real `/chat` answers drafted by `scripts/calibration_draft.py`,
+scored 0-2 on both scales by the project owner, then re-scored by the judge
+with `python -m joblens calibrate`.
+
+**Result.** The owner scored all 20 answers 2 for faithfulness and 2 for
+completeness.
+
+| dimension | agreement | kappa |
+| --- | ---: | ---: |
+| faithfulness | 65.0% | 0.00 |
+| completeness | 95.0% | 0.00 |
+
+The judge scored 7 answers 1 for faithfulness where the owner gave 2, with
+reasons that are checkable against the sources: "[1] does not explicitly
+mention Kubernetes" (remote Kubernetes jobs), "a claim that is not supported
+by the sources" (jobs in Germany), and a partial answer to the Canadian visa
+question from a support-role posting.
+
+Kappa is 0.00 by construction, not by measurement. When every human score is
+the same value, the agreement expected by chance equals the observed
+agreement, whatever the judge does, so the statistic cannot tell a good judge
+from a bad one. `Calibration.trustworthy` stays False and the judge's scores
+remain labelled uncalibrated.
+
+**Decision.** The judge is not calibrated. The seven disagreements are the
+useful output: each is an answer to re-read against its sources. A second
+scoring pass that marks unsupported claims as 0 or 1 would give the sample
+the variation kappa needs; until then no judge score is quoted as more than
+a smoke test.
+
+The same session also merged the owner's review of the 232 grade-2
+retrieval judgements into `data/golden/retrieval.yaml`: all 232 were kept,
+no grade changed, and each affected query's note now records the review. The
+retrieval numbers are unchanged because no grade moved.
