@@ -127,35 +127,46 @@ def test_a_refusal_is_shown_as_one():
     assert any("no sources cited" in c.value for c in at.caption)
 
 
-def test_citations_are_listed_as_links():
+def test_only_cited_postings_are_listed_as_sources():
+    def posting(n):
+        return {
+            "n": n,
+            "posting_id": n,
+            "title": f"Role {n}",
+            "company": "Acme",
+            "url": f"https://example.com/{n}",
+        }
+
     reply = {
         "question": "q",
-        "answer": "Acme [1].",
+        "answer": "Acme is hiring [1] and so is Beta [3].",
         "grounded": True,
         "took_ms": 900,
         "cost_usd": 0.0001,
-        "citations": [
-            {
-                "n": 1,
-                "posting_id": 1,
-                "title": "Rust Dev",
-                "company": "Acme",
-                "url": "https://example.com/1",
-            }
-        ],
+        "citations": [posting(1), posting(2), posting(3)],
     }
     at, _ = _run(CHAT, _post(200, reply), _ask)
-    assert any(
-        m.startswith("1. [Rust Dev](https://example.com/1)") for m in _markdown(at)
-    )
+    md = _markdown(at)
+    sources = md.index("**Sources**")
+    assert md[sources + 1].startswith("1. [Role 1](https://example.com/1)")
+    assert md[sources + 2].startswith("3. [Role 3](https://example.com/3)")
+    # The uncited one is still reachable, after the sources and under a label
+    # that says so. AppTest does not list expanders that carry an icon in
+    # `at.expander`, so the label is checked in the element tree.
+    assert md[sources + 3].startswith("2. [Role 2](https://example.com/2)")
+    assert "Also retrieved, not cited (1)" in repr(at._tree)
 
 
 @pytest.mark.parametrize(
-    "status, expected",
-    [(429, "Rate limited"), (503, "ollama backend unreachable")],
+    "status, detail, expected",
+    [
+        (429, "slow down", "Rate limited"),
+        (503, "ollama backend unreachable: [WinError 10061]", "Start the Ollama app"),
+        (503, "anthropic backend failing: 529", "anthropic backend failing"),
+    ],
 )
-def test_rate_limit_and_backend_down_are_warnings(status, expected):
-    at, _ = _run(CHAT, _post(status, {"detail": "ollama backend unreachable"}), _ask)
+def test_rate_limit_and_backend_down_are_warnings(status, detail, expected):
+    at, _ = _run(CHAT, _post(status, {"detail": detail}), _ask)
     assert any(expected in w.value for w in at.warning)
 
 

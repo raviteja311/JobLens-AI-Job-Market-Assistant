@@ -75,13 +75,38 @@ def snippet_text(snippet: str) -> str:
     return text[:280] + ("..." if len(text) > 280 else "")
 
 
+# Same pattern the backend uses to decide an answer is grounded
+# (joblens.rag.chat._CITATION).
+CITATION = re.compile(r"\[(\d+)\]")
+
+
+def source_line(citation: dict) -> str:
+    return (
+        f"{citation['n']}. [{md(citation['title'])}]({citation['url']}) · "
+        f"{md(citation['company'])}"
+    )
+
+
 def show_limited(response: httpx.Response, fallback: str) -> bool:
     """Render the API's own reason for a 429/422/503. True if it did."""
     if response.status_code == 429:
         st.warning("Rate limited. Try again in a minute.", icon=":material/timer:")
         return True
     if response.status_code in (422, 503):
-        st.warning(response.json().get("detail", fallback), icon=":material/warning:")
+        detail = response.json().get("detail", fallback)
+        if response.status_code == 503 and detail.startswith(
+            "ollama backend unreachable"
+        ):
+            # The API's reason ends in a raw socket error, which says what
+            # broke but not what to do about it.
+            st.warning(
+                "Ollama is not running, so there is no model to answer with. "
+                "Start the Ollama app (or run `ollama serve`), then ask again.",
+                icon=":material/power_off:",
+            )
+            st.caption(detail)
+        else:
+            st.warning(detail, icon=":material/warning:")
         return True
     return False
 
@@ -216,13 +241,23 @@ if chat_tab.open:
                         ":orange-badge[:material/info: no sources cited] The "
                         "postings did not answer this, and the reply says so."
                     )
-                if body["citations"]:
+                # `citations` is every posting the model was given. Only the
+                # ones the answer actually cites are its sources; listing all
+                # six under that heading would claim support it never used.
+                cited_numbers = {int(n) for n in CITATION.findall(body["answer"])}
+                cited = [c for c in body["citations"] if c["n"] in cited_numbers]
+                rest = [c for c in body["citations"] if c["n"] not in cited_numbers]
+                if cited:
                     st.markdown("**Sources**")
-                    for citation in body["citations"]:
-                        st.markdown(
-                            f"{citation['n']}. [{md(citation['title'])}]"
-                            f"({citation['url']}) · {md(citation['company'])}"
-                        )
+                    for citation in cited:
+                        st.markdown(source_line(citation))
+                if rest:
+                    with st.expander(
+                        f"Also retrieved, not cited ({len(rest)})",
+                        icon=":material/manage_search:",
+                    ):
+                        for citation in rest:
+                            st.markdown(source_line(citation))
             st.caption(f"{body['took_ms'] / 1000:.1f} s · ${body['cost_usd']:.5f}")
 
 
