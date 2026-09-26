@@ -316,9 +316,11 @@ golden set that makes all of it measurable.
 **The golden set** is 60 real queries in `data/golden/retrieval.yaml`, all
 judged, graded 0 (no) / 1 (acceptable) / 2 (exactly what was asked). Every
 candidate that any retriever surfaces in its top 10 was graded from the full
-posting text, 1,274 judgements in all, 58 queries with at least one relevant
-posting. The grading was done by Claude reading the postings, not by a
-person, and the file says so on every query; the first 15 had been judged
+posting text, 1,379 judgements in all (1,274 in the first pass and 105 added
+when the corpus was rebuilt), 58 queries with at least one relevant posting.
+The grading was done by Claude reading the postings, and the file says so on
+every query; the owner then reviewed the 232 grade-2 judgements still in the
+corpus and kept all of them; the first 15 had been judged
 from titles and snippets only, and re-grading them from full text moved
 scores enough to be worth the note. Judgements key on `(source, source_id)`
 and never on the primary key, because a re-ingest into an empty database
@@ -738,7 +740,9 @@ Kept current and honest.
 - **The LLM judge is uncalibrated.** See Phase 5.
 - **Hybrid retrieval is worse than vector alone** on these queries. It is kept
   for rare-token queries, which the current golden set under-represents.
-- **No salary prediction.** The models do not beat predicting the median.
+- **No salary prediction.** The best model (ridge) beats predicting the
+  median by 16.8% but is still off by about $49k on an average posting, which
+  is not good enough to serve until there are roughly 500 salaried postings.
 - **Salary figures cover 23% of postings** and those are not a random sample.
 - **Currency conversion uses rates frozen on 2025-09-01.**
 - **Locations are a lookup table, not a geocoder.** 37% of postings have no

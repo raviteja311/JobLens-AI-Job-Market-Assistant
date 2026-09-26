@@ -27,7 +27,8 @@ So the first deliverable of the search phase was not a retriever. It was 60
 real queries in a YAML file, graded on a 0, 1, 2 scale: no, acceptable,
 exactly what was asked. I judged the first 15 by hand from titles and
 snippets. The full set came later: every candidate any retriever put in its
-top 10, 1,274 of them, graded from the full posting text by an LLM (Claude)
+top 10, 1,274 of them (1,379 after a 105-candidate top-up when the corpus
+was rebuilt), graded from the full posting text by an LLM (Claude)
 following the same rubric, with the grader recorded on every query. Two
 queries turned out to have no relevant posting at all, which leaves 58. I
 then reviewed the 232 grade-2 judgements by hand and kept every one; the

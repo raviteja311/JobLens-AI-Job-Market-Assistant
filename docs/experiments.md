@@ -1067,7 +1067,9 @@ for the rare-token case, with the cost now measured on four times the data.
 The gap that remains is that the grades are a model's reading, not a
 person's: the file says so on every query, and a human pass over the 227
 grade-2 judgements is the next step that would make these numbers quotable
-without a caveat.
+without a caveat. *(Update, same day: after the rebuild and top-up the owner
+reviewed the 232 grade-2 judgements still in the corpus and kept all of
+them; see the judge calibration entry below.)*
 
 ---
 

@@ -60,7 +60,9 @@ table came back with the same winner in every column but one.
 **Not done, recorded:** the 20 human scores for the judge (a person has to
 read the answers, which is the point), a human pass over the grade-2
 retrieval judgements, and the API embedding comparison, which needs a paid
-key.
+key. *(Update, same day: the grade-2 review and the 20 judge scores were
+both done later on 2026-09-26; see `docs/experiments.md`. The embedding
+comparison is still open.)*
 
 ---
 
