@@ -115,3 +115,12 @@ def test_saved_model_round_trips(priced, tmp_path):
     predicted = pipeline.predict(priced[["text", *salary_model.CATEGORICAL]].head(3))
     assert len(predicted) == 3
     assert (predicted > 0).all()
+
+
+def test_permutation_importance_names_every_input_column(priced):
+    table = salary_model.column_importance(priced, "ridge", n_repeats=3)
+    assert set(table["column"]) == {"text", *salary_model.CATEGORICAL}
+    assert table["mae_increase_usd"].iloc[0] >= table["mae_increase_usd"].iloc[-1]
+    # The synthetic corpus encodes pay in the title words, so shuffling the
+    # text has to cost the model something.
+    assert table.set_index("column").loc["text", "mae_increase_usd"] > 0

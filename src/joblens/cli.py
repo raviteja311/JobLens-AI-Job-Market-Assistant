@@ -109,6 +109,20 @@ def cmd_train_salary(args: argparse.Namespace) -> int:
     frame = salary_model.training_frame(dataset.load_postings())
     report = salary_model.compare_models(frame, folds=args.folds)
     print(report.as_table())
+    if args.importance:
+        print()
+        print(
+            f"permutation importance, {report.best.name}, "
+            f"held-out rows of every fold:"
+        )
+        table = salary_model.column_importance(
+            frame, report.best.name, folds=report.best.folds
+        )
+        for row in table.itertuples():
+            print(
+                f"  {row.column:<12} {row.mae_increase_usd:>+10,.0f} USD MAE"
+                f"  (sd {row.std_usd:,.0f})"
+            )
     if args.save:
         path = salary_model.fit_and_save(frame, report.best.name)
         log.info("saved %s model to %s", report.best.name, path)
@@ -393,6 +407,11 @@ def build_parser() -> argparse.ArgumentParser:
     train = sub.add_parser("train-salary", help="compare salary regression models")
     train.add_argument("--folds", type=int, default=5)
     train.add_argument("--save", action="store_true", help="persist the best model")
+    train.add_argument(
+        "--importance",
+        action="store_true",
+        help="permutation importance per input column for the best model",
+    )
     train.set_defaults(func=cmd_train_salary)
 
     cluster = sub.add_parser("cluster", help="cluster postings and label the clusters")

@@ -951,3 +951,70 @@ embedding partition did not move, and the TF-IDF one moved further from
 it, which is what happens when the surface-token clusters get better
 rather than fewer. The silhouette did not notice, as before.
 
+---
+
+## 2026-09-26 - Permutation importance: the text is the only column that matters
+
+**Hypothesis.** The earlier salary write-up read the ridge's coefficients
+and found recruiter prose. Coefficients say which term the model leaned on,
+not whether the text mattered at all. Shuffling one input column at a time
+on a held-out split answers the second question for every column, and does
+it for the trees too.
+
+**Setup.** 110 postings with a usable salary (the corpus grew by four since
+the first run). 75/25 split, seed 42, the ridge that won 5-fold CV, ten
+shuffles per column. The number is how much MAE rises when that column is
+scrambled. `python -m joblens train-salary --importance`.
+
+**Result.**
+
+| column | MAE increase (USD) | sd |
+| --- | ---: | ---: |
+| text | +11,762 | 2,101 |
+| region | +2,699 | 2,024 |
+| seniority | +1,695 | 2,063 |
+| source | +244 | 515 |
+| is_remote | -287 | 434 |
+
+Only the text moves the needle, and it moves it by 11.8k on a model whose
+MAE is 59k. Region and seniority are inside one standard deviation of zero.
+`is_remote` going slightly negative means shuffling it made the held-out
+score fractionally better, which is what a column the model should not
+have been given looks like.
+
+The CV table itself shifted with the four new rows: ridge now beats the
+median by 8.2% (59,148 vs 64,426), up from 1.8%. That is the same lesson as
+the first run from the other side: with this few rows, four postings move
+the headline by six points.
+
+**Decision.** Unchanged. The text carries what signal there is, the signal is
+not enough to serve, and the categorical features can be dropped from the
+ridge without loss. No salary endpoint until roughly 500 disclosing
+postings.
+
+**Correction, same day.** The dev database was emptied by a test run and
+rebuilt from the boards (see the rebuild entry below): 109 priced postings,
+one fewer, mostly the same rows. The same command then ranked `source` first
+at +8,552 and text second at +2,767. One ingest reversed the conclusion,
+which means the conclusion was never measured: a 25% split of 110 rows is 28
+postings, and the "sd" column above was the spread across shuffles of those
+28, not across samples of the data. It could not have shown this.
+
+`column_importance` now scores every fold of the same 5-fold split the model
+comparison uses, and the sd is taken over folds and shuffles together. On
+the rebuilt corpus:
+
+| column | MAE increase (USD) | sd |
+| --- | ---: | ---: |
+| text | +14,350 | 10,659 |
+| source | +3,834 | 4,774 |
+| region | +1,425 | 5,467 |
+| seniority | +974 | 2,142 |
+| is_remote | -1,303 | 2,822 |
+
+Text is still first and is the only column more than one sd above zero; the
+headline survives. What changed is the honest size of the error bar: the
+text effect is somewhere between about 4k and 25k, and nothing else is
+distinguishable from zero. The decision stands, now for a reason that holds
+up under a re-ingest.
+

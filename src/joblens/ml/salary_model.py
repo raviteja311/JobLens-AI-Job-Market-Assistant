@@ -30,6 +30,7 @@ from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
 from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.inspection import permutation_importance
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import KFold, cross_validate
 from sklearn.pipeline import Pipeline
@@ -294,6 +295,56 @@ def fit_and_save(frame: pd.DataFrame, name: str, path: Path | None = None) -> Pa
 def load_model(path: Path | None = None) -> tuple[str, Pipeline]:
     payload = joblib.load(path or ARTIFACTS_DIR / "salary_model.joblib")
     return payload["name"], payload["pipeline"]
+
+
+def column_importance(
+    frame: pd.DataFrame, name: str, folds: int = 5, n_repeats: int = 10
+) -> pd.DataFrame:
+    """Permutation importance of each input column, in dollars of MAE.
+
+    `top_features` reads a fitted model's own weights, which answers "which
+    TF-IDF term did the ridge lean on". This answers the question a person
+    asks first: does the text matter at all, or is it the region and the
+    seniority doing the work. Each column is shuffled on held-out rows and
+    the rise in MAE is the column's importance; a column whose shuffle
+    changes nothing was decoration. Model-agnostic, so it works for the
+    trees as well as the ridge, and honest, because it is scored out of
+    sample.
+
+    Scored on every fold of the same K-fold split `compare_models` uses, not
+    on one train/test split. With about 110 priced rows a 25% split holds 28
+    of them, and the first version of this function, run on two corpora an
+    ingest apart, ranked text first by 11.8k and then source first by 8.6k.
+    `std_usd` is the spread across folds and repeats, which is the number
+    that says whether a ranking is real.
+    """
+    dataset.require_rows(frame, 30, "permutation importance")
+    columns = ["text", *CATEGORICAL]
+    X = frame[columns].reset_index(drop=True)
+    y = frame["salary_usd"].to_numpy()
+    folds = max(2, min(folds, len(frame) // 5))
+    splitter = KFold(n_splits=folds, shuffle=True, random_state=RANDOM_STATE)
+    scores = []
+    for train_idx, test_idx in splitter.split(X):
+        pipeline = build_pipeline(name).fit(X.iloc[train_idx], y[train_idx])
+        result = permutation_importance(
+            pipeline,
+            X.iloc[test_idx],
+            y[test_idx],
+            scoring="neg_mean_absolute_error",
+            n_repeats=n_repeats,
+            random_state=RANDOM_STATE,
+        )
+        scores.append(result.importances)
+    stacked = np.hstack(scores)
+    table = pd.DataFrame(
+        {
+            "column": columns,
+            "mae_increase_usd": stacked.mean(axis=1),
+            "std_usd": stacked.std(axis=1),
+        }
+    )
+    return table.sort_values("mae_increase_usd", ascending=False).reset_index(drop=True)
 
 
 def top_features(pipeline: Pipeline, top_k: int = 20) -> pd.DataFrame:

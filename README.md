@@ -249,6 +249,14 @@ looks like. Seven more configurations were tried; all converge towards the
 baseline rather than past it. **There is no salary prediction endpoint** and
 there will not be one until there are roughly 500 salary-disclosing postings.
 
+Permutation importance on the held-out rows of every CV fold
+(`train-salary --importance`) says where what little signal there is lives:
+shuffling the text costs the ridge **14.4k** of MAE (sd 10.7k), and every
+other column is within one standard deviation of nothing. The text is the
+only column that matters, and it is not enough. The first version measured
+this on a single 28-row test split, and one re-ingest flipped its ranking;
+the write-up is in `docs/experiments.md`.
+
 **Clustering.** TF-IDF and k-means, k chosen by silhouette, clusters labelled
 from their own centroid terms. k=10 gives nameable families: `founding
 engineer`, `forward deployed engineer`, `open source / developer`, `ml / ai`,
