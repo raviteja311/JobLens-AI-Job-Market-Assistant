@@ -669,8 +669,12 @@ Kept current and honest.
 - **The chat eval does not run in CI.** A local Llama on a GitHub runner
   takes half an hour, so `/chat` is scored on a schedule and before a
   release, and the deploy gate is retrieval only.
-- **The test suite truncates the development database.** Point `DATABASE_URL`
-  at anything you care about and `pytest` will empty it.
+- **The test suite truncates its database, which is always `<name>_test`.**
+  `tests/conftest.py` renames whatever `DATABASE_URL` points at before any
+  test runs, so the dev corpus is out of reach; create `joblens_test` once
+  (`create database joblens_test template template0`) or the db tests skip.
+  Before this guard existed a test run emptied the dev corpus an hour after
+  the golden set was scored against it.
 - **Phase 6 has one teacher.** Every training label came from llama3.1 8B, so
   the student inherits that model's blind spots and its habit of inventing
   the most common skills. There is no frontier API model in the comparison

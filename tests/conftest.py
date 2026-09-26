@@ -9,11 +9,36 @@ made up, the shape of the data is not.
 
 from __future__ import annotations
 
+import os
 import random
 from datetime import datetime, timedelta, timezone
+from urllib.parse import urlsplit, urlunsplit
 
 import pandas as pd
 import pytest
+
+from joblens.config import Settings, get_settings
+
+
+def disposable_database_url(url: str) -> str:
+    """The same URL with the database renamed to `<name>_test`.
+
+    The db tests truncate every table they touch. They used to do it to
+    whatever DATABASE_URL named, which is the dev corpus when the value comes
+    from .env, and on 2026-09-26 that wiped 468 postings and their vectors an
+    hour after the golden set was scored against them. Now the suite can only
+    ever reach a database whose name says it is disposable; if that database
+    does not exist the db tests skip, which is the safe failure.
+    """
+    parts = urlsplit(url)
+    name = parts.path.lstrip("/")
+    if name.endswith("_test"):
+        return url
+    return urlunsplit(parts._replace(path=f"/{name}_test"))
+
+
+os.environ["DATABASE_URL"] = disposable_database_url(Settings().database_url)
+get_settings.cache_clear()
 
 # family -> (skill sentence, base annual USD)
 FAMILIES = {
