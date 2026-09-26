@@ -54,6 +54,12 @@ def build_index(
     that is actually missing.
     """
     embedder = embedder or get_embedder()
+    # The embedder's usage counters are cumulative across calls, and the CLI
+    # reuses one embedder for both strategies. Snapshot so each strategy
+    # reports its own time and cost rather than everything so far.
+    usage = getattr(embedder, "usage", None)
+    seconds_before = usage.seconds if usage else 0.0
+    usd_before = usage.usd if usage else 0.0
     with db.connect() as conn:
         if rebuild:
             conn.execute(
@@ -121,14 +127,13 @@ def build_index(
                 )
             conn.commit()
 
-    usage = getattr(embedder, "usage", None)
     return IndexResult(
         strategy=strategy,
         model=embedder.name,
         postings=len(rows),
         chunks=len(chunks),
-        seconds=usage.seconds if usage else 0.0,
-        usd=usage.usd if usage else 0.0,
+        seconds=(usage.seconds - seconds_before) if usage else 0.0,
+        usd=(usage.usd - usd_before) if usage else 0.0,
     )
 
 

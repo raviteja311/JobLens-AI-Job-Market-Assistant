@@ -88,8 +88,18 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(line, default=str, ensure_ascii=False)
 
 
+def _coerce_level(level: int | str) -> int:
+    """`LOG_LEVEL=debug` and `LOG_LEVEL=DEBUG` both mean DEBUG; anything
+    unrecognised means INFO rather than a TypeError at startup."""
+    if isinstance(level, int):
+        return level
+    resolved = logging.getLevelName(str(level).strip().upper())
+    return resolved if isinstance(resolved, int) else logging.INFO
+
+
 def configure_logging(level: int | str = logging.INFO, fmt: str = "text") -> None:
     """Install one handler on the root logger. Idempotent."""
+    level = _coerce_level(level)
     root = logging.getLogger()
     for handler in list(root.handlers):
         root.removeHandler(handler)

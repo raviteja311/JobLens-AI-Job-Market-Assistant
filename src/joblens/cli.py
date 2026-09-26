@@ -26,7 +26,7 @@ log = logging.getLogger("joblens")
 
 def _configure_logging(verbose: bool) -> None:
     settings = get_settings()
-    level = logging.DEBUG if verbose else getattr(logging, settings.log_level, "INFO")
+    level = logging.DEBUG if verbose else settings.log_level
     observability.configure_logging(level, settings.log_format)
 
 

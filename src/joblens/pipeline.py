@@ -79,13 +79,19 @@ def ingest_source(source_name: str, limit: int = 200) -> RunResult:
                 updated=result.updated,
                 duplicates=db.count_duplicates(conn),
             )
-        except (
-            Exception
-        ) as exc:  # noqa: BLE001 - recorded, then re-raised to the caller
+        except Exception as exc:  # noqa: BLE001 - recorded, never raised
             result.failed = True
             result.error = str(exc)
-            db.finish_run(conn, run_id, status="failed", error=str(exc))
             log.exception("ingest failed for %s", source_name)
+            # The failure may have been the database itself, which leaves the
+            # connection in an aborted transaction. Roll back first, or the
+            # run-log update is refused too, the row stays 'running' forever,
+            # and the error escapes to take the remaining sources down with it.
+            conn.rollback()
+            try:
+                db.finish_run(conn, run_id, status="failed", error=str(exc))
+            except Exception:  # noqa: BLE001
+                log.exception("could not record the failed run for %s", source_name)
     return result
 
 

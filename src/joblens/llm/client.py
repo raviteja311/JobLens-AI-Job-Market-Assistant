@@ -35,7 +35,8 @@ T = TypeVar("T", bound=BaseModel)
 
 # USD per million tokens, input and output, from the public pricing page.
 PRICING = {
-    "claude-sonnet-5": (3.00, 15.00),
+    "claude-sonnet-5": (2.00, 10.00),
+    "claude-haiku-4-5": (1.00, 5.00),
     "claude-haiku-4-5-20251001": (1.00, 5.00),
 }
 
@@ -220,6 +221,23 @@ def _log_call(
         log.exception("could not log the LLM call")
 
 
+def _raise_if_unavailable(backend, exc: Exception) -> None:
+    """Translate a transport-level failure into BackendUnavailable.
+
+    Shared by `complete` and `complete_structured` so that /chat and /match
+    fail the same way: a 503 with a reason, never a 500 with a stack trace.
+    """
+    if isinstance(exc, httpx.TransportError):
+        raise BackendUnavailable(f"{backend.name} backend unreachable: {exc}") from exc
+    if isinstance(exc, httpx.HTTPStatusError):
+        # Ollama answers 500 when the model fails to load, usually for
+        # lack of memory. That is the backend's problem, not the caller's.
+        raise BackendUnavailable(
+            f"{backend.name} backend returned HTTP "
+            f"{exc.response.status_code}: {exc.response.text[:200]}"
+        ) from exc
+
+
 def complete(
     prompt_text: str,
     *,
@@ -245,17 +263,7 @@ def complete(
             attempts=1,
             error=str(exc),
         )
-        if isinstance(exc, httpx.TransportError):
-            raise BackendUnavailable(
-                f"{backend.name} backend unreachable: {exc}"
-            ) from exc
-        if isinstance(exc, httpx.HTTPStatusError):
-            # Ollama answers 500 when the model fails to load, usually for
-            # lack of memory. That is the backend's problem, not the caller's.
-            raise BackendUnavailable(
-                f"{backend.name} backend returned HTTP "
-                f"{exc.response.status_code}: {exc.response.text[:200]}"
-            ) from exc
+        _raise_if_unavailable(backend, exc)
         raise
     _log_call(
         feature=feature,
@@ -344,6 +352,7 @@ def complete_structured(
                 attempts=attempt,
                 error=str(exc),
             )
+            _raise_if_unavailable(backend, exc)
             raise
 
         result.attempts = attempt

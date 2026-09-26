@@ -9,7 +9,10 @@ in the bronze table after fixing a bug, without touching the network.
 from __future__ import annotations
 
 import logging
+import math
 import time
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any, Protocol
 
 import httpx
@@ -18,6 +21,31 @@ from joblens.config import get_settings
 from joblens.models import Posting, RawItem
 
 log = logging.getLogger(__name__)
+
+# Longest a single backoff may sleep. A Retry-After of 3600 from a board is
+# real, and honouring it inside a cron job with a 30 minute timeout is not.
+MAX_RETRY_DELAY = 60.0
+
+
+def _retry_delay(header: str | None, fallback: float) -> float:
+    """Seconds to wait, from a Retry-After header that may be delta-seconds
+    or an HTTP-date, or absent, or nonsense. Never raises."""
+    if not header:
+        return min(fallback, MAX_RETRY_DELAY)
+    try:
+        seconds = float(header)
+        if math.isfinite(seconds):
+            return min(max(seconds, 0.0), MAX_RETRY_DELAY)
+    except ValueError:
+        pass
+    try:
+        when = parsedate_to_datetime(header)
+    except (TypeError, ValueError):
+        return min(fallback, MAX_RETRY_DELAY)
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=timezone.utc)
+    seconds = (when - datetime.now(timezone.utc)).total_seconds()
+    return min(max(seconds, 0.0), MAX_RETRY_DELAY)
 
 
 class Source(Protocol):
@@ -51,7 +79,7 @@ def get_json(
         try:
             response = http.get(url, params=params)
             if response.status_code == 429 or response.status_code >= 500:
-                retry_after = float(response.headers.get("Retry-After", delay))
+                retry_after = _retry_delay(response.headers.get("Retry-After"), delay)
                 log.warning(
                     "%s returned %s, retrying in %.0fs (attempt %s/%s)",
                     url,

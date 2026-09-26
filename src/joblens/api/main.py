@@ -44,7 +44,9 @@ _state: dict = {}
 async def lifespan(app: FastAPI):
     settings = get_settings()
     observability.ensure_logging(settings.log_level, settings.log_format)
-    observability.register_database_collector(db.connect)
+    # Resolved at scrape time, not bound now: the collector is registered
+    # once per process and must follow db.connect if it is ever replaced.
+    observability.register_database_collector(lambda: db.connect())
     embedder = get_embedder()
     embedder.encode(["warm up"])  # pay the model load before serving traffic
     _state["embedder"] = embedder
@@ -111,12 +113,18 @@ def _observe(request: Request, status: int, seconds: float) -> None:
 # moment there are two, which is fine at this size and is the kind of thing
 # that should be written down rather than discovered.
 _hits: dict[str, deque] = defaultdict(deque)
+# Above this many distinct callers, forget the ones whose window has expired.
+# Without a sweep the dict only ever grows: one entry per IP that ever called.
+_SWEEP_ABOVE = 1000
 
 
 def rate_limit(request: Request) -> None:
     settings = get_settings()
     caller = request.client.host if request.client else "unknown"
     now = time.monotonic()
+    if len(_hits) > _SWEEP_ABOVE:
+        for stale in [k for k, w in _hits.items() if not w or now - w[-1] > 60]:
+            del _hits[stale]
     window = _hits[caller]
     while window and now - window[0] > 60:
         window.popleft()
@@ -267,12 +275,16 @@ def chat(request: schemas.ChatRequest) -> schemas.ChatResponse:
     response_model=schemas.MatchResponse,
     dependencies=[Depends(rate_limit)],
 )
-async def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
+def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
+    """Sync on purpose, like /chat. This handler makes up to nine blocking
+    LLM calls; as `async def` it ran on the event loop and every other
+    request, /health included, waited behind it. A plain `def` runs in the
+    threadpool instead."""
     settings = get_settings()
     if not settings.llm_enabled:
         raise HTTPException(503, "no LLM backend configured")
 
-    data = await file.read()
+    data = file.file.read()
     if len(data) > MAX_RESUME_BYTES:
         raise HTTPException(413, "resume must be under 2MB")
     try:

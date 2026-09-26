@@ -32,8 +32,11 @@ RUN pip install .
 # Bake the two models the API loads. Without this the first request after
 # every cold start waits on a 90MB download from the Hub, and a free tier
 # host with an ephemeral disk pays that on every boot.
+#
+# mkdir first: with BAKE_MODELS=0 nothing else creates /opt/hf, and the
+# runtime stage's `COPY --from=builder /opt/hf` fails on a missing path.
 ARG BAKE_MODELS=1
-RUN if [ "$BAKE_MODELS" = "1" ]; then \
+RUN mkdir -p /opt/hf && if [ "$BAKE_MODELS" = "1" ]; then \
         python -c "from sentence_transformers import CrossEncoder, SentenceTransformer; \
 SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'); \
 CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"; \

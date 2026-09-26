@@ -118,3 +118,23 @@ def test_transform_reparses_bronze_without_the_network(clean_db, offline_remoteo
 def test_unknown_source_is_rejected():
     with pytest.raises(ValueError, match="unknown source"):
         pipeline.ingest_source("linkedin")
+
+
+def test_a_database_error_mid_run_is_recorded_and_does_not_raise(
+    clean_db, offline_remoteok, monkeypatch
+):
+    # A failing statement leaves psycopg in an aborted transaction. Without a
+    # rollback the run-log update is refused too, the row stays 'running'
+    # forever, and the exception escapes to abort the remaining sources.
+    def broken_upsert(conn, postings):
+        conn.execute("select * from this_table_does_not_exist")
+        return (0, 0)
+
+    monkeypatch.setattr(pipeline.db, "upsert_postings", broken_upsert)
+    result = pipeline.ingest_source("remoteok", limit=10)
+    assert result.failed
+    assert "this_table_does_not_exist" in result.error
+    with db.connect() as conn:
+        row = conn.execute("select status, error from ingestion_runs").fetchone()
+    assert row["status"] == "failed"
+    assert "this_table_does_not_exist" in row["error"]

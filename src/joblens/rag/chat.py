@@ -50,9 +50,13 @@ class Source:
     url: str
     location: str | None
     text: str
+    is_remote: bool = False
 
     def render(self) -> str:
-        where = self.location or ("remote" if not self.location else "")
+        # Only say "remote" when the posting says so. A missing location is
+        # "not stated", and telling the model otherwise is a hallucination
+        # we would be feeding it ourselves.
+        where = self.location or ("remote" if self.is_remote else "")
         head = f"[{self.n}] {self.title} at {self.company}"
         if where:
             head += f" ({where})"
@@ -94,6 +98,7 @@ def collect_sources(conn, question: str, embedder: Embedder | None, limit: int):
             url=hit.url,
             location=hit.location,
             text=bodies.get(hit.posting_id, "")[:SOURCE_CHARS],
+            is_remote=hit.is_remote,
         )
         for i, hit in enumerate(hits, start=1)
     ]

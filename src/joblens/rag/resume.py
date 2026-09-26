@@ -84,9 +84,19 @@ class MatchReport:
 def pdf_to_text(data: bytes) -> str:
     """Extract text from a PDF, or explain why there is none."""
     from pypdf import PdfReader
+    from pypdf.errors import PyPdfError
 
-    reader = PdfReader(io.BytesIO(data))
-    text = "\n".join((page.extract_text() or "") for page in reader.pages)
+    try:
+        reader = PdfReader(io.BytesIO(data))
+        if reader.is_encrypted:
+            raise ValueError(
+                "that PDF is password protected. Remove the password and try again."
+            )
+        text = "\n".join((page.extract_text() or "") for page in reader.pages)
+    except PyPdfError as exc:
+        # A truncated download, a .docx renamed to .pdf, or a file that is not
+        # a PDF at all. The caller's mistake, so it must not be a 500.
+        raise ValueError(f"could not read that PDF: {exc}") from exc
     text = text.strip()
     if not text:
         raise ValueError(
