@@ -119,8 +119,24 @@ def cmd_cluster(args: argparse.Namespace) -> int:
     from joblens.ml import clustering, dataset
 
     frame = dataset.load_postings()
-    result = clustering.cluster_postings(frame, k=args.k)
-    print(result.as_table())
+    if args.on == "tfidf" and not args.compare:
+        print(clustering.cluster_postings(frame, k=args.k).as_table())
+        return 0
+
+    with db.connect() as conn:
+        frame, vectors = dataset.load_embeddings(frame, conn)
+    if not len(frame):
+        log.error("no embeddings in the index. Run `python -m joblens embed` first.")
+        return 1
+    if args.compare:
+        comparison = clustering.compare_representations(frame, vectors, k=args.k)
+        print(comparison.as_table())
+        print()
+        print(comparison.tfidf.as_table())
+        print()
+        print(comparison.embedding.as_table())
+        return 0
+    print(clustering.cluster_postings(frame, k=args.k, vectors=vectors).as_table())
     return 0
 
 
@@ -382,6 +398,17 @@ def build_parser() -> argparse.ArgumentParser:
     cluster = sub.add_parser("cluster", help="cluster postings and label the clusters")
     cluster.add_argument(
         "--k", type=int, default=None, help="default: pick by silhouette"
+    )
+    cluster.add_argument(
+        "--on",
+        default="tfidf",
+        choices=["tfidf", "embedding"],
+        help="the space k-means runs in. Labels always come from TF-IDF.",
+    )
+    cluster.add_argument(
+        "--compare",
+        action="store_true",
+        help="run both representations and report their agreement",
     )
     cluster.set_defaults(func=cmd_cluster)
 

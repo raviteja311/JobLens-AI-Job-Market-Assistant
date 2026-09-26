@@ -263,6 +263,18 @@ second cluster meaning "uses Ashby". Stripping it made the clusters obviously
 better and the silhouette score slightly **worse**, which is the argument for
 building the golden dataset before trusting any unsupervised metric.
 
+The same k-means on the Phase 3 embeddings (`cluster --compare`) picks k=4
+and agrees with the TF-IDF partition at an adjusted Rand index of **0.064**,
+barely above chance (0.066, with k=6, on the rebuilt corpus). Reading the clusters explains it: TF-IDF splits on
+surface tokens and gave nine groups including `ai / agents`, `ml / models`
+and `uk / latam`; embeddings settle on four broad families and find the
+healthcare group with 57 postings where TF-IDF found 10. The comparison
+also exposed a cleaning bug: 18 Hacker News postings with a URL in the
+title had formed an `https / www` cluster, so `posting_text` now strips
+noise from titles as well as descriptions. TF-IDF stays on the dashboard
+because nine nameable groups beat four vague ones; the embedding run is the
+sanity check.
+
 **Trends.** Top skills over time, demand by region, remote share, median
 advertised salary by skill. Every share is reported against the postings that
 could have answered the question: 65% are remote, but only 23% state a salary.

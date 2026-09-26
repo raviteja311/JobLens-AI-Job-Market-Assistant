@@ -82,3 +82,14 @@ def test_encoder_columns_line_up_with_the_taxonomy():
     assert matrix.shape == (2, len(skills.SKILLS))
     assert matrix[0][names.index("skill:docker")] == 1.0
     assert matrix[1].sum() == 0.0
+
+
+def test_posting_text_strips_urls_from_the_title_too():
+    # Hacker News posters sometimes put their URL where the company goes, and
+    # 18 of those were enough to make `https / www` a cluster of its own.
+    frame = pd.DataFrame(
+        {"title": ["https://www.acme.io | ML Engineer"], "description": ["PyTorch"]}
+    )
+    text = skills.posting_text(frame).iloc[0]
+    assert "https" not in text and "www" not in text
+    assert "ML Engineer" in text

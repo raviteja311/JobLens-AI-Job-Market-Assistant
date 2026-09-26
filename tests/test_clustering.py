@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -60,3 +61,46 @@ def test_table_renders(corpus):
     table = clustering.cluster_postings(corpus, k=3).as_table()
     assert "| cluster | postings | label |" in table
     assert "silhouette" in table
+
+
+def _family_vectors(corpus):
+    """A fake embedding that encodes the job family, so the embedding run has
+    structure to find without loading a model."""
+    families = sorted(
+        corpus["title"].str.replace(r"^(Junior|Senior) ", "", regex=True).unique()
+    )
+    rng = np.random.default_rng(0)
+    centres = rng.normal(size=(len(families), 16))
+    rows = []
+    for title in corpus["title"]:
+        family = title.replace("Junior ", "").replace("Senior ", "")
+        rows.append(centres[families.index(family)] + rng.normal(scale=0.05, size=16))
+    return np.asarray(rows)
+
+
+def test_embedding_clustering_finds_the_families_and_still_names_them(corpus):
+    result = clustering.cluster_postings(corpus, k=4, vectors=_family_vectors(corpus))
+    assert result.representation == "embedding"
+    assert result.k == 4
+    # Every cluster is one family, so every cluster is pure.
+    for cluster in range(4):
+        titles = corpus.loc[result.labels == cluster, "title"]
+        families = titles.str.replace(r"^(Junior|Senior) ", "", regex=True).unique()
+        assert len(families) == 1
+    # And the labels still come from words, not vector indices.
+    assert all(isinstance(term, str) for term in result.summary["top_terms"].iloc[0])
+
+
+def test_vectors_must_line_up_with_the_frame(corpus):
+    with pytest.raises(ValueError, match="vectors for"):
+        clustering.cluster_postings(corpus, k=3, vectors=np.zeros((5, 16)))
+
+
+def test_comparison_reports_agreement_between_the_two_spaces(corpus):
+    comparison = clustering.compare_representations(
+        corpus, _family_vectors(corpus), k=4
+    )
+    assert -1.0 <= comparison.agreement <= 1.0
+    table = comparison.as_table()
+    assert "| tfidf |" in table and "| embedding |" in table
+    assert "adjusted Rand index" in table

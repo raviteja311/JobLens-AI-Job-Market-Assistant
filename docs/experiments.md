@@ -892,3 +892,62 @@ and saying so is cheaper than guessing.
 Qwen2.5-1.5B or the 3B the project plan specifies. This machine has 7.3GB of
 RAM; a 1.5B model in fp32 is about 6GB of weights before optimiser state and
 activations. Not reachable here, and recorded rather than quietly skipped.
+
+---
+
+## 2026-09-26 - Clustering on embeddings vs TF-IDF: they disagree, and both are right
+
+**Hypothesis.** k-means on the Phase 3 embeddings groups postings by what
+the job is rather than by which words the recruiter used, so it should
+find the same families as TF-IDF with less noise and higher agreement
+between the two.
+
+**Setup.** 468 postings, every one with a whole-posting all-MiniLM-L6-v2
+vector from the Phase 3 index. Same k-means, same seed, k chosen by
+silhouette over 3..10 in each space. Clusters found in embedding space are
+still labelled from TF-IDF, by averaging the TF-IDF rows of their members,
+so both runs are named by the same vocabulary. Agreement is the adjusted
+Rand index between the two partitions: 1.0 is identical, 0.0 is chance.
+`python -m joblens cluster --compare`.
+
+**Result.**
+
+| representation | k | silhouette | clusters (postings) |
+| --- | ---: | ---: | --- |
+| tfidf | 8 | 0.008 | ai / infrastructure (95), role / experience (92), software engineer / senior (86), product / remote (80), ai / founding (65), francisco / san (19), https / www (18), healthcare / data platform (13) |
+| embedding | 4 | 0.024 | software / senior (164), ai / software (146), role / team (101), health / clinical (57) |
+
+Adjusted Rand index **0.104**. The two partitions barely agree, and reading
+them says why. TF-IDF splits on surface tokens: a `francisco / san` cluster
+that is a location, not a job, and an `https / www` cluster of 18 postings
+whose title or company field is a bare URL, which `strip_noise` never sees
+because it only runs on descriptions. Embeddings ignore both and settle on
+four broad families, one of which, `health / clinical` with 57 postings, is
+the same healthcare group TF-IDF found with 13. The embedding version is the
+one a person would draw; the TF-IDF version is the one with more names.
+
+The silhouettes are not comparable. Each is measured in its own geometry,
+and 0.024 in 384 dense dimensions says nothing about 0.008 in 13,000 sparse
+ones. The Rand index is the only number in the table that compares them.
+
+**Decision.** Keep TF-IDF for the dashboard: eight nameable groups beat four
+vague ones when the label is the product. Use the embedding partition as
+the sanity check it turned out to be, and fix the thing it exposed: run
+`strip_noise` over the title as well as the description in `posting_text`,
+so URL fragments stop qualifying as vocabulary. Applied at feature time,
+like the description, so the stored rows stay as the boards wrote them.
+
+**After the fix.** Same run with titles stripped:
+
+| representation | k | silhouette | clusters (postings) |
+| --- | ---: | ---: | --- |
+| tfidf | 9 | 0.007 | ai / software (117), team / product (99), experience / role (76), software engineer (55), ai / agents (51), ml / models (29), uk / latam (18), remote europe / senior (13), net / healthcare (10) |
+| embedding | 4 | 0.024 | unchanged |
+
+The `https / www` cluster is gone and `ai / agents` and `ml / models`
+appeared in its place, which is the first time k-means has separated the
+agent-building roles from the rest. The Rand index fell to 0.064: the
+embedding partition did not move, and the TF-IDF one moved further from
+it, which is what happens when the surface-token clusters get better
+rather than fewer. The silhouette did not notice, as before.
+

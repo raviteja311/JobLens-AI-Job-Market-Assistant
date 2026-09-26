@@ -7,9 +7,11 @@ is what the tests use: none of the modelling code needs a database.
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Iterable
 
+import numpy as np
 import pandas as pd
 
 from joblens import db
@@ -124,6 +126,47 @@ def seniority(title: str | None) -> str:
     if _SENIOR.search(text):
         return "senior"
     return "mid"
+
+
+def load_embeddings(
+    frame: pd.DataFrame,
+    conn=None,
+    strategy: str = "whole",
+    model: str = "all-MiniLM-L6-v2",
+) -> tuple[pd.DataFrame, np.ndarray]:
+    """The stored vector for each posting in `frame`, from the Phase 3 index.
+
+    Returns the subset of the frame that has a vector, in the same order as
+    the matrix rows. Postings that were never embedded are dropped rather
+    than zero-filled, because a zero vector is a real point to k-means.
+    """
+    if frame.empty:
+        return frame, np.empty((0, 0), dtype=np.float32)
+    if conn is None:
+        with db.connect() as connection:
+            return load_embeddings(frame, connection, strategy, model)
+    rows = conn.execute(
+        """
+        select posting_id, embedding::text as embedding
+          from posting_chunks
+         where strategy = %s and model = %s and chunk_index = 0
+           and posting_id = any(%s)
+        """,
+        (strategy, model, [int(i) for i in frame["id"]]),
+    ).fetchall()
+    vectors = {
+        # pgvector's text form is a JSON array.
+        r["posting_id"]: np.asarray(json.loads(r["embedding"]), dtype=np.float32)
+        for r in rows
+    }
+    keep = frame["id"].map(lambda i: int(i) in vectors)
+    subset = frame.loc[keep].reset_index(drop=True)
+    matrix = (
+        np.vstack([vectors[int(i)] for i in subset["id"]])
+        if len(subset)
+        else np.empty((0, 0), dtype=np.float32)
+    )
+    return subset, matrix
 
 
 def require_rows(frame: pd.DataFrame, minimum: int, what: str) -> None:

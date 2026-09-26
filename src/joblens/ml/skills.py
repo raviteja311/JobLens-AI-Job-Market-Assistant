@@ -165,9 +165,12 @@ def posting_text(frame: pd.DataFrame) -> pd.Series:
 
     The description goes through `strip_noise` first. Skip that and the models
     spend their capacity on URLs and per-board boilerplate; see the clustering
-    entry in docs/experiments.md for what that looked like.
+    entry in docs/experiments.md for what that looked like. The title gets the
+    same treatment: Hacker News posters sometimes put their URL where the
+    company name goes, and 18 of those were enough to make `https / www` a
+    cluster of its own.
     """
-    title = frame["title"].fillna("").astype(str)
+    title = frame["title"].fillna("").astype(str).map(strip_noise)
     if "description" in frame.columns:
         description = frame["description"].fillna("").astype(str).map(strip_noise)
     else:

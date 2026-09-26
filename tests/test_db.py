@@ -133,3 +133,37 @@ def test_database_url_is_not_a_production_looking_url():
     # real database by accident.
     url = os.environ.get("DATABASE_URL", "")
     assert "amazonaws" not in url and "neon.tech" not in url
+
+
+def _store_vector(conn, posting_id: int, value: float) -> None:
+    vector = "[" + ",".join([str(value)] * 384) + "]"
+    conn.execute(
+        """
+        insert into posting_chunks
+            (posting_id, strategy, chunk_index, content, model, embedding)
+        values (%s, 'whole', 0, 'text', 'all-MiniLM-L6-v2', %s::vector)
+        """,
+        (posting_id, vector),
+    )
+
+
+def test_load_embeddings_aligns_rows_and_drops_the_unembedded(conn):
+    from joblens.ml import dataset
+
+    db.upsert_postings(conn, [make_posting(str(i)) for i in range(3)])
+    ids = [
+        r["id"]
+        for r in conn.execute("select id from postings order by source_id").fetchall()
+    ]
+    # Store them out of order and skip the middle one.
+    _store_vector(conn, ids[2], 0.5)
+    _store_vector(conn, ids[0], 0.25)
+    conn.commit()
+
+    frame = dataset.load_postings(conn=conn)
+    subset, vectors = dataset.load_embeddings(frame, conn)
+    assert len(subset) == 2 and vectors.shape == (2, 384)
+    assert ids[1] not in set(subset["id"])
+    for row, posting_id in enumerate(subset["id"]):
+        expected = 0.25 if posting_id == ids[0] else 0.5
+        assert vectors[row, 0] == pytest.approx(expected)
