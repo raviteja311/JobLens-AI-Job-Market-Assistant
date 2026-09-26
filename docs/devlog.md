@@ -6,6 +6,40 @@ Newest entry at the top.
 
 ---
 
+## 2026-09-26 - Closing Phase 2 and 3 leftovers, and a wiped corpus
+
+**Did:** k-means on the embeddings next to TF-IDF (`cluster --compare`),
+permutation importance for the salary model (`train-salary --importance`),
+the golden set grown from 15 to 58 judged queries graded from full posting
+text, and a calibration file of 20 real `/chat` answers drafted for scoring.
+
+**What broke:** a test run emptied the dev database fifteen minutes after
+the 58-query eval was recorded. The suite truncates whatever `DATABASE_URL`
+names and `.env` names the dev corpus; the README even listed it as a known
+limitation. A limitation you document and do not fix is a scheduled
+incident. `conftest.py` now forces every test onto `<name>_test`.
+
+**What broke, second:** the rebuild flipped the salary importance ranking,
+text first to source first. It was measured on one 28-row split, so the
+ranking was never real. Now scored across all five CV folds; text is still
+first, with an error bar that says how little that means.
+
+**What broke, third:** `calibrate` would have crashed on the drafted file.
+It ran the LLM judge on each entry before reading the human score, found
+`None`, and died, after spending a judge call. Unscored entries are now
+drafts and are skipped, and a down backend is one log line.
+
+**Decided:** grade only the 105 new candidates after the rebuild instead of
+the whole pool, and keep both graders in each query's note. The retrieval
+table came back with the same winner in every column but one.
+
+**Not done, recorded:** the 20 human scores for the judge (a person has to
+read the answers, which is the point), a human pass over the grade-2
+retrieval judgements, and the API embedding comparison, which needs a paid
+key.
+
+---
+
 ## Phase 8 - packaging, as far as a repo can package itself
 
 **Did:** rewrote the README top as a landing page (pitch, demo, live URL

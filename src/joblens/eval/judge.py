@@ -111,12 +111,35 @@ class Calibration:
         )
 
 
+def _has_scores(entry: dict) -> bool:
+    return all(
+        isinstance(entry.get(k), int) and not isinstance(entry.get(k), bool)
+        for k in ("faithfulness", "completeness")
+    )
+
+
 def load_human_scores(path: Path | None = None) -> list[dict]:
+    """Entries a reviewer has finished scoring.
+
+    `scripts/calibration_draft.py` writes the file with both scores empty, and
+    a reviewer fills them in over time. An entry with either score missing is
+    left out rather than read as a zero: half-scored is not scored, and
+    running the judge on it would spend a call to compare against nothing.
+    """
     path = path or JUDGEMENTS_FILE
     if not path.exists():
         return []
     payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    return payload.get("scored", [])
+    return [e for e in payload.get("scored", []) or [] if _has_scores(e)]
+
+
+def pending_count(path: Path | None = None) -> int:
+    """Drafted answers still waiting for a reviewer's scores."""
+    path = path or JUDGEMENTS_FILE
+    if not path.exists():
+        return 0
+    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return sum(1 for e in payload.get("scored", []) or [] if not _has_scores(e))
 
 
 def calibrate(scored: list[dict] | None = None) -> Calibration:

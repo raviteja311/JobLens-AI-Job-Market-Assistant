@@ -55,17 +55,19 @@ Two tables carry the project. Both are reproduced with `make eval` and
 `make distil-eval`; the full write-ups, including the runs that failed, are
 in [docs/experiments.md](docs/experiments.md).
 
-**Retrieval**, 15 judged queries over 465 postings. Hybrid lost to plain
-vector search, which was not the expected result; reranking was the real
-gain.
+**Retrieval**, 58 judged queries over 466 postings, 1,379 graded
+candidates. Plain vector search over whole postings wins on nDCG and
+recall; the cross-encoder reranker wins on MRR at 130x the latency; hybrid
+trails both, which was not the expected result. The ordering held when the
+corpus was rebuilt from scratch and 7% of the judged postings expired.
 
 | configuration | recall@5 | recall@10 | MRR | nDCG@10 | ms/query |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.299 | 0.358 | 0.406 | 0.328 | 25 |
-| vector (whole) | 0.569 | 0.692 | 0.773 | 0.598 | 34 |
-| vector (section) | 0.491 | 0.813 | 0.734 | 0.684 | 35 |
-| hybrid (whole) | 0.438 | 0.666 | 0.761 | 0.620 | 94 |
-| hybrid + rerank | 0.497 | 0.725 | **0.900** | **0.692** | 3145 |
+| keyword | 0.224 | 0.402 | 0.537 | 0.390 | 10 |
+| vector (whole) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
+| vector (section) | 0.347 | 0.590 | 0.734 | 0.581 | 17 |
+| hybrid (whole) | 0.366 | 0.548 | 0.781 | 0.555 | 46 |
+| hybrid + rerank | 0.355 | 0.553 | **0.794** | 0.577 | 1956 |
 
 **Skill extraction**, 60 blind-judged postings with 138 gold mentions. The
 fine-tuned student recovered from a 0.000 collapse to 0.485, and the 80-line
@@ -86,7 +88,7 @@ scores uncalibrated and labelled as such.
 ## Status
 
 Phases 0 to 7 of the [12-week plan](docs/devlog.md) are complete, Phase 7
-locally. 468 postings from 2 live sources, hybrid search over pgvector,
+locally. 466 postings from 2 live sources, hybrid search over pgvector,
 grounded chat and resume matching on a local LLM, an eval suite that fails
 CI on a regression, a distillation experiment whose headline is that a regex
 won, and a containerised, monitored stack with a runbook. Phase 8 is this
@@ -292,25 +294,44 @@ could have answered the question: 65% are remote, but only 23% state a salary.
 pgvector, a local MiniLM, hybrid retrieval, a cross-encoder reranker, and the
 golden set that makes all of it measurable.
 
-**The golden set** is 60 real queries in `data/golden/retrieval.yaml`, of
-which 15 are judged, graded 0 (no) / 1 (acceptable) / 2 (exactly what was
-asked). Judgements key on `(source, source_id)` and never on the primary key,
-because a re-ingest into an empty database renumbers every posting and would
-silently re-point every judgement at a different job. Candidates come from a
-pool of all three retrievers, not from the system under test, so a retriever
-cannot score well against its own blind spots.
+**The golden set** is 60 real queries in `data/golden/retrieval.yaml`, all
+judged, graded 0 (no) / 1 (acceptable) / 2 (exactly what was asked). Every
+candidate that any retriever surfaces in its top 10 was graded from the full
+posting text, 1,274 judgements in all, 58 queries with at least one relevant
+posting. The grading was done by Claude reading the postings, not by a
+person, and the file says so on every query; the first 15 had been judged
+from titles and snippets only, and re-grading them from full text moved
+scores enough to be worth the note. Judgements key on `(source, source_id)`
+and never on the primary key, because a re-ingest into an empty database
+renumbers every posting and would silently re-point every judgement at a
+different job. Candidates come from a pool of all three retrievers, not from
+the system under test, so a retriever cannot score well against its own
+blind spots. `scripts/golden_pool.py` dumps the pool for grading and
+`scripts/golden_apply.py` merges grades back with their provenance.
 
-**Retrieval comparison**, 15 judged queries, 465 postings, models warmed
+**Retrieval comparison**, 58 judged queries, 466 postings, models warmed
 before timing:
 
 | configuration | recall@5 | recall@10 | mrr | ndcg@10 | ms/query |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.299 | 0.358 | 0.406 | 0.328 | 25 |
-| vector (whole) | 0.569 | 0.692 | 0.773 | 0.598 | 34 |
-| vector (section) | 0.491 | 0.813 | 0.734 | 0.684 | 35 |
-| hybrid (whole) | 0.438 | 0.666 | 0.761 | 0.620 | 94 |
-| hybrid (section) | 0.430 | 0.646 | 0.736 | 0.600 | 93 |
-| hybrid + rerank | 0.497 | 0.725 | **0.900** | **0.692** | 3145 |
+| keyword | 0.224 | 0.402 | 0.537 | 0.390 | 10 |
+| vector (whole) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
+| vector (section) | 0.347 | 0.590 | 0.734 | 0.581 | 17 |
+| hybrid (whole) | 0.366 | 0.548 | 0.781 | 0.555 | 46 |
+| hybrid (section) | 0.319 | 0.527 | 0.729 | 0.533 | 47 |
+| hybrid + rerank | 0.355 | 0.553 | **0.794** | 0.577 | 1956 |
+
+These are from the rebuilt corpus. The first 58-query run, on the corpus a
+test run later emptied, had the same winners on every column except
+recall@5, which moved from the reranker (0.373) to whole-posting vector
+search (0.374); `docs/experiments.md` has
+both tables and the 105-candidate top-up that the rebuild needed.
+
+On the original 15 snippet-judged queries the same table had the reranker
+winning everything with MRR 0.900 and nDCG 0.692. Four times the queries and
+full-text grades brought every number down and reordered the top: the
+15-query numbers were optimistic, which is the usual direction for a small
+set graded from the retriever's own snippets.
 
 **Hybrid lost to plain vector search**, which was not the expected result.
 Keyword retrieval has to OR its terms, because ANDing them (what
@@ -327,13 +348,19 @@ because an embedding of "pgvector" is mostly "database"; keyword search
 returns the one posting that names it, at rank 1. Hybrid is insurance against
 the query type embeddings cannot handle, bought at a measurable cost on
 ordinary queries. That is the honest summary and it is in the limitations.
+(The posting that named pgvector has since expired from the corpus, so the
+golden query is currently unanswerable and sits out of the average; the
+case is kept because the next such term will arrive with the next ingest.)
 
-**Reranking is the real improvement.** MRR 0.773 to 0.900, at 3.1 seconds a
-query on CPU, so it is off by default and on behind `--rerank`.
+**Reranking buys precision at the top, not depth.** MRR 0.781 to 0.794 over
+hybrid, the only column it wins, at two seconds a query on CPU, while recall@10 and nDCG
+drop below plain vector search because the reranker only sees the snippet
+the first stage selected. It is off by default and on behind `--rerank`.
 
-**Chunking.** Whole-posting vectors win at the top of the ranking (recall@5,
-MRR); section vectors win on depth (recall@10 0.813 vs 0.692). `whole` is the
-default because the first three results are what people read.
+**Chunking.** On the full golden set whole-posting vectors win at every
+depth (recall@10 0.658 vs 0.590); the section advantage on depth that the
+15-query set showed did not survive four times the queries. `whole` is the
+default.
 
 **Dedup.** Embedding similarity at 0.93 finds 26 pairs, of which 19 overlap
 the Phase 1 hash. Each method finds 7 the other misses, because the hash reads
@@ -539,7 +566,14 @@ Student Assistant.
 Fixing the mask took it to 0.337, rebalancing to 0.369, and doubling the
 training data to 342 examples took it to 0.485. Its macro F1 of 0.710 beats
 the teacher's 0.682, and its recall of 0.457 is close to the regex's 0.500.
-It is still not worth serving: `SKILL_EXTRACTOR` stays `rules`.
+It is still not worth serving: `SKILL_EXTRACTOR` stays `rules`. The switch
+is real, though: `SKILL_EXTRACTOR=tuned` with `SKILL_ADAPTER_PATH` pointing
+at an adapter directory drops the student into the second-opinion slot of
+`/match` behind the same `extract(title, description)` interface, loaded
+once per process, and `teacher` puts the 8B model there. The student is
+served through transformers rather than Ollama, because merging a LoRA and
+converting to GGUF is a toolchain and a second copy of the weights to keep
+in sync for a model that lost the comparison.
 
 **What made the difference measurable.** Checkpoints are selected on F1 from
 generated output, never on loss, because loss is the number that fell into a
@@ -658,9 +692,11 @@ Kept current and honest.
   Hacker News comments, which over-represents startups and US remote work. Any
   "the market wants X" claim from this data is really "these two boards wanted
   X this month".
-- **The golden set is 15 judged queries out of 60, and I judged them from
-  titles and snippets rather than full postings.** Every retrieval number on
-  this page rests on that. The remaining 45 are written but unjudged.
+- **The golden set was graded by a model, not a person.** All 60 queries are
+  judged from the full posting text (1,274 judgements), but the grader was
+  Claude reading the postings, and the file says so on every query. Every
+  retrieval number on this page rests on that. A human pass over the 227
+  grade-2 judgements is what would remove the caveat.
 - **Recall is recall over the pool**, not over the corpus. A posting no
   retriever surfaces is never judged and never counted as missed. At 465
   postings the gap is small; it would not be at 50,000.

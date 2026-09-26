@@ -34,3 +34,28 @@ def test_an_uncalibrated_judge_is_not_trustworthy():
 
 def test_calibration_table_says_when_it_is_not_usable():
     assert "NOT usable" in Calibration(4, 1.0, 1.0, 1.0, 1.0).as_table()
+
+
+def test_drafted_entries_without_scores_are_not_calibration_data(tmp_path):
+    from joblens.eval import judge
+
+    path = tmp_path / "judgements.yaml"
+    path.write_text(
+        "scored:\n"
+        "- {id: c01, question: q, answer: a, faithfulness: 2, completeness: 1}\n"
+        "- {id: c02, question: q, answer: a, faithfulness: null, completeness: null}\n"
+        "- {id: c03, question: q, answer: a, faithfulness: 1}\n",
+        encoding="utf-8",
+    )
+    assert [e["id"] for e in judge.load_human_scores(path)] == ["c01"]
+    assert judge.pending_count(path) == 2
+
+
+def test_calibrating_nothing_never_calls_the_judge(monkeypatch):
+    from joblens.eval import judge
+
+    def boom(*args, **kwargs):
+        raise AssertionError("the judge was called with nothing to compare against")
+
+    monkeypatch.setattr(judge, "judge", boom)
+    assert judge.calibrate([]).n == 0

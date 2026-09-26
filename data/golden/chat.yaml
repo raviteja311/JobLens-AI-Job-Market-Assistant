@@ -61,3 +61,74 @@ questions:
   # refusal check scored it as a failure. The case was mis-specified, not the
   # answer.
   must_refuse: false
+# Added 2026-09-26 to take the set from 8 to 20. Written against the corpus
+# as it stood that day (468 postings); each answerable question was checked
+# to have at least one posting that answers it, and each must_refuse one
+# asks for something no posting states.
+- id: c09
+  question: which postings offer hourly contract rates, and what are the rates?
+  expected_facts:
+  - names at least one posting that quotes an hourly rate
+  - every rate quoted appears in the cited posting
+  must_refuse: false
+- id: c10
+  question: are there any internships or entry-level engineering roles?
+  expected_facts:
+  - names at least one intern or entry-level posting
+  - does not claim there are none
+  must_refuse: false
+- id: c11
+  question: which jobs are based in Germany, and in which cities?
+  expected_facts:
+  - names at least one posting located in Germany
+  - gives the city stated in the posting
+  must_refuse: false
+- id: c12
+  question: which companies say they offer visa sponsorship?
+  expected_facts:
+  - names only companies whose cited posting mentions sponsorship
+  must_refuse: false
+- id: c13
+  question: what does a founding engineer role involve, according to these postings?
+  expected_facts:
+  - describes responsibilities drawn from cited founding engineer postings
+  - does not generalise beyond the postings shown
+  must_refuse: false
+- id: c14
+  question: which roles ask for Kubernetes experience?
+  expected_facts:
+  - names roles whose cited posting mentions Kubernetes
+  - does not list a posting that never mentions it
+  must_refuse: false
+- id: c15
+  question: are there healthcare or clinical software roles?
+  expected_facts:
+  - names at least one healthcare or clinical posting
+  must_refuse: false
+- id: c16
+  question: of the postings you can see, which pays the most?
+  expected_facts:
+  - quotes a salary that appears in a cited posting
+  - says the claim is limited to the retrieved postings
+  must_refuse: false
+- id: c17
+  question: which roles involve building RAG systems or LLM agents?
+  expected_facts:
+  - names at least one posting that mentions RAG, agents or LLM applications
+  - the technologies named appear in the cited postings
+  must_refuse: false
+- id: c18
+  question: what are the visa requirements for working in Canada?
+  expected_facts:
+  - says the postings do not answer this
+  must_refuse: true
+- id: c19
+  question: which of these companies are publicly traded?
+  expected_facts:
+  - says the postings do not state this
+  must_refuse: true
+- id: c20
+  question: which programming language should I learn first to get hired?
+  expected_facts:
+  - declines to give career advice the postings do not contain
+  must_refuse: true

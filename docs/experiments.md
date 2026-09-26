@@ -1018,3 +1018,127 @@ text effect is somewhere between about 4k and 25k, and nothing else is
 distinguishable from zero. The decision stands, now for a reason that holds
 up under a re-ingest.
 
+---
+
+## 2026-09-26 - The golden set at 58 queries: the 15-query numbers were optimistic
+
+**Hypothesis.** The retrieval leaderboard measured on 15 queries judged from
+titles and snippets would hold on the full 60-query set judged from full
+posting text.
+
+**Setup.** Every candidate any retriever surfaced in its top 10 for each of
+the 60 queries, 1,274 candidates in all, dumped with the full cleaned
+description by `scripts/golden_pool.py` and graded 0/1/2 by Claude Fable 5.1
+reading the posting, six batches of ten queries. Merged with
+`scripts/golden_apply.py`, which records that provenance in every query's
+note. Two queries ended with no relevant posting (`pgvector`, whose one
+posting has expired, and `jobs paying over 200k`, which the note says
+retrieval should fail honestly) and sit out of the average. Same corpus of
+468 postings for every row.
+
+**Result.**
+
+| configuration | recall@5 | recall@10 | mrr | ndcg@10 | ms/query |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.209 | 0.372 | 0.471 | 0.353 | 12 |
+| vector (whole) | 0.361 | 0.658 | 0.781 | 0.621 | 16 |
+| vector (section) | 0.339 | 0.590 | 0.753 | 0.589 | 19 |
+| hybrid (whole) | 0.361 | 0.541 | 0.770 | 0.547 | 51 |
+| hybrid (section) | 0.313 | 0.521 | 0.719 | 0.525 | 53 |
+| hybrid + rerank | 0.373 | 0.561 | 0.818 | 0.586 | 2030 |
+
+Against the 15-query table every number fell and the top reordered. The
+reranker had MRR 0.900 and nDCG 0.692; it now has 0.818 and 0.586, still the
+best MRR but no longer the best nDCG, which goes to plain whole-posting
+vector search. Section chunking lost the depth advantage it had shown.
+Hybrid still trails vector on everything.
+
+Two reasons, both about the old set rather than the retrievers. Fifteen
+queries is a sample where one query is 7% of the score. And grading from a
+snippet the retriever chose is grading the retriever's argument for itself:
+a posting whose snippet mentions the query term looks relevant even when the
+full text says it is a marketing role that happens to name the tool.
+
+**Decision.** The 58-query numbers replace the 15-query ones everywhere they
+were quoted. The floors in `eval/report.py` (nDCG 0.45, recall@10 0.55)
+still hold with room, so the gate is unchanged. Whole-posting vector search
+is confirmed as the default representation; hybrid stays the default mode
+for the rare-token case, with the cost now measured on four times the data.
+The gap that remains is that the grades are a model's reading, not a
+person's: the file says so on every query, and a human pass over the 227
+grade-2 judgements is the next step that would make these numbers quotable
+without a caveat.
+
+---
+
+## 2026-09-26 - The corpus was wiped and rebuilt: which numbers survived
+
+**What happened.** Fifteen minutes after the 58-query eval above was
+recorded, a test run pointed at the dev database emptied it: postings,
+chunks and the bronze history. The suite truncates whatever `DATABASE_URL`
+names, and `.env` names the dev corpus. The rebuild (`migrate`, `ingest
+--limit 400`, `embed`) came back with 466 postings instead of 468, and 88 of
+the golden set's 1,274 judgements now point at postings the boards have
+expired. Eleven queries lost a relevant posting.
+
+That is an accidental robustness test, so it was run as one. Hypothesis:
+every conclusion above survives a re-ingest. Anything that does not was
+never measured.
+
+**Retrieval, before the top-up.** Same 58 queries, same grades:
+
+| configuration | recall@10 | mrr | ndcg@10 |
+| --- | ---: | ---: | ---: |
+| vector (whole) | 0.665 | 0.761 | 0.618 |
+| hybrid (whole) | 0.544 | 0.781 | 0.548 |
+| hybrid + rerank | 0.551 | 0.772 | 0.564 |
+
+Vector search reproduced to within 0.01. The reranker's MRR fell from 0.818
+to 0.772 and lost the column to plain hybrid, which is what an ungraded
+posting does: it scores as irrelevant, and the reranker is the configuration
+most likely to pull a new posting into the top ranks.
+
+**Top-up.** `scripts/golden_pool.py --all --unjudged` (new flag) listed 105
+candidates across 46 queries that no one had graded. They were graded 0/1/2
+by Claude Opus 5.5 from the same pool dump the Fable 5.1 pass read: 88 zeros,
+11 ones, 6 twos, mostly keyword hits on company boilerplate. Merged with
+`golden_apply.py`, which now appends provenance on a merge instead of
+replacing it, so every topped-up query names both graders.
+
+**Retrieval, after the top-up.**
+
+| configuration | recall@5 | recall@10 | mrr | ndcg@10 | ms/query |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.224 | 0.402 | 0.537 | 0.390 | 10 |
+| vector (whole) | 0.374 | 0.653 | 0.761 | 0.612 | 15 |
+| vector (section) | 0.347 | 0.590 | 0.734 | 0.581 | 17 |
+| hybrid (whole) | 0.366 | 0.548 | 0.781 | 0.555 | 46 |
+| hybrid (section) | 0.319 | 0.527 | 0.729 | 0.533 | 47 |
+| hybrid + rerank | 0.355 | 0.553 | 0.794 | 0.577 | 1956 |
+
+Every column has the same winner as the 468-posting run except recall@5,
+which moved from the reranker (0.373) to vector search (0.374), a tie in
+anything but name. The retrieval conclusions survived.
+
+**Clustering.** `cluster --compare` now picks k=10 for TF-IDF and k=6 for
+embeddings, with an adjusted Rand index of 0.066 (0.064 before). The
+embedding run again finds a health / clinical family (45 postings); TF-IDF
+again finds the forward-deployed and founding-engineer groups. The
+specific k moved, the finding that the two spaces barely agree did not.
+
+**Salary importance.** Did not survive, and is corrected in its own entry
+above: a single 28-row test split ranked a different column first after the
+rebuild. It now scores every CV fold, and the corrected ranking is the one
+that is quoted.
+
+**Decision.** Three changes so this cannot recur or go unnoticed:
+
+1. `tests/conftest.py` renames the database in `DATABASE_URL` to
+   `<name>_test` before any test runs, and CI's Postgres now creates
+   `joblens_test`. The suite can no longer reach the dev corpus at all.
+2. After any rebuild, run `golden_pool.py --all --unjudged` and grade what
+   it lists before quoting retrieval numbers. 105 candidates took one pass;
+   re-grading all 1,379 would not have been needed.
+3. Any importance or ranking claim on the salary data is scored across
+   folds with the spread reported, because 110 rows cannot support a single
+   split.

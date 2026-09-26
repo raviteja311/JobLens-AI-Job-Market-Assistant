@@ -281,14 +281,24 @@ def cmd_eval(args: argparse.Namespace) -> int:
 
 def cmd_calibrate(args: argparse.Namespace) -> int:
     from joblens.eval import judge as judging
+    from joblens.llm.client import BackendUnavailable
 
-    calibration = judging.calibrate()
-    if calibration.n == 0:
+    pending = judging.pending_count()
+    if not judging.load_human_scores():
         print(
-            "no hand-scored answers in data/golden/judgements.yaml. Score 20 "
-            "answers by hand first: an uncalibrated judge is a number generator."
+            "no hand-scored answers in data/golden/judgements.yaml"
+            + (f" ({pending} drafted, waiting for scores)" if pending else "")
+            + ". Score 20 answers by hand first: an uncalibrated judge is a "
+            "number generator."
         )
         return 1
+    try:
+        calibration = judging.calibrate()
+    except BackendUnavailable as exc:
+        log.error("the judge needs an LLM backend: %s", exc)
+        return 1
+    if pending:
+        print(f"{pending} drafted answers still unscored and left out.")
     print(calibration.as_table())
     for row in calibration.disagreements[:10]:
         print(f"\n  human {row['human']} judge {row['judge']}: {row['question']}")

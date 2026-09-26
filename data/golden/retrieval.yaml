@@ -6,534 +6,1834 @@ grades:
 queries:
 - id: q01
   query: remote machine learning engineer for someone with two years experience
-  note: the query this whole project exists to answer
-  verified: false
-  judgements: {}
-- id: q02
-  query: LLM engineer building RAG systems
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: the query this whole project exists to answer | judged by Claude Fable 5.1 on 2026-09-26
+    from the full posting text of every candidate any retriever surfaced in its top 10; not
+    human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest judged by
+    Claude Opus 5.5 from the same pool dump; not human-verified
   verified: true
   judgements:
+    hackernews:49158703: 0
+    hackernews:49159028: 0
     hackernews:49159942: 0
+    hackernews:49160256: 0
+    hackernews:49162914: 1
+    hackernews:49164461: 0
+    hackernews:49166165: 1
+    hackernews:49168019: 0
     hackernews:49169371: 0
+    hackernews:49524327: 0
+    hackernews:49525116: 0
+    hackernews:49525135: 0
+    hackernews:49525468: 0
+    hackernews:49528364: 0
+    hackernews:49530424: 0
+    hackernews:49534032: 1
+    hackernews:49537584: 0
+    hackernews:49538758: 1
+    hackernews:49595476: 1
+    hackernews:49662536: 0
+    remoteok:1099821: 1
+    remoteok:1135903: 0
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+    remoteok:1136841: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137378: 0
+    remoteok:1137380: 0
+- id: q02
+  query: LLM engineer building RAG systems
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49159942: 1
+    hackernews:49163907: 1
+    hackernews:49169371: 0
+    hackernews:49523666: 0
     hackernews:49523985: 2
-    hackernews:49528234: 2
+    hackernews:49524822: 1
+    hackernews:49525651: 0
+    hackernews:49528234: 1
     hackernews:49530424: 0
     hackernews:49534270: 0
     hackernews:49538639: 0
+    hackernews:49543579: 0
+    hackernews:49546958: 0
+    hackernews:49553901: 1
     hackernews:49555479: 0
-    remoteok:1135672: 0
     remoteok:1135997: 0
     remoteok:1136001: 0
+    remoteok:1136094: 0
     remoteok:1136097: 0
     remoteok:1136670: 0
     remoteok:1136795: 0
     remoteok:1136796: 0
-    remoteok:1136798: 1
+    remoteok:1136798: 0
     remoteok:1136878: 0
+    remoteok:1137408: 0
 - id: q03
   query: pgvector
-  note: rare token, keyword search should win outright | judged by Claude from title, company
-    and retrieved snippet, not from the full posting. Review before quoting the numbers.
+  note: rare token, keyword search should win outright | judged by Claude Fable 5.1 on 2026-09-26
+    from the full posting text of every candidate any retriever surfaced in its top 10; not
+    human-verified
   verified: true
   judgements:
     hackernews:49157265: 0
+    hackernews:49158689: 0
     hackernews:49160170: 0
     hackernews:49163658: 0
+    hackernews:49163678: 0
+    hackernews:49165353: 0
     hackernews:49523830: 0
     hackernews:49524691: 0
     hackernews:49530381: 0
     hackernews:49530464: 0
+    hackernews:49530894: 0
     hackernews:49531002: 0
     hackernews:49533498: 0
-    hackernews:49541500: 2
 - id: q04
   query: jobs that need PyTorch rather than TensorFlow
-  note: negation, which retrieval does not handle and the eval should show
-  verified: false
-  judgements: {}
+  note: negation, which retrieval does not handle and the eval should show | judged by Claude
+    Fable 5.1 on 2026-09-26 from the full posting text of every candidate any retriever surfaced
+    in its top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26
+    re-ingest judged by Claude Opus 5.5 from the same pool dump; not human-verified
+  verified: true
+  judgements:
+    hackernews:49164461: 0
+    hackernews:49165031: 2
+    hackernews:49165353: 0
+    hackernews:49166151: 0
+    hackernews:49523288: 0
+    hackernews:49523703: 0
+    hackernews:49524327: 2
+    hackernews:49527283: 1
+    hackernews:49528364: 0
+    hackernews:49532957: 0
+    hackernews:49541874: 2
+    hackernews:49554223: 0
+    remoteok:1099821: 2
+    remoteok:1136097: 0
+    remoteok:1136168: 0
+    remoteok:1136210: 0
+    remoteok:1136592: 0
+    remoteok:1136949: 0
+    remoteok:1137136: 0
+    remoteok:1137139: 0
+    remoteok:1137279: 0
+    remoteok:1137378: 0
+    remoteok:1137380: 0
+    remoteok:1137391: 0
+    remoteok:1137406: 0
 - id: q05
   query: entry level data science role no PhD required
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49157827: 1
+    hackernews:49159028: 0
+    hackernews:49160256: 0
+    hackernews:49162501: 0
+    hackernews:49523175: 0
+    hackernews:49523956: 1
+    hackernews:49525116: 0
+    hackernews:49525141: 1
+    hackernews:49534359: 1
+    hackernews:49539823: 1
+    hackernews:49541874: 0
+    hackernews:49542805: 1
+    remoteok:1099822: 0
+    remoteok:1135903: 0
+    remoteok:1136097: 0
+    remoteok:1136217: 1
+    remoteok:1136222: 1
+    remoteok:1137156: 0
+    remoteok:1137391: 0
+    remoteok:1137396: 0
 - id: q06
   query: founding engineer at a seed stage startup
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
   verified: true
   judgements:
     hackernews:49156711: 0
-    hackernews:49158552: 1
+    hackernews:49158552: 0
     hackernews:49159942: 0
-    hackernews:49162950: 0
+    hackernews:49162950: 2
     hackernews:49169371: 0
+    hackernews:49171913: 2
     hackernews:49522929: 0
-    hackernews:49523950: 1
+    hackernews:49523950: 0
+    hackernews:49524822: 0
     hackernews:49525270: 2
+    hackernews:49525367: 2
     hackernews:49525463: 2
     hackernews:49526894: 1
-    hackernews:49529054: 2
+    hackernews:49529054: 1
     hackernews:49530424: 0
-    hackernews:49532259: 2
-    hackernews:49534647: 1
-    hackernews:49544301: 2
+    hackernews:49532259: 1
+    hackernews:49544301: 1
     hackernews:49595476: 0
     hackernews:49711313: 2
     remoteok:1136670: 0
 - id: q07
   query: platform engineering with Kubernetes and Terraform
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
   verified: true
   judgements:
     hackernews:49156711: 2
     hackernews:49156737: 2
     hackernews:49159942: 0
-    hackernews:49161868: 1
-    hackernews:49168356: 2
+    hackernews:49161868: 2
+    hackernews:49168356: 1
     hackernews:49522929: 2
     hackernews:49524822: 0
-    hackernews:49527115: 2
+    hackernews:49527115: 1
     hackernews:49527209: 1
     hackernews:49529957: 2
     hackernews:49530424: 0
+    hackernews:49530867: 1
+    hackernews:49532122: 0
     hackernews:49539168: 2
-    hackernews:49555567: 2
-    hackernews:49573833: 2
-    hackernews:49608356: 1
+    hackernews:49543579: 1
+    hackernews:49555567: 1
+    hackernews:49573833: 1
+    hackernews:49608356: 2
+    remoteok:1136188: 1
     remoteok:1136670: 0
     remoteok:1136796: 0
 - id: q08
   query: backend engineer Rust
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
   verified: true
   judgements:
     hackernews:49156711: 0
     hackernews:49158689: 0
+    hackernews:49158982: 2
     hackernews:49159942: 0
     hackernews:49165359: 2
     hackernews:49166080: 1
     hackernews:49169371: 0
     hackernews:49522929: 0
-    hackernews:49523123: 1
+    hackernews:49523123: 2
     hackernews:49523422: 2
+    hackernews:49524822: 0
     hackernews:49525399: 0
+    hackernews:49530020: 0
     hackernews:49530424: 0
-    hackernews:49530430: 2
+    hackernews:49530430: 1
     hackernews:49530894: 0
-    hackernews:49533651: 1
+    hackernews:49533651: 2
     hackernews:49534764: 0
-    hackernews:49546958: 0
+    hackernews:49546958: 2
+    hackernews:49615973: 1
     remoteok:1136670: 0
 - id: q09
   query: roles in San Francisco that are onsite
-  note: location plus modality
-  verified: false
-  judgements: {}
+  note: location plus modality | judged by Claude Fable 5.1 on 2026-09-26 from the full posting
+    text of every candidate any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49156730: 2
+    hackernews:49156845: 0
+    hackernews:49159312: 0
+    hackernews:49159996: 2
+    hackernews:49160057: 0
+    hackernews:49162833: 2
+    hackernews:49163520: 2
+    hackernews:49163678: 2
+    hackernews:49166975: 2
+    hackernews:49168047: 2
+    hackernews:49524060: 2
+    hackernews:49524252: 2
+    hackernews:49527354: 1
+    hackernews:49528822: 2
+    hackernews:49531002: 0
+    hackernews:49532154: 2
+    hackernews:49546647: 0
+    hackernews:49547792: 0
 - id: q10
   query: computer vision engineer
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
   verified: true
   judgements:
     hackernews:49156711: 0
     hackernews:49157959: 1
     hackernews:49159942: 0
     hackernews:49162501: 1
-    hackernews:49164461: 1
+    hackernews:49164461: 0
     hackernews:49169371: 0
     hackernews:49522929: 0
-    hackernews:49524691: 1
+    hackernews:49524691: 2
     hackernews:49524822: 0
+    hackernews:49524880: 0
+    hackernews:49525116: 0
     hackernews:49525183: 0
     hackernews:49526361: 0
     hackernews:49527113: 0
     hackernews:49527181: 0
+    hackernews:49528132: 0
     hackernews:49528637: 2
+    hackernews:49529454: 0
     hackernews:49530424: 0
-    hackernews:49532154: 0
+    hackernews:49532154: 1
+    hackernews:49552294: 0
+    remoteok:1099821: 0
+    remoteok:1099822: 0
     remoteok:1135767: 0
     remoteok:1136670: 0
+    remoteok:1136796: 0
     remoteok:1136798: 0
-    remoteok:1137309: 1
+    remoteok:1137139: 0
+    remoteok:1137309: 0
 - id: q11
   query: data engineer building pipelines with Airflow and dbt
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
   verified: true
   judgements:
+    hackernews:49156737: 0
     hackernews:49157080: 0
-    hackernews:49159028: 1
-    hackernews:49160256: 2
-    hackernews:49163520: 0
+    hackernews:49159028: 0
+    hackernews:49160256: 1
+    hackernews:49163520: 1
     hackernews:49164668: 0
     hackernews:49164894: 0
     hackernews:49165031: 0
-    hackernews:49523408: 2
+    hackernews:49523408: 1
     hackernews:49524502: 0
-    hackernews:49525116: 2
+    hackernews:49525116: 1
     hackernews:49528044: 0
     hackernews:49530424: 0
+    hackernews:49539823: 1
     hackernews:49542805: 1
-    hackernews:49613305: 2
-    remoteok:1136222: 1
+    hackernews:49549234: 0
+    hackernews:49613305: 0
+    remoteok:1099822: 1
+    remoteok:1136222: 0
     remoteok:1136670: 0
     remoteok:1136795: 0
+    remoteok:1136796: 0
 - id: q12
   query: someone who can own the whole stack at a small company
-  note: vague phrasing, no keyword overlap, vector should win
-  verified: false
-  judgements: {}
-- id: q13
-  query: fine-tuning open source models
-  note: ''
-  verified: false
-  judgements: {}
-- id: q14
-  query: MLOps and model deployment
-  note: ''
-  verified: false
-  judgements: {}
-- id: q15
-  query: python developer with AWS experience
-  note: ''
-  verified: false
-  judgements: {}
-- id: q16
-  query: forward deployed engineer working directly with customers
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: vague phrasing, no keyword overlap, vector should win | judged by Claude Fable 5.1
+    on 2026-09-26 from the full posting text of every candidate any retriever surfaced in
+    its top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest
+    judged by Claude Opus 5.5 from the same pool dump; not human-verified
   verified: true
   judgements:
-    hackernews:49159942: 0
+    hackernews:49156711: 1
+    hackernews:49157647: 1
+    hackernews:49159115: 1
+    hackernews:49160915: 1
+    hackernews:49160993: 2
+    hackernews:49162401: 2
+    hackernews:49163907: 2
+    hackernews:49164303: 2
+    hackernews:49166080: 2
+    hackernews:49522903: 2
+    hackernews:49522912: 2
+    hackernews:49523956: 0
+    hackernews:49524520: 1
+    hackernews:49525418: 0
+    hackernews:49526742: 1
+    hackernews:49530381: 1
+    hackernews:49534032: 2
+    hackernews:49534647: 2
+    hackernews:49535156: 1
+    hackernews:49550510: 2
+    hackernews:49595476: 0
+    hackernews:49661611: 2
+    hackernews:49662536: 1
+    remoteok:1137062: 1
+    remoteok:1137378: 0
+    remoteok:1137380: 0
+- id: q13
+  query: fine-tuning open source models
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49157080: 0
+    hackernews:49157674: 0
+    hackernews:49164213: 1
+    hackernews:49164297: 0
+    hackernews:49165353: 1
+    hackernews:49167059: 0
+    hackernews:49167647: 0
+    hackernews:49171202: 0
+    hackernews:49523666: 0
+    hackernews:49523797: 0
+    hackernews:49523950: 0
+    hackernews:49524327: 0
+    hackernews:49524920: 0
+    hackernews:49525412: 1
+    hackernews:49530116: 0
+    hackernews:49537584: 1
+    hackernews:49542221: 1
+    hackernews:49547973: 0
+    hackernews:49550471: 0
+    hackernews:49595476: 0
+    hackernews:49627985: 0
+    remoteok:1137405: 0
+- id: q14
+  query: MLOps and model deployment
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49158131: 1
+    hackernews:49163107: 0
+    hackernews:49163337: 1
+    hackernews:49165353: 1
+    hackernews:49524327: 2
+    hackernews:49524502: 1
+    hackernews:49524822: 1
+    hackernews:49527115: 0
+    hackernews:49527209: 0
+    hackernews:49528405: 1
+    hackernews:49530020: 0
+    hackernews:49531126: 0
+    hackernews:49537584: 1
+    hackernews:49542221: 1
+    hackernews:49573833: 0
+    hackernews:49595476: 2
+    hackernews:49608356: 1
+    remoteok:1136857: 0
+    remoteok:1137408: 0
+- id: q15
+  query: python developer with AWS experience
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156737: 1
+    hackernews:49160256: 2
+    hackernews:49164303: 2
+    hackernews:49166151: 1
+    hackernews:49168019: 1
+    hackernews:49168356: 0
+    hackernews:49523703: 2
+    hackernews:49523797: 0
+    hackernews:49525483: 0
+    hackernews:49527115: 0
+    hackernews:49532122: 0
+    hackernews:49532957: 1
+    hackernews:49532978: 1
+    hackernews:49615973: 2
+    remoteok:1135745: 0
+    remoteok:1136188: 0
+    remoteok:1136796: 0
+    remoteok:1136841: 0
+    remoteok:1137373: 0
+    remoteok:1137378: 0
+    remoteok:1137405: 0
+    remoteok:1137411: 0
+- id: q16
+  query: forward deployed engineer working directly with customers
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156689: 0
+    hackernews:49159942: 1
     hackernews:49163337: 2
-    hackernews:49525544: 1
+    hackernews:49163576: 0
+    hackernews:49524822: 2
+    hackernews:49524979: 0
+    hackernews:49525544: 0
     hackernews:49528405: 2
     hackernews:49530020: 2
     hackernews:49531126: 2
+    hackernews:49538758: 0
+    hackernews:49543632: 2
     hackernews:49608356: 2
-    hackernews:49656171: 1
     remoteok:1136066: 0
     remoteok:1136670: 0
+    remoteok:1136937: 0
     remoteok:1136987: 1
+    remoteok:1137139: 0
+    remoteok:1137406: 0
+    remoteok:1137408: 1
 - id: q17
   query: jobs paying over 200k
   note: retrieval cannot answer this; it belongs in /trends and the eval should show retrieval
-    failing honestly
-  verified: false
-  judgements: {}
+    failing honestly | judged by Claude Fable 5.1 on 2026-09-26 from the full posting text
+    of every candidate any retriever surfaced in its top 10; not human-verified | top-up of
+    105 new candidates after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same
+    pool dump; not human-verified
+  verified: true
+  judgements:
+    hackernews:49157265: 0
+    hackernews:49157827: 0
+    hackernews:49159281: 0
+    hackernews:49159784: 0
+    hackernews:49162914: 0
+    hackernews:49163907: 0
+    hackernews:49166151: 0
+    hackernews:49523956: 0
+    hackernews:49524501: 0
+    hackernews:49525141: 0
+    hackernews:49530381: 0
+    hackernews:49532957: 0
+    hackernews:49601673: 0
+    hackernews:49649994: 0
+    remoteok:1135783: 0
+    remoteok:1136097: 0
+    remoteok:1136168: 0
+    remoteok:1136210: 0
+    remoteok:1136592: 0
+    remoteok:1137136: 0
+    remoteok:1137309: 0
+    remoteok:1137378: 0
+    remoteok:1137399: 0
+    remoteok:1137405: 0
+    remoteok:1137406: 0
+    remoteok:1137431: 0
 - id: q18
   query: TypeScript and React frontend work
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49158886: 0
+    hackernews:49164303: 1
+    hackernews:49166080: 1
+    hackernews:49169841: 2
+    hackernews:49522989: 1
+    hackernews:49523558: 0
+    hackernews:49523830: 0
+    hackernews:49530116: 2
+    hackernews:49530424: 1
+    hackernews:49543579: 2
+    hackernews:49543632: 0
+    hackernews:49552564: 2
+    hackernews:49552714: 1
+    hackernews:49554223: 1
+    hackernews:49598051: 0
+    remoteok:1136066: 0
+    remoteok:1136670: 0
+    remoteok:1136795: 0
+    remoteok:1136937: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137378: 0
+    remoteok:1137391: 0
+    remoteok:1137405: 0
+    remoteok:1137410: 1
+    remoteok:1137420: 1
 - id: q19
   query: research scientist publishing papers
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49163308: 1
+    hackernews:49165353: 2
+    hackernews:49167647: 1
+    hackernews:49170963: 0
+    hackernews:49522949: 2
+    hackernews:49523175: 0
+    hackernews:49525183: 0
+    hackernews:49526311: 1
+    hackernews:49527388: 1
+    hackernews:49529518: 0
+    hackernews:49532070: 0
+    hackernews:49532259: 1
+    hackernews:49533854: 1
+    hackernews:49537584: 2
+    hackernews:49559854: 1
+    hackernews:49627985: 1
+    hackernews:49662536: 1
+    remoteok:1136216: 0
+    remoteok:1136798: 0
+    remoteok:1137314: 0
 - id: q20
   query: developer relations or technical writing
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156702: 0
+    hackernews:49159002: 2
+    hackernews:49159115: 0
+    hackernews:49161851: 2
+    hackernews:49162817: 0
+    hackernews:49165622: 0
+    hackernews:49523835: 0
+    hackernews:49524979: 0
+    hackernews:49525270: 0
+    hackernews:49526361: 0
+    hackernews:49527193: 0
+    hackernews:49527388: 0
+    hackernews:49528044: 0
+    hackernews:49530116: 0
+    hackernews:49530424: 0
+    hackernews:49532122: 0
+    hackernews:49535156: 0
+    hackernews:49613305: 1
+    remoteok:1136592: 0
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+    remoteok:1136798: 0
+    remoteok:1137136: 1
+    remoteok:1137388: 0
+    remoteok:1137405: 0
+    remoteok:1137421: 0
 - id: q21
   query: security engineer
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49157095: 0
+    hackernews:49157646: 0
+    hackernews:49159942: 0
+    hackernews:49167547: 2
+    hackernews:49169371: 1
+    hackernews:49523166: 0
+    hackernews:49523175: 0
+    hackernews:49525399: 2
+    hackernews:49525748: 2
+    hackernews:49527113: 1
+    hackernews:49527181: 2
+    hackernews:49528002: 1
+    hackernews:49528686: 2
+    hackernews:49530424: 0
+    hackernews:49531126: 0
+    hackernews:49539823: 2
+    remoteok:1136210: 1
+    remoteok:1136670: 0
+    remoteok:1136796: 0
 - id: q22
   query: internship or new grad position
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156845: 0
+    hackernews:49157647: 0
+    hackernews:49157827: 0
+    hackernews:49159064: 0
+    hackernews:49159784: 0
+    hackernews:49160057: 0
+    hackernews:49163160: 2
+    hackernews:49164730: 0
+    hackernews:49523558: 2
+    hackernews:49524060: 1
+    hackernews:49524501: 0
+    hackernews:49525141: 0
+    hackernews:49525497: 2
+    hackernews:49526154: 0
+    hackernews:49527354: 0
+    hackernews:49530424: 0
+    hackernews:49530909: 2
+    hackernews:49533419: 2
+    remoteok:1135681: 0
+    remoteok:1135783: 0
+    remoteok:1136096: 0
+    remoteok:1136168: 0
+    remoteok:1136937: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137391: 1
 - id: q23
   query: fully remote anywhere in the world
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49158703: 0
+    hackernews:49159686: 1
+    hackernews:49160086: 2
+    hackernews:49162776: 0
+    hackernews:49162914: 0
+    hackernews:49163678: 0
+    hackernews:49166165: 1
+    hackernews:49167837: 2
+    hackernews:49168356: 1
+    hackernews:49169157: 0
+    hackernews:49172196: 2
+    hackernews:49523978: 0
+    hackernews:49525135: 1
+    hackernews:49527115: 1
+    hackernews:49527344: 1
+    hackernews:49538758: 1
+    hackernews:49546936: 0
+    hackernews:49547973: 1
+    hackernews:49615435: 2
+    hackernews:49662536: 1
+    remoteok:1137136: 1
+    remoteok:1137138: 1
+    remoteok:1137139: 1
+    remoteok:1137378: 2
+    remoteok:1137417: 0
 - id: q24
   query: Go and distributed systems
-  note: short token that stems badly, a known weak spot | judged by Claude from title, company
-    and retrieved snippet, not from the full posting. Review before quoting the numbers.
+  note: short token that stems badly, a known weak spot | judged by Claude Fable 5.1 on 2026-09-26
+    from the full posting text of every candidate any retriever surfaced in its top 10; not
+    human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest judged by
+    Claude Opus 5.5 from the same pool dump; not human-verified
   verified: true
   judgements:
     hackernews:49163458: 1
-    hackernews:49164668: 1
+    hackernews:49164668: 2
     hackernews:49166092: 1
-    hackernews:49530116: 2
+    hackernews:49169157: 0
+    hackernews:49523123: 1
+    hackernews:49523422: 1
+    hackernews:49523712: 1
+    hackernews:49530116: 1
+    hackernews:49531109: 0
     hackernews:49532898: 2
-    hackernews:49539168: 1
-    remoteok:1135634: 2
-    remoteok:1135672: 0
+    hackernews:49539168: 0
+    hackernews:49549234: 0
+    remoteok:1135634: 1
+    remoteok:1136188: 1
     remoteok:1136670: 0
+    remoteok:1136795: 0
     remoteok:1136796: 0
     remoteok:1136798: 0
     remoteok:1136841: 0
     remoteok:1137072: 0
+    remoteok:1137400: 2
+    remoteok:1137408: 0
+    remoteok:1137409: 0
 - id: q25
   query: startup working on developer tools
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49159028: 0
+    hackernews:49159942: 0
+    hackernews:49160993: 0
+    hackernews:49168047: 2
+    hackernews:49523510: 0
+    hackernews:49525270: 0
+    hackernews:49525399: 2
+    hackernews:49527646: 0
+    hackernews:49528686: 0
+    hackernews:49532122: 0
+    hackernews:49533482: 0
+    hackernews:49601673: 0
+    remoteok:1136066: 0
+    remoteok:1136188: 1
+    remoteok:1136447: 0
+    remoteok:1136795: 0
+    remoteok:1136796: 0
+    remoteok:1136937: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137378: 0
+    remoteok:1137380: 0
+    remoteok:1137391: 0
+    remoteok:1137405: 0
 - id: q26
   query: Postgres database performance work
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
   verified: true
   judgements:
-    hackernews:49157080: 0
-    hackernews:49157647: 0
+    hackernews:49156737: 2
+    hackernews:49157080: 1
+    hackernews:49157647: 1
     hackernews:49163131: 0
     hackernews:49163658: 1
-    hackernews:49164668: 0
+    hackernews:49164668: 1
+    hackernews:49531109: 0
+    hackernews:49532978: 1
+    hackernews:49533482: 1
+    remoteok:1135765: 0
     remoteok:1135903: 0
+    remoteok:1136066: 0
     remoteok:1136097: 0
+    remoteok:1136217: 0
     remoteok:1136222: 0
+    remoteok:1136592: 0
     remoteok:1136670: 0
+    remoteok:1136937: 0
     remoteok:1137136: 0
     remoteok:1137138: 0
     remoteok:1137139: 0
+    remoteok:1137378: 0
     remoteok:1137391: 0
+    remoteok:1137405: 0
 - id: q27
   query: AI agents and tool use
-  note: ''
-  verified: false
-  judgements: {}
-- id: q28
-  query: engineering manager leading a small team
-  note: ''
-  verified: false
-  judgements: {}
-- id: q29
-  query: fintech or payments company
-  note: ''
-  verified: false
-  judgements: {}
-- id: q30
-  query: healthcare or biotech machine learning
-  note: ''
-  verified: false
-  judgements: {}
-- id: q31
-  query: data annotation and labelling work
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
   verified: true
   judgements:
-    hackernews:49169577: 0
-    hackernews:49530464: 0
-    hackernews:49534359: 1
-    hackernews:49537584: 0
-    hackernews:49542805: 0
-    remoteok:1135673: 1
-    remoteok:1135903: 1
-    remoteok:1136222: 1
+    hackernews:49169017: 2
+    hackernews:49522930: 1
+    hackernews:49524167: 2
+    hackernews:49525603: 2
+    hackernews:49528364: 1
+    hackernews:49528837: 2
+    hackernews:49538459: 2
+    hackernews:49540773: 1
+    hackernews:49541388: 1
+    hackernews:49552714: 2
+    hackernews:49650855: 2
+    remoteok:1136066: 0
+    remoteok:1137114: 2
     remoteok:1137136: 0
     remoteok:1137138: 0
     remoteok:1137139: 0
-    remoteok:1137309: 2
-    remoteok:1137375: 1
-- id: q32
-  query: roles in London or the UK
-  note: ''
-  verified: false
-  judgements: {}
-- id: q33
-  query: contract or freelance rather than full time
-  note: ''
-  verified: false
-  judgements: {}
-- id: q34
-  query: open source maintainer role
-  note: ''
-  verified: false
-  judgements: {}
-- id: q35
-  query: Ruby on Rails
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+    remoteok:1137314: 0
+    remoteok:1137399: 2
+- id: q28
+  query: engineering manager leading a small team
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
   verified: true
   judgements:
-    hackernews:49157647: 1
+    hackernews:49157178: 2
+    hackernews:49158727: 0
+    hackernews:49159942: 0
+    hackernews:49169371: 0
+    hackernews:49525544: 2
+    hackernews:49525831: 0
+    hackernews:49528686: 0
+    hackernews:49546647: 0
+    hackernews:49567458: 1
+    remoteok:1135908: 0
+    remoteok:1136097: 0
+    remoteok:1136447: 0
+    remoteok:1136670: 2
+    remoteok:1136796: 0
+    remoteok:1136841: 0
+    remoteok:1136949: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137279: 0
+    remoteok:1137380: 2
+    remoteok:1137396: 0
+- id: q29
+  query: fintech or payments company
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49162509: 2
+    hackernews:49162833: 0
+    hackernews:49166000: 0
+    hackernews:49523604: 2
+    hackernews:49523956: 2
+    hackernews:49525418: 1
+    hackernews:49525483: 2
+    hackernews:49528002: 1
+    hackernews:49541874: 2
+    hackernews:49552294: 0
+    remoteok:1135903: 0
+    remoteok:1135997: 0
+    remoteok:1136188: 0
+    remoteok:1136210: 2
+    remoteok:1136217: 0
+    remoteok:1136568: 2
+    remoteok:1136797: 2
+    remoteok:1136844: 0
+    remoteok:1136950: 1
+    remoteok:1137139: 0
+    remoteok:1137307: 0
+    remoteok:1137388: 2
+    remoteok:1137391: 1
+    remoteok:1137405: 0
+    remoteok:1137414: 1
+- id: q30
+  query: healthcare or biotech machine learning
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156724: 2
+    hackernews:49157095: 0
+    hackernews:49162990: 1
+    hackernews:49164461: 0
+    hackernews:49167647: 2
+    hackernews:49170014: 1
+    hackernews:49523228: 2
+    hackernews:49524327: 0
+    hackernews:49525147: 1
+    hackernews:49525714: 1
+    hackernews:49530558: 2
+    hackernews:49542805: 2
+    hackernews:49627985: 2
+    remoteok:1099821: 0
+    remoteok:1135789: 0
+    remoteok:1136168: 0
+    remoteok:1136796: 0
+    remoteok:1136937: 1
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137407: 0
+- id: q31
+  query: data annotation and labelling work
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49165353: 0
+    hackernews:49167647: 0
+    hackernews:49169577: 2
+    hackernews:49525600: 0
+    hackernews:49530464: 0
+    hackernews:49534359: 0
+    hackernews:49537584: 0
+    hackernews:49542805: 0
+    hackernews:49627985: 0
+    remoteok:1135903: 1
+    remoteok:1136217: 0
+    remoteok:1136222: 0
+    remoteok:1136795: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137375: 0
+    remoteok:1137378: 0
+    remoteok:1137391: 0
+    remoteok:1137396: 0
+    remoteok:1137428: 2
+- id: q32
+  query: roles in London or the UK
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49159686: 0
+    hackernews:49160915: 1
+    hackernews:49162565: 2
+    hackernews:49170963: 2
+    hackernews:49523558: 0
+    hackernews:49525135: 0
+    hackernews:49527344: 0
+    hackernews:49528405: 2
+    hackernews:49533498: 0
+    hackernews:49538758: 2
+    hackernews:49541388: 2
+    hackernews:49547792: 0
+    hackernews:49567458: 0
+    hackernews:49626445: 2
+    remoteok:1135745: 0
+    remoteok:1135901: 0
+    remoteok:1135908: 0
+    remoteok:1136066: 2
+    remoteok:1136097: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137378: 1
+    remoteok:1137391: 1
+- id: q33
+  query: contract or freelance rather than full time
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156716: 0
+    hackernews:49156845: 0
+    hackernews:49157674: 0
+    hackernews:49157827: 0
+    hackernews:49157888: 0
+    hackernews:49160993: 0
+    hackernews:49162696: 2
+    hackernews:49162914: 0
+    hackernews:49165622: 2
+    hackernews:49523018: 0
+    hackernews:49523950: 0
+    hackernews:49524781: 0
+    hackernews:49525141: 0
+    hackernews:49525348: 0
+    hackernews:49525483: 0
+    hackernews:49533482: 0
+    hackernews:49543040: 0
+    hackernews:49553487: 0
+    hackernews:49661611: 2
+    hackernews:49662536: 1
+    remoteok:1135901: 2
+    remoteok:1136066: 0
+    remoteok:1136213: 2
+    remoteok:1136844: 0
+    remoteok:1137209: 0
+    remoteok:1137378: 0
+- id: q34
+  query: open source maintainer role
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156711: 0
+    hackernews:49160915: 0
+    hackernews:49160993: 0
+    hackernews:49163458: 0
+    hackernews:49164297: 0
+    hackernews:49166092: 0
+    hackernews:49523510: 0
+    hackernews:49523558: 0
+    hackernews:49524080: 1
+    hackernews:49530116: 1
+    hackernews:49541388: 1
+    hackernews:49543040: 0
+    hackernews:49547792: 0
+    hackernews:49549234: 1
+    hackernews:49613305: 1
+    hackernews:49615973: 0
+    remoteok:1135783: 0
+    remoteok:1136097: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137378: 0
+    remoteok:1137386: 0
+    remoteok:1137391: 0
+    remoteok:1137405: 0
+    remoteok:1137411: 0
+- id: q35
+  query: Ruby on Rails
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49157647: 2
     hackernews:49159686: 2
+    hackernews:49163658: 0
     hackernews:49165651: 0
+    hackernews:49523604: 0
     hackernews:49523768: 1
     hackernews:49527344: 2
     hackernews:49529015: 0
-    hackernews:49531646: 1
+    hackernews:49529763: 0
+    hackernews:49529957: 1
+    hackernews:49531646: 2
     hackernews:49533482: 0
+    hackernews:49547792: 0
+    hackernews:49615973: 0
+    remoteok:1136094: 0
+    remoteok:1136210: 0
     remoteok:1137388: 0
+    remoteok:1137405: 0
+    remoteok:1137421: 0
 - id: q36
   query: infrastructure and site reliability engineering
-  note: ''
-  verified: false
-  judgements: {}
-- id: q37
-  query: NLP and text processing
-  note: ''
-  verified: false
-  judgements: {}
-- id: q38
-  query: product engineer who talks to users
-  note: ''
-  verified: false
-  judgements: {}
-- id: q39
-  query: climate or energy technology
-  note: ''
-  verified: false
-  judgements: {}
-- id: q40
-  query: recommendation systems and ranking
-  note: ''
-  verified: false
-  judgements: {}
-- id: q41
-  query: work with embeddings and vector search
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
   verified: true
   judgements:
-    hackernews:49160170: 1
-    hackernews:49163907: 2
-    hackernews:49524691: 1
+    hackernews:49156711: 2
+    hackernews:49159942: 1
+    hackernews:49160915: 2
+    hackernews:49161868: 2
+    hackernews:49162833: 2
+    hackernews:49165916: 2
+    hackernews:49169371: 2
+    hackernews:49522929: 2
+    hackernews:49523712: 2
+    hackernews:49524822: 0
+    hackernews:49525544: 0
+    hackernews:49530424: 0
+    hackernews:49534270: 0
+    hackernews:49534764: 2
+    hackernews:49550471: 0
+    hackernews:49562582: 2
+    hackernews:49608356: 2
+    hackernews:49613305: 0
+    hackernews:49615973: 1
+    remoteok:1136447: 2
+    remoteok:1136670: 0
+    remoteok:1136798: 1
+    remoteok:1137380: 1
+- id: q37
+  query: NLP and text processing
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49157080: 0
+    hackernews:49164303: 1
+    hackernews:49167647: 0
+    hackernews:49169371: 0
+    hackernews:49169577: 0
+    hackernews:49523770: 1
+    hackernews:49524835: 0
     hackernews:49525600: 1
     hackernews:49532154: 1
-    hackernews:49534359: 1
-    hackernews:49537584: 1
-    hackernews:49541500: 2
+    hackernews:49534359: 0
+    hackernews:49542805: 1
+    hackernews:49627985: 0
+    hackernews:49661611: 1
+    remoteok:1135675: 0
+    remoteok:1136566: 0
+    remoteok:1136670: 0
+    remoteok:1136687: 0
+    remoteok:1137072: 0
+    remoteok:1137136: 0
+    remoteok:1137155: 0
+    remoteok:1137386: 0
+    remoteok:1137388: 0
+    remoteok:1137391: 0
+    remoteok:1137405: 0
+    remoteok:1137412: 0
+    remoteok:1137420: 0
+    remoteok:1137421: 0
+- id: q38
+  query: product engineer who talks to users
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49157129: 0
+    hackernews:49159942: 0
+    hackernews:49163576: 0
+    hackernews:49163946: 1
+    hackernews:49164382: 0
+    hackernews:49522903: 2
+    hackernews:49523985: 1
+    hackernews:49524731: 0
+    hackernews:49524979: 2
+    hackernews:49528044: 1
+    hackernews:49528234: 1
+    hackernews:49528686: 0
+    hackernews:49530424: 0
+    hackernews:49531416: 2
+    hackernews:49550510: 1
+    hackernews:49570095: 1
+    remoteok:1136670: 0
+    remoteok:1136841: 0
+    remoteok:1137388: 0
+    remoteok:1137396: 0
+    remoteok:1137410: 0
+    remoteok:1137420: 1
+    remoteok:1137421: 0
+- id: q39
+  query: climate or energy technology
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156845: 0
+    hackernews:49163358: 2
+    hackernews:49163576: 0
+    hackernews:49165394: 2
+    hackernews:49168356: 0
+    hackernews:49170963: 0
+    hackernews:49522949: 0
+    hackernews:49523288: 2
+    hackernews:49523558: 0
+    hackernews:49526311: 2
+    hackernews:49527115: 0
+    hackernews:49527388: 0
+    hackernews:49528935: 0
+    hackernews:49529957: 0
+    hackernews:49534764: 2
+    hackernews:49546958: 2
+    hackernews:49564474: 2
+    remoteok:1135681: 0
+    remoteok:1135997: 1
+    remoteok:1136001: 0
+    remoteok:1136797: 0
+    remoteok:1137194: 1
+    remoteok:1137391: 0
+    remoteok:1137405: 0
+- id: q40
+  query: recommendation systems and ranking
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49159028: 0
+    hackernews:49165359: 0
+    hackernews:49522903: 1
+    hackernews:49523018: 0
+    hackernews:49523422: 0
+    hackernews:49524520: 0
+    hackernews:49524580: 0
+    hackernews:49530256: 0
+    hackernews:49532070: 0
+    hackernews:49532259: 0
+    hackernews:49534359: 0
+    hackernews:49543579: 0
+    remoteok:1136216: 0
+    remoteok:1136795: 0
+    remoteok:1136796: 0
+    remoteok:1136798: 0
+    remoteok:1136841: 0
+    remoteok:1136950: 0
+    remoteok:1137072: 0
+    remoteok:1137279: 0
+    remoteok:1137405: 0
+    remoteok:1137408: 0
+- id: q41
+  query: work with embeddings and vector search
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49160170: 0
+    hackernews:49163907: 1
+    hackernews:49523558: 0
+    hackernews:49524327: 0
+    hackernews:49524691: 0
+    hackernews:49525600: 0
+    hackernews:49530464: 0
+    hackernews:49532154: 0
+    hackernews:49532259: 0
+    hackernews:49534032: 1
+    hackernews:49534359: 0
+    hackernews:49537584: 0
     remoteok:1136066: 0
+    remoteok:1136094: 0
+    remoteok:1136592: 0
+    remoteok:1136795: 0
+    remoteok:1136937: 0
     remoteok:1137136: 0
     remoteok:1137138: 0
     remoteok:1137139: 0
-    remoteok:1137224: 1
     remoteok:1137309: 0
     remoteok:1137378: 0
     remoteok:1137391: 0
+    remoteok:1137405: 0
+    remoteok:1137412: 0
+    remoteok:1137428: 0
+    remoteok:1137431: 0
 - id: q42
   query: senior staff or principal level
-  note: ''
-  verified: false
-  judgements: {}
-- id: q43
-  query: mobile app development iOS or Android
-  note: ''
-  verified: false
-  judgements: {}
-- id: q44
-  query: company that mentions equity in the offer
-  note: ''
-  verified: false
-  judgements: {}
-- id: q45
-  query: evaluation and testing of AI systems
-  note: the thing Phase 5 is about, and rare in the corpus
-  verified: false
-  judgements: {}
-- id: q46
-  query: analytics engineer building dashboards
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
   verified: true
   judgements:
-    hackernews:49156689: 0
+    hackernews:49156711: 1
+    hackernews:49156845: 2
+    hackernews:49158727: 1
+    hackernews:49163927: 2
+    hackernews:49167647: 1
+    hackernews:49522929: 1
+    hackernews:49523835: 2
+    hackernews:49524167: 1
+    hackernews:49524978: 1
+    hackernews:49525544: 1
+    hackernews:49527283: 1
+    hackernews:49528336: 1
+    hackernews:49530424: 1
+    hackernews:49530430: 2
+    hackernews:49543579: 1
+    hackernews:49554223: 1
+    hackernews:49564474: 1
+    hackernews:49627985: 1
+    remoteok:1135697: 0
+    remoteok:1136097: 0
+    remoteok:1136795: 1
+    remoteok:1136949: 0
+    remoteok:1137156: 1
+    remoteok:1137378: 0
+    remoteok:1137391: 0
+    remoteok:1137411: 1
+- id: q43
+  query: mobile app development iOS or Android
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49157437: 0
+    hackernews:49159028: 0
+    hackernews:49159064: 2
+    hackernews:49163576: 2
+    hackernews:49523558: 0
+    hackernews:49523675: 2
+    hackernews:49523797: 0
+    hackernews:49525053: 2
+    hackernews:49525483: 0
+    hackernews:49527118: 2
+    hackernews:49528637: 2
+    hackernews:49530424: 2
+    hackernews:49531439: 1
+    hackernews:49532122: 0
+    hackernews:49533482: 1
+    hackernews:49537373: 0
+    remoteok:1136188: 0
+    remoteok:1137373: 0
+    remoteok:1137405: 0
+- id: q44
+  query: company that mentions equity in the offer
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156730: 0
+    hackernews:49159281: 2
+    hackernews:49162608: 2
+    hackernews:49162833: 2
+    hackernews:49163060: 2
+    hackernews:49523289: 0
+    hackernews:49523956: 2
+    hackernews:49525418: 2
+    hackernews:49525483: 2
+    hackernews:49527452: 2
+    hackernews:49529454: 2
+    hackernews:49595476: 2
+    hackernews:49649994: 2
+    remoteok:1135783: 0
+    remoteok:1135903: 0
+    remoteok:1136097: 0
+    remoteok:1136168: 0
+    remoteok:1136188: 0
+    remoteok:1136217: 0
+    remoteok:1136796: 0
+    remoteok:1136797: 0
+    remoteok:1137307: 0
+    remoteok:1137414: 0
+- id: q45
+  query: evaluation and testing of AI systems
+  note: the thing Phase 5 is about, and rare in the corpus | judged by Claude Fable 5.1 on
+    2026-09-26 from the full posting text of every candidate any retriever surfaced in its
+    top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest
+    judged by Claude Opus 5.5 from the same pool dump; not human-verified
+  verified: true
+  judgements:
+    hackernews:49163301: 0
+    hackernews:49163907: 1
+    hackernews:49164213: 2
+    hackernews:49165031: 0
+    hackernews:49165622: 1
+    hackernews:49525423: 0
+    hackernews:49525600: 1
+    hackernews:49525603: 1
+    hackernews:49532154: 2
+    hackernews:49538459: 1
+    hackernews:49540773: 0
+    hackernews:49552714: 1
+    remoteok:1136796: 0
+    remoteok:1136798: 1
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137224: 0
+    remoteok:1137309: 2
+    remoteok:1137314: 0
+    remoteok:1137388: 0
+    remoteok:1137398: 1
+    remoteok:1137408: 0
+    remoteok:1137421: 0
+- id: q46
+  query: analytics engineer building dashboards
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156689: 1
+    hackernews:49156711: 0
     hackernews:49159942: 0
     hackernews:49160915: 0
     hackernews:49162501: 0
-    hackernews:49164668: 1
+    hackernews:49163520: 1
+    hackernews:49164668: 0
+    hackernews:49165651: 1
+    hackernews:49166092: 0
     hackernews:49169371: 0
     hackernews:49522912: 1
+    hackernews:49522929: 0
+    hackernews:49523768: 0
+    hackernews:49523985: 0
     hackernews:49524822: 0
+    hackernews:49525116: 1
+    hackernews:49529454: 0
+    hackernews:49529957: 0
     hackernews:49530424: 0
     hackernews:49543579: 0
     hackernews:49615973: 0
-    remoteok:1135673: 2
-    remoteok:1136222: 2
+    remoteok:1136222: 1
     remoteok:1136670: 0
     remoteok:1136796: 0
+    remoteok:1137405: 0
+    remoteok:1137417: 0
 - id: q47
   query: hardware or embedded systems
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49156689: 0
+    hackernews:49163678: 0
+    hackernews:49163907: 0
+    hackernews:49164894: 2
+    hackernews:49166082: 2
+    hackernews:49168356: 0
+    hackernews:49170090: 2
+    hackernews:49523422: 0
+    hackernews:49526154: 1
+    hackernews:49527115: 0
+    hackernews:49529957: 0
+    hackernews:49530256: 0
+    hackernews:49532154: 1
+    hackernews:49543579: 1
+    hackernews:49555479: 1
+    hackernews:49667711: 2
+    remoteok:1136795: 0
+    remoteok:1136796: 0
+    remoteok:1136798: 0
+    remoteok:1136841: 0
+    remoteok:1137072: 0
+    remoteok:1137408: 1
 - id: q48
   query: role that involves both research and shipping product
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49160915: 0
+    hackernews:49163946: 0
+    hackernews:49524979: 0
+    hackernews:49528044: 0
+    hackernews:49528405: 0
+    hackernews:49537373: 0
+    hackernews:49547792: 0
+    hackernews:49550510: 0
+    hackernews:49595476: 1
+    remoteok:1136094: 0
+    remoteok:1136097: 0
+    remoteok:1136216: 0
+    remoteok:1136670: 0
+    remoteok:1136687: 0
+    remoteok:1136841: 0
+    remoteok:1136937: 0
+    remoteok:1136950: 0
+    remoteok:1137139: 0
+    remoteok:1137302: 0
+    remoteok:1137388: 0
+    remoteok:1137396: 0
+    remoteok:1137407: 0
+    remoteok:1137421: 0
 - id: q49
   query: no whiteboard interviews
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49165394: 0
+    hackernews:49166975: 0
+    hackernews:49171072: 0
+    hackernews:49525141: 0
+    hackernews:49525603: 0
+    hackernews:49525748: 0
+    hackernews:49527193: 1
+    hackernews:49532154: 0
+    hackernews:49534032: 0
+    hackernews:49570095: 0
+    remoteok:1136168: 0
+    remoteok:1136670: 0
+    remoteok:1136687: 0
+    remoteok:1136857: 0
+    remoteok:1137378: 0
+    remoteok:1137386: 0
+    remoteok:1137388: 0
+    remoteok:1137391: 0
+    remoteok:1137405: 0
+    remoteok:1137406: 0
+    remoteok:1137410: 0
+    remoteok:1137412: 0
+    remoteok:1137420: 0
+    remoteok:1137421: 0
 - id: q50
   query: small team under twenty people
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49157178: 0
+    hackernews:49158050: 1
+    hackernews:49159942: 2
+    hackernews:49169017: 0
+    hackernews:49522903: 0
+    hackernews:49522912: 2
+    hackernews:49524520: 1
+    hackernews:49525831: 0
+    hackernews:49530116: 0
+    hackernews:49532898: 1
+    hackernews:49554223: 0
+    remoteok:1136066: 1
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+    remoteok:1136841: 0
+    remoteok:1136949: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137279: 0
+    remoteok:1137378: 0
+    remoteok:1137380: 0
+    remoteok:1137405: 0
+    remoteok:1137412: 0
+    remoteok:1137414: 1
+    remoteok:1137421: 0
 - id: q51
   query: developer tools for AI engineers
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156689: 0
+    hackernews:49157646: 0
+    hackernews:49163160: 0
+    hackernews:49164303: 0
+    hackernews:49165622: 0
+    hackernews:49167647: 0
+    hackernews:49168019: 0
+    hackernews:49169017: 1
+    hackernews:49523985: 0
+    hackernews:49524822: 0
+    hackernews:49524920: 0
+    hackernews:49524943: 0
+    hackernews:49527283: 0
+    hackernews:49528364: 0
+    hackernews:49528686: 0
+    hackernews:49530424: 0
+    hackernews:49532122: 0
+    hackernews:49541388: 2
+    hackernews:49552714: 0
+    hackernews:49627985: 0
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137380: 1
 - id: q52
   query: Java or Scala backend
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156737: 0
+    hackernews:49159028: 0
+    hackernews:49165651: 0
+    hackernews:49166080: 0
+    hackernews:49166092: 0
+    hackernews:49168047: 0
+    hackernews:49523408: 0
+    hackernews:49523422: 0
+    hackernews:49523703: 0
+    hackernews:49523978: 2
+    hackernews:49525483: 2
+    hackernews:49527588: 0
+    hackernews:49528364: 0
+    hackernews:49530116: 0
+    hackernews:49530424: 0
+    hackernews:49531417: 0
+    hackernews:49541107: 0
+    hackernews:49541874: 1
+    hackernews:49554223: 0
+    hackernews:49615973: 0
+    remoteok:1136188: 2
 - id: q53
   query: technical support or solutions engineer
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156689: 0
+    hackernews:49156711: 0
+    hackernews:49159942: 2
+    hackernews:49161851: 0
+    hackernews:49165394: 0
+    hackernews:49166082: 0
+    hackernews:49169371: 0
+    hackernews:49522929: 0
+    hackernews:49523985: 0
+    hackernews:49524880: 0
+    hackernews:49525116: 0
+    hackernews:49525468: 0
+    hackernews:49528044: 0
+    hackernews:49530256: 0
+    hackernews:49530424: 0
+    remoteok:1136066: 1
+    remoteok:1136670: 0
+    remoteok:1136796: 0
+    remoteok:1136798: 0
+    remoteok:1136937: 1
+    remoteok:1136987: 2
+    remoteok:1137302: 1
+    remoteok:1137408: 1
+    remoteok:1137411: 0
 - id: q54
   query: robotics
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
+  verified: true
+  judgements:
+    hackernews:49159686: 1
+    hackernews:49162501: 1
+    hackernews:49163358: 2
+    hackernews:49163678: 1
+    hackernews:49167691: 2
+    hackernews:49525651: 2
+    hackernews:49526154: 2
+    hackernews:49527344: 1
+    hackernews:49528413: 2
+    hackernews:49530909: 2
+    hackernews:49533419: 2
+    hackernews:49611044: 2
+    hackernews:49667711: 2
 - id: q55
   query: hybrid two days a week in the office
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156819: 0
+    hackernews:49156845: 0
+    hackernews:49157827: 2
+    hackernews:49158886: 1
+    hackernews:49159784: 1
+    hackernews:49524341: 1
+    hackernews:49524501: 1
+    hackernews:49525141: 2
+    hackernews:49525750: 2
+    hackernews:49527646: 1
+    hackernews:49529454: 1
+    hackernews:49541874: 1
+    hackernews:49553487: 1
+    remoteok:1135788: 0
+    remoteok:1136066: 0
+    remoteok:1136094: 0
+    remoteok:1136096: 0
+    remoteok:1136878: 0
+    remoteok:1136937: 0
+    remoteok:1136948: 0
+    remoteok:1137378: 0
+    remoteok:1137386: 0
+    remoteok:1137391: 0
+    remoteok:1137412: 0
 - id: q56
   query: growth or marketing role at a tech company
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49161851: 2
+    hackernews:49166000: 2
+    hackernews:49524979: 0
+    hackernews:49547792: 0
+    hackernews:49567458: 0
+    hackernews:49595476: 2
+    hackernews:49613305: 2
+    remoteok:1135681: 1
+    remoteok:1135997: 0
+    remoteok:1136094: 2
+    remoteok:1136097: 0
+    remoteok:1136216: 1
+    remoteok:1136221: 0
+    remoteok:1136797: 0
+    remoteok:1136949: 1
+    remoteok:1136950: 2
+    remoteok:1137302: 0
+    remoteok:1137378: 0
+    remoteok:1137381: 2
+    remoteok:1137388: 0
+    remoteok:1137391: 0
+    remoteok:1137396: 0
+    remoteok:1137406: 0
+    remoteok:1137414: 2
+    remoteok:1137421: 0
 - id: q57
   query: designer who can code
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49156702: 0
+    hackernews:49157129: 0
+    hackernews:49159312: 0
+    hackernews:49159942: 2
+    hackernews:49160915: 1
+    hackernews:49523985: 0
+    hackernews:49524252: 1
+    hackernews:49525270: 1
+    hackernews:49526361: 0
+    hackernews:49526742: 0
+    hackernews:49527388: 0
+    hackernews:49543579: 2
+    hackernews:49553901: 1
+    hackernews:49598051: 0
+    remoteok:1135767: 0
+    remoteok:1136192: 0
+    remoteok:1136213: 0
+    remoteok:1136796: 0
+    remoteok:1136841: 1
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137156: 0
+    remoteok:1137405: 1
 - id: q58
   query: quantitative or trading systems
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49157674: 2
+    hackernews:49162509: 0
+    hackernews:49163308: 2
+    hackernews:49166000: 0
+    hackernews:49523018: 2
+    hackernews:49523422: 0
+    hackernews:49523950: 2
+    hackernews:49524520: 0
+    hackernews:49526311: 2
+    hackernews:49559854: 2
+    hackernews:49571280: 2
+    remoteok:1136216: 0
+    remoteok:1136217: 0
+    remoteok:1136670: 0
+    remoteok:1136795: 0
+    remoteok:1136796: 0
+    remoteok:1136798: 0
+    remoteok:1136841: 0
+    remoteok:1137072: 0
+    remoteok:1137307: 1
+    remoteok:1137388: 1
+    remoteok:1137408: 0
+    remoteok:1137421: 1
 - id: q59
   query: LangChain or LlamaIndex
-  note: judged by Claude from title, company and retrieved snippet, not from the full posting.
-    Review before quoting the numbers.
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified
   verified: true
   judgements:
     hackernews:49157646: 2
+    hackernews:49160993: 0
+    hackernews:49162509: 0
     hackernews:49165024: 0
+    hackernews:49165916: 0
     hackernews:49169157: 0
+    hackernews:49523978: 0
     hackernews:49523985: 2
     hackernews:49524835: 0
-    hackernews:49534032: 1
+    hackernews:49525412: 0
+    hackernews:49525483: 0
+    hackernews:49530116: 0
+    hackernews:49534032: 2
     hackernews:49547973: 0
-    hackernews:49552714: 1
-    hackernews:49711313: 1
+    hackernews:49552714: 2
+    hackernews:49711313: 0
+    remoteok:1135634: 0
     remoteok:1137279: 0
     remoteok:1137307: 0
 - id: q60
   query: company building their own foundation models
-  note: ''
-  verified: false
-  judgements: {}
+  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
+    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
+    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
+    human-verified
+  verified: true
+  judgements:
+    hackernews:49160993: 0
+    hackernews:49165353: 2
+    hackernews:49167691: 0
+    hackernews:49522903: 0
+    hackernews:49525270: 0
+    hackernews:49525463: 0
+    hackernews:49525651: 0
+    hackernews:49528399: 0
+    hackernews:49534270: 0
+    hackernews:49537584: 2
+    hackernews:49542221: 2
+    hackernews:49595476: 1
+    remoteok:1135681: 0
+    remoteok:1136097: 0
+    remoteok:1136192: 0
+    remoteok:1136670: 0
+    remoteok:1136841: 0
+    remoteok:1136878: 0
+    remoteok:1136937: 0
+    remoteok:1137136: 0
+    remoteok:1137138: 0
+    remoteok:1137139: 0
+    remoteok:1137378: 0
+    remoteok:1137380: 0
+    remoteok:1137388: 0
+    remoteok:1137405: 0
+    remoteok:1137421: 0
