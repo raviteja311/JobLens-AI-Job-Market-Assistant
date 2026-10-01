@@ -36,7 +36,7 @@ flowchart LR
         RO[RemoteOK]
         AD[Adzuna, optional]
     end
-    sources -->|daily, GitHub Actions| ING[Ingestion pipeline<br/>fetch, parse, clean, dedup]
+    sources -->|daily, GitHub Actions| ING[Ingestion pipeline<br/>fetch, parse, clean, count duplicates]
     ING --> RAW[(raw_postings<br/>bronze)]
     RAW -->|transform| PG[(postings<br/>silver)]
     PG --> ML[Classic ML<br/>skills regex, clustering, trends]
@@ -83,8 +83,9 @@ regex it was meant to replace still ships.
 | tuned-v1 (collapsed) | 0.000 | 0.000 | 0.000 | 3,105 |
 
 **Chat**, last scored on 8 questions including up to 3 the corpus cannot
-answer: refusal accuracy 1.00 (gated in CI, floor 0.75), citation rate 0.75,
-judge scores uncalibrated and labelled as such. The chat golden set has since
+answer: refusal accuracy 1.00 (gated by `joblens eval` with a floor of 0.75,
+but not run in CI), citation rate 0.75, judge scores uncalibrated and
+labelled as such. The chat golden set has since
 grown to 20 questions (5 must be refused) and has not been re-scored.
 
 ## Status
@@ -150,7 +151,7 @@ python -m joblens spend                # what the LLM calls have cost
 python -m joblens serve                # the API
 ```
 
-`make test` runs the pytest suite (252 tests across 20 modules); `make test-db`
+`make test` runs the pytest suite (271 tests across 20 modules); `make test-db`
 fails instead of skipping when Postgres is unreachable.
 
 ## Repo structure
@@ -167,12 +168,13 @@ src/joblens/finetune/ Phase 6: teacher labels, LoRA training, extractor benchmar
 src/joblens/observability.py  Phase 7: JSON logs, Prometheus metrics
 prompts/             versioned prompt files, one directory per prompt
 data/golden/         the judged queries everything is scored against
+data/eval_baseline.json  committed retrieval scores the CI gate compares with
 tests/               pytest suite
 migrations/          schema, applied by `joblens migrate`
 monitoring/          Phase 7: Prometheus scrape config, Grafana dashboard and alerts
 docs/                devlog, experiments, runbook, blog drafts, resume bullets
 scripts/demo_gif.py  records the README demo from the running UI
-Dockerfile           two image targets: the API and the UI
+Dockerfile           two images from one file: the API (runtime) and the UI (ui)
 ```
 
 ## Phases
@@ -202,21 +204,25 @@ re-runs over the raw layer instead of waiting two weeks to re-collect.
 
 **Cleaning** strips HTML with the stdlib, normalises locations against a
 lookup table rather than a geocoder, and parses salary out of free text:
-ranges, `up to`, `from`, hourly and monthly rates, seven currency symbols and nine ISO codes, and the
-strings that mean "we are not telling you". Hourly and monthly figures are
-annualised. When no period is stated, one is inferred from the size of the
-number (a bare `65` is read as hourly); that guess is the riskiest step, since a
-wrong one is how a $60/hr contract ends up in the data as a $60 salary.
+ranges, `up to`, `from`, hourly and monthly rates, nine currencies (USD, GBP,
+EUR, INR, JPY, CAD and AUD by symbol or ISO code, CHF and SEK by code), and
+the strings that mean "we are not telling you". Hourly and monthly figures are
+annualised only when the period was actually stated; a guessed period is how a
+$60/hr contract ends up in the data as a $60 salary. A bare figure in the
+thousands is read as annual, which multiplies it by one; a bare small figure
+such as `65` keeps its min and max but no period, and is never annualised.
+A salary with no currency is left out of the salary model and `/trends`
+rather than assumed to be dollars.
 
 **Dedup** is an exact match on a normalised content hash of title, company and
-location, with seniority words removed. It finds 28 duplicates. Phase 3 adds a
+location, with seniority words removed. It counts duplicates rather than
+removing them: 28 on the latest run, stored in `ingestion_runs`. Phase 3 adds a
 second, different signal rather than replacing it.
 
 **Reliability.** Retries with backoff on 429 and 5xx, fails fast on other 4xx.
 One source failing does not stop the others. Every run writes to
 `ingestion_runs` with counts and any error. 33 of 400 Hacker News comments are
-replies rather than postings; they are counted as skipped in the run log, not
-dropped silently.
+replies rather than postings and are counted as skipped, not dropped silently.
 
 **Schedule.** `.github/workflows/ingest.yml` runs daily at 06:00 UTC and is
 idempotent, so a missed slot costs that day's postings and nothing else.
@@ -272,13 +278,26 @@ bound checked separately (2026-09-26, 109 usable postings):
 | median | 59,386 | 93,682 | -0.044 | +0.0% |
 | gradient_boosting | 63,717 | 97,238 | -0.910 | -7.3% |
 
-The ridge now clearly beats the median, and it is still off by about $49k on
-an average posting. **There is no salary prediction endpoint** and there will
-not be one until there are roughly 500 salary-disclosing postings.
+Two of those 109 had no currency at all ("145k-165k + equity", "150k-250k")
+and had been filled in as dollars. A salary with no currency is now dropped
+rather than assumed, and the same run on the remaining rows (2026-10-01, 107
+usable postings) gives back part of the gain:
+
+| model | MAE (USD) | RMSE (USD) | R2 | vs median |
+| --- | ---: | ---: | ---: | ---: |
+| ridge | 53,503 | 73,309 | 0.213 | +10.0% |
+| ridge_log | 54,559 | 80,459 | 0.134 | +8.3% |
+| random_forest | 54,991 | 81,329 | 0.078 | +7.5% |
+| gradient_boosting | 56,896 | 82,022 | -0.020 | +4.3% |
+| median | 59,475 | 93,615 | -0.007 | +0.0% |
+
+The ridge still beats the median, and it is off by about $54k on an average
+posting. **There is no salary prediction endpoint** and there will not be one
+until there are roughly 500 salary-disclosing postings.
 
 Permutation importance on the held-out rows of every CV fold
 (`train-salary --importance`) says where what little signal there is lives:
-shuffling the text costs the ridge **13.6k** of MAE (sd 8.7k), and every
+shuffling the text costs the ridge **12.1k** of MAE (sd 11.0k), and every
 other column is within one standard deviation of nothing. The text is the
 only column that matters, and it is not enough. The first version measured
 this on a single 28-row test split, and one re-ingest flipped its ranking;
@@ -448,7 +467,13 @@ answer on CPU.
 
 `/chat` and `/match` are rate limited to 10 requests a minute per caller. The
 whole point of the project is a public URL, and a public URL with an uncapped
-model call behind it is someone else's free inference endpoint.
+model call behind it is someone else's free inference endpoint. Only a
+request that passes validation spends the budget: a 422, 413 or 415 does not.
+
+`/chat` returns the postings the answer cites with `[n]` as `citations`, and
+everything the model was given as `retrieved`, so a client never shows an
+uncited posting as support. `/match` answers 503 with a reason, not 500, when
+the model never returns a skill list that validates.
 
 ### Phase 5: Evaluation harness
 
@@ -497,18 +522,21 @@ the rule that fixes it, and the A/B is the reason to believe the fix:
 **Refusal accuracy is the metric that matters** and is reported separately
 from the judge. A system that answers "what is the capital of Peru?" from job
 postings is worse than one that answers nothing, because it is confidently
-wrong in a way the user cannot detect. That is a hard floor in CI, not a trend
-line.
+wrong in a way the user cannot detect. That is a hard floor in the gate, not
+a trend line.
 
 **The judge is calibrated, or its numbers are not used.** `joblens calibrate`
 scores the judge against hand-scored answers in `data/golden/judgements.yaml`
 and reports agreement and Cohen's kappa. Kappa and not raw agreement because
 the grades are skewed towards 2: a judge that answers "2" to everything scores
 about 70% agreement and a kappa of zero, and only one of those numbers says it
-is useless. **It has been run and failed**: 20 hand-scored answers give a faithfulness
-kappa of 0.00, so `Calibration.trustworthy` returns False. The judge scores
-below are therefore uncalibrated and should be read as a smoke test, not as a
-quality measurement.
+is useless. **It has been run, and the judge is not calibrated**: the owner
+scored 20 drafted answers by hand, all 2 on both scales, and the judge agreed
+on 65% (faithfulness) and 95% (completeness) with kappa 0.00 on both. With no
+variation in the human scores kappa cannot tell the judge from chance, so
+`Calibration.trustworthy` stays False (see `docs/experiments.md`). The judge
+scores here are therefore uncalibrated and should be read as a smoke test,
+not as a quality measurement.
 
 Known judge biases this design limits rather than fixes: verbosity bias is
 real and unmitigated, and self-preference is at its worst here because the
@@ -517,9 +545,19 @@ judge is the same llama3.1 that wrote the answer.
 **The gate.** Thresholds live in `src/joblens/eval/report.py` next to the code
 rather than in the workflow file, so changing one shows up in a pull request
 diff. Absolute floors fail the build outright; a drop of more than 0.05
-against the last recorded run fails it as a regression. The tolerance is not
-zero because these numbers move a point or two on a corpus that grows daily,
-and a gate that fires on noise gets disabled within a week.
+against the baseline fails it as a regression. The baseline is the last run
+recorded in the database, or, when there is none, the committed
+`data/eval_baseline.json`: scores for all six retrieval configurations,
+measured on the 466-posting corpus. CI starts from an empty database every
+time, so before that file existed the regression check never applied there
+and only the floors could fail the build. Locally it never fired either:
+`joblens eval` recorded the new run before looking up the last one, so it
+compared each run with itself. It now reads the baseline first. `joblens eval --update-baseline`
+rewrites the file, and committing it is the reviewed way to move the bar.
+The judge's faithfulness and completeness are recorded but not compared, for
+the reason above. The tolerance is not zero because these numbers move a
+point or two on a corpus that grows daily, and a gate that fires on noise
+gets disabled within a week.
 
 **A/B harness.** `joblens ab v1 v2` runs both prompt versions over the same
 questions and diffs the scores.
@@ -528,7 +566,10 @@ questions and diffs the scores.
 is what survives someone dropping the database.
 
 `.github/workflows/eval.yml` runs the retrieval suite on any PR touching
-retrieval, prompts or the golden set. The chat suite is not in that gate: a
+retrieval, prompts, the golden set or the baseline, and fails on a floor or
+on a drop against the committed baseline. CI scores a fresh ingest, not the
+corpus the baseline was measured on, so a large drop there can be corpus
+drift rather than a code change. The chat suite is not in that gate: a
 local Llama on a GitHub runner takes half an hour, and a green tick that only
 means "we skipped it" is worse than no tick.
 
@@ -668,11 +709,14 @@ ingestion workflow also opens a GitHub issue labelled `ingest-failure` when
 it fails, and comments on the open one on repeat failures, because an email
 from GitHub Actions is the easiest alert in the world to miss.
 
-**CI/CD.** Pull requests run lint and tests (`ci`) and, when retrieval code
-or the golden set changes, the retrieval eval gate (`eval`). A push to `main`
-runs both of those as stages of `deploy`, then builds the image and pushes
-it to GitHub's container registry tagged with the commit SHA. What gets
-deployed is the image that passed the gate, not a rebuild.
+**CI/CD.** Pull requests run lint and tests (`ci`) and, when retrieval code,
+the golden set or the eval baseline changes, the retrieval eval gate
+(`eval`), which fails on a floor or on a drop of more than 0.05 against the
+committed `data/eval_baseline.json`. A push to `main` runs both of those as
+stages of `deploy`, then builds the image and pushes it to GitHub's
+container registry tagged with the commit SHA. There is no deploy job yet;
+when there is, it should pull that tag, so what runs is the image that
+passed the gate, not a rebuild.
 
 **Runbook.** [`docs/runbook.md`](docs/runbook.md) covers ingestion failed,
 LLM provider down or expensive, database slow or down, deploy and rollback,
@@ -682,7 +726,9 @@ Every command in it exists in the repo.
 **Security basics.** Secrets come from the environment; `.env` is
 gitignored and `.dockerignore` keeps it out of the image. `/chat` and
 `/match` sit behind a per-IP rate limit. Resume uploads are capped at 2MB
-and any request declaring a body over 3MB is refused before it is read.
+and any request body over 3MB is refused: before it is read when the request
+declares its length, and as soon as the running count passes 3MB when it
+does not (a chunked upload).
 Containers run as an unprivileged user with no compiler or git installed.
 
 **Not done yet, and why.**
@@ -747,7 +793,7 @@ Kept current and honest.
 - **Hybrid retrieval is worse than vector alone** on these queries. It is kept
   for rare-token queries, which the current golden set under-represents.
 - **No salary prediction.** The best model (ridge) beats predicting the
-  median by 16.8% but is still off by about $49k on an average posting, which
+  median by 10.0% but is still off by about $54k on an average posting, which
   is not good enough to serve until there are roughly 500 salaried postings.
 - **Salary figures cover 23% of postings** and those are not a random sample.
 - **Currency conversion uses rates frozen on 2025-09-01.**

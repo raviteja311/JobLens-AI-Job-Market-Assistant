@@ -5,9 +5,10 @@ name: deploy
 # here, so a green tick on main means exactly what a green tick on a PR
 # meant and nothing was skipped for speed.
 #
-# The image goes to GitHub's registry under this repository. The deploy job
-# pulls that tag, so what runs in production is byte for byte the image the
-# eval gate passed, not a rebuild that happened to have the same source.
+# The image goes to GitHub's registry under this repository, tagged with the
+# short commit SHA. There is no deploy job yet: the workflow ends at the
+# push. When one is added it should pull that tag, so what runs in production
+# is byte for byte the image the eval gate passed, not a rebuild.
 on:
   push:
     branches: [main]

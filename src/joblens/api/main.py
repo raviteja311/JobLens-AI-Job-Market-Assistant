@@ -17,10 +17,10 @@ import time
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import JSONResponse, Response
 
-from joblens import db, observability
+from joblens import __version__, db, observability
 from joblens.api import schemas
 from joblens.config import get_settings
 from joblens.llm.client import BackendUnavailable
@@ -69,34 +69,68 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="JobLens",
-    version="0.4.0",
+    version=__version__,
     description="Semantic job search, grounded chat and resume matching.",
     lifespan=lifespan,
 )
 
 
+class BodySizeLimit:
+    """The body size guard, as plain ASGI so it can see the body arrive.
+
+    FastAPI checks the resume against MAX_RESUME_BYTES after reading it. This
+    rejects a declared length over the limit before a byte is buffered, and
+    counts the bytes of a request that declares none (chunked uploads), so
+    leaving the header off no longer skips the check: the 413 is raised the
+    moment the running total passes the limit.
+    """
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        limit = get_settings().max_body_bytes
+        detail = f"request body must be under {limit} bytes"
+        headers = dict(scope.get("headers") or [])
+        declared = headers.get(b"content-length", b"").decode("latin-1")
+        if declared.isdigit() and int(declared) > limit:
+            await JSONResponse({"detail": detail}, status_code=413)(
+                scope, receive, send
+            )
+            return
+
+        received = 0
+
+        async def counted():
+            nonlocal received
+            message = await receive()
+            if message["type"] == "http.request":
+                received += len(message.get("body", b""))
+                if received > limit:
+                    # FastAPI re-raises an HTTPException met while reading
+                    # the body, so this comes back as a 413, not a 400.
+                    raise HTTPException(413, detail)
+            return message
+
+        await self.app(scope, counted, send)
+
+
+# Added before `observe`, so it sits inside it and its 413s are counted too.
+app.add_middleware(BodySizeLimit)
+
+
 @app.middleware("http")
 async def observe(request: Request, call_next):
-    """One histogram sample and one JSON log line per request.
-
-    Also the body size guard. FastAPI checks the resume against
-    MAX_RESUME_BYTES after reading it; this rejects on the declared length
-    before a byte of a 500MB upload is buffered.
-    """
-    settings = get_settings()
+    """One histogram sample and one JSON log line per request."""
     watch = observability.Stopwatch()
-    declared = request.headers.get("content-length")
-    if declared and declared.isdigit() and int(declared) > settings.max_body_bytes:
-        response: Response = JSONResponse(
-            {"detail": f"request body must be under {settings.max_body_bytes} bytes"},
-            status_code=413,
-        )
-    else:
-        try:
-            response = await call_next(request)
-        except Exception:
-            _observe(request, 500, watch.seconds)
-            raise
+    try:
+        response = await call_next(request)
+    except Exception:
+        _observe(request, 500, watch.seconds)
+        raise
     _observe(request, response.status_code, watch.seconds)
     return response
 
@@ -131,6 +165,13 @@ _SWEEP_ABOVE = 1000
 
 
 def rate_limit(request: Request) -> None:
+    """Spend one of the caller's requests for this minute.
+
+    Called from inside the handlers, not as a route dependency. A dependency
+    runs before FastAPI validates the body, so a request rejected with 422
+    used to spend a slot; here only a request that has passed validation
+    counts.
+    """
     settings = get_settings()
     caller = request.client.host if request.client else "unknown"
     now = time.monotonic()
@@ -257,15 +298,12 @@ def get_trends(days: int = Query(90, ge=1, le=365)) -> dict:
     return summary
 
 
-@app.post(
-    "/chat",
-    response_model=schemas.ChatResponse,
-    dependencies=[Depends(rate_limit)],
-)
-def chat(request: schemas.ChatRequest) -> schemas.ChatResponse:
+@app.post("/chat", response_model=schemas.ChatResponse)
+def chat(request: schemas.ChatRequest, http: Request) -> schemas.ChatResponse:
     settings = get_settings()
     if not settings.llm_enabled:
         raise HTTPException(503, "no LLM backend configured")
+    rate_limit(http)
     try:
         with db.connect() as conn:
             answer = chat_rag.ask(
@@ -276,31 +314,27 @@ def chat(request: schemas.ChatRequest) -> schemas.ChatResponse:
             )
     except BackendUnavailable as exc:
         raise HTTPException(503, str(exc)) from exc
+    retrieved = [
+        schemas.Citation(
+            n=s.n, posting_id=s.posting_id, title=s.title, company=s.company, url=s.url
+        )
+        for s in answer.sources
+    ]
     return schemas.ChatResponse(
         question=answer.question,
         answer=answer.answer,
-        citations=[
-            schemas.Citation(
-                n=s.n,
-                posting_id=s.posting_id,
-                title=s.title,
-                company=s.company,
-                url=s.url,
-            )
-            for s in answer.sources
-        ],
+        # Only the postings the answer cites. A number the model invented
+        # matches no supplied source and so cannot appear here.
+        citations=[c for c in retrieved if c.n in answer.cited],
+        retrieved=retrieved,
         grounded=answer.grounded,
         took_ms=answer.took_ms,
         cost_usd=round(answer.cost_usd, 6),
     )
 
 
-@app.post(
-    "/match",
-    response_model=schemas.MatchResponse,
-    dependencies=[Depends(rate_limit)],
-)
-def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
+@app.post("/match", response_model=schemas.MatchResponse)
+def match(http: Request, file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
     """Sync on purpose, like /chat. This handler makes up to nine blocking
     LLM calls; as `async def` it ran on the event loop and every other
     request, /health included, waited behind it. A plain `def` runs in the
@@ -321,6 +355,9 @@ def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
     if not filename.endswith(".pdf") and b"\x00" in data:
         # A text file does not contain NUL bytes; a binary renamed to .txt does.
         raise HTTPException(422, "that file is not plain text")
+    # After the free checks, before any work: a request refused above has
+    # cost nothing and does not spend the caller's budget.
+    rate_limit(http)
     try:
         text = (
             resume_rag.pdf_to_text(data)
@@ -336,6 +373,8 @@ def match(file: UploadFile = RESUME_FILE) -> schemas.MatchResponse:
                 conn, text, embedder=_state.get("embedder")
             )
     except BackendUnavailable as exc:
+        raise HTTPException(503, str(exc)) from exc
+    except resume_rag.ProfileUnavailable as exc:
         raise HTTPException(503, str(exc)) from exc
     return schemas.MatchResponse(
         resume_skills=report.profile.skills,

@@ -143,7 +143,9 @@ def test_only_cited_postings_are_listed_as_sources():
         "grounded": True,
         "took_ms": 900,
         "cost_usd": 0.0001,
-        "citations": [posting(1), posting(2), posting(3)],
+        # What the API sends: the cited postings, and everything retrieved.
+        "citations": [posting(1), posting(3)],
+        "retrieved": [posting(1), posting(2), posting(3)],
     }
     at, _ = _run(CHAT, _post(200, reply), _ask)
     md = _markdown(at)

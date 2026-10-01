@@ -75,6 +75,14 @@ class Match:
     verdict: JobMatch
 
 
+class ProfileUnavailable(RuntimeError):
+    """The model never produced a skill list that validates.
+
+    Not a ValueError on purpose: the API turns ValueError into a 422, which
+    would blame the resume for the model's malformed JSON.
+    """
+
+
 @dataclass
 class MatchReport:
     profile: ResumeProfile
@@ -157,7 +165,16 @@ def match_resume(
     began = time.perf_counter()
     limit = min(limit, MAX_MATCHES)
 
-    extracted = extract_profile(resume_text, prompt_version)
+    try:
+        extracted = extract_profile(resume_text, prompt_version)
+    except ValueError as exc:
+        # Every retry came back unparseable. Without this the endpoint
+        # answered 500, which reads as a crash rather than a model that
+        # could not do the job this time.
+        raise ProfileUnavailable(
+            "the model did not return a valid skill list for this resume "
+            "after several attempts; try again, or switch LLM_BACKEND"
+        ) from exc
     profile = extracted.value
     cost = extracted.completion.cost_usd
 

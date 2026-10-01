@@ -77,21 +77,32 @@ def training_frame(frame: pd.DataFrame) -> pd.DataFrame:
     work["seniority"] = work["title"].map(dataset.seniority)
     work["text"] = posting_text(work)
 
-    midpoint = work[["salary_min_year", "salary_max_year"]].mean(axis=1, skipna=True)
-    rate = work["salary_currency"].fillna("USD").map(FX_TO_USD)
-    # An unrecognised currency code is dropped, not assumed to be dollars.
-    work["salary_usd"] = midpoint * rate
+    work["salary_usd"], usable = salary_in_usd(work)
+    return work.loc[usable].reset_index(drop=True)
+
+
+def salary_in_usd(frame: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
+    """The annual midpoint in USD, and which rows have a salary we believe.
+
+    Shared by the training frame and /trends so the two cannot disagree about
+    which postings are priced.
+    """
+    midpoint = frame[["salary_min_year", "salary_max_year"]].mean(axis=1, skipna=True)
+    # A missing or unrecognised currency is dropped, not assumed to be dollars:
+    # "150k-250k" with no symbol could be francs as easily as dollars.
+    rate = frame["salary_currency"].map(FX_TO_USD)
+    usd = midpoint * rate
 
     # Each stated bound has to be plausible, not only the midpoint: a range
     # misread as 100 to 200,000 has a believable midpoint and a nonsense floor.
-    low = work["salary_min_year"] * rate
-    high = work["salary_max_year"] * rate
+    low = frame["salary_min_year"] * rate
+    high = frame["salary_max_year"] * rate
     usable = (
-        work["salary_usd"].between(MIN_ANNUAL_USD, MAX_ANNUAL_USD)
+        usd.between(MIN_ANNUAL_USD, MAX_ANNUAL_USD)
         & (low.isna() | (low >= MIN_ANNUAL_USD))
         & (high.isna() | (high <= MAX_ANNUAL_USD))
     )
-    return work.loc[usable].reset_index(drop=True)
+    return usd, usable
 
 
 def _text_features() -> ColumnTransformer:

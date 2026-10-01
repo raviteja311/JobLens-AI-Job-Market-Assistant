@@ -86,6 +86,24 @@ def test_unknown_currency_is_dropped_not_assumed_to_be_dollars():
     assert salary_model.training_frame(frame).empty
 
 
+def test_missing_currency_is_dropped_not_assumed_to_be_dollars():
+    # "150k-250k" with no symbol used to be filled in as USD.
+    frame = pd.DataFrame(
+        {
+            "title": ["ML Engineer", "ML Engineer"],
+            "description": ["Python", "Python"],
+            "location": [None, None],
+            "is_remote": [True, True],
+            "source": ["hackernews", "hackernews"],
+            "salary_min_year": [150_000, 150_000],
+            "salary_max_year": [250_000, 250_000],
+            "salary_currency": [None, "USD"],
+        }
+    )
+    usable = salary_model.training_frame(frame)
+    assert usable["salary_currency"].tolist() == ["USD"]
+
+
 def test_too_little_data_fails_loudly(corpus):
     small = salary_model.training_frame(corpus).head(5)
     with pytest.raises(ValueError, match="at least 30 rows"):

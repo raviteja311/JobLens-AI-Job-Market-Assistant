@@ -68,5 +68,20 @@ def test_summary_counts_its_own_denominators(corpus):
     assert len(result["top_skills"]) == 15
 
 
+def test_priced_postings_need_a_currency_and_plausible_bounds():
+    frame = pd.DataFrame(
+        {
+            # A believable posting, one with no currency, and "100-200k"
+            # misread as 100 to 200,000, whose midpoint alone looks fine.
+            "salary_min_year": [120_000, 120_000, 100],
+            "salary_max_year": [150_000, 150_000, 200_000],
+            "salary_currency": ["USD", None, "USD"],
+        }
+    )
+    priced = trends._priced(frame)
+    assert priced.index.tolist() == [0]
+    assert priced["salary_usd"].tolist() == [135_000]
+
+
 def test_summary_of_an_empty_corpus_does_not_explode():
     assert trends.summary(pd.DataFrame()) == {"postings": 0}

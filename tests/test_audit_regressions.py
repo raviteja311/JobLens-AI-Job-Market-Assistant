@@ -298,3 +298,150 @@ def test_search_strategy_defaults_to_the_setting(client, monkeypatch):
     assert seen["strategy"] == api.get_settings().chunk_strategy
     assert client.get("/search?q=python&strategy=section").status_code == 200
     assert seen["strategy"] == "section"
+
+
+# ---------------------------------------------------------------- doc audit
+
+
+class _GarbageBackend:
+    name = "ollama"
+
+    def complete(self, prompt, max_tokens, json_mode):
+        return llm.Completion(text="I think they know Python.", model="m", backend="b")
+
+
+@contextmanager
+def _settings(monkeypatch, **values):
+    from joblens import config
+
+    for key, value in values.items():
+        monkeypatch.setenv(key, str(value))
+    config.get_settings.cache_clear()
+    try:
+        yield
+    finally:
+        for key in values:
+            monkeypatch.delenv(key)
+        config.get_settings.cache_clear()
+
+
+def _answer(question="who hires?", cited=frozenset({1, 3})):
+    sources = [
+        chat_rag.Source(
+            n=n,
+            posting_id=10 + n,
+            title=f"Role {n}",
+            company="Acme",
+            url="u",
+            location=None,
+            text="t",
+        )
+        for n in (1, 2, 3)
+    ]
+    return chat_rag.ChatAnswer(
+        question=question,
+        answer="Acme [1] and Beta [3].",
+        sources=sources,
+        grounded=True,
+        cited=set(cited),
+    )
+
+
+def test_chat_citations_are_only_the_cited_postings(client, monkeypatch):
+    # Every supplied posting used to come back as a citation; [2] was not cited.
+    monkeypatch.setattr(api.chat_rag, "ask", lambda conn, q, **kw: _answer(q))
+    api._hits.clear()
+    body = client.post("/chat", json={"question": "who hires?"}).json()
+    assert [c["n"] for c in body["citations"]] == [1, 3]
+    assert [c["n"] for c in body["retrieved"]] == [1, 2, 3]
+    api._hits.clear()
+
+
+def test_an_invented_citation_number_is_not_returned(client, monkeypatch):
+    monkeypatch.setattr(
+        api.chat_rag, "ask", lambda conn, q, **kw: _answer(q, cited={1, 9})
+    )
+    api._hits.clear()
+    body = client.post("/chat", json={"question": "who hires?"}).json()
+    assert [c["n"] for c in body["citations"]] == [1]
+    api._hits.clear()
+
+
+def test_match_returns_503_when_the_skill_list_never_validates(client, monkeypatch):
+    # complete_structured gives up with a ValueError, which surfaced as a 500.
+    monkeypatch.setattr(llm, "get_backend", lambda: _GarbageBackend())
+    api._hits.clear()
+    response = client.post("/match", files={"file": ("cv.txt", b"python aws " * 20)})
+    assert response.status_code == 503
+    assert "valid skill list" in response.json()["detail"]
+    api._hits.clear()
+
+
+def test_requests_that_fail_validation_do_not_spend_the_rate_limit(client, monkeypatch):
+    monkeypatch.setattr(api.chat_rag, "ask", lambda conn, q, **kw: _answer(q))
+    api._hits.clear()
+    with _settings(monkeypatch, RATE_LIMIT_PER_MINUTE=2):
+        for _ in range(5):
+            assert client.post("/chat", json={"question": "x"}).status_code == 422
+            assert client.post("/match").status_code == 422
+            assert (
+                client.post("/match", files={"file": ("cv.exe", b"MZ")}).status_code
+                == 415
+            )
+        assert client.post("/chat", json={"question": "who hires?"}).status_code == 200
+        assert client.post("/chat", json={"question": "who hires?"}).status_code == 200
+        assert client.post("/chat", json={"question": "who hires?"}).status_code == 429
+    api._hits.clear()
+
+
+def test_a_body_without_content_length_is_still_size_limited(client, monkeypatch):
+    def chunks():
+        for _ in range(10):
+            yield b"x" * 100
+
+    with _settings(monkeypatch, MAX_BODY_BYTES=500):
+        declared = client.post("/chat", content=b"x" * 600)
+        assert declared.status_code == 413
+        streamed = client.post(
+            "/chat", content=chunks(), headers={"content-type": "application/json"}
+        )
+        assert "content-length" not in {k.lower() for k in streamed.request.headers}
+        assert streamed.status_code == 413
+        assert "under 500 bytes" in streamed.json()["detail"]
+
+        # A multipart upload streamed the same way, which is how a resume
+        # arrives: the limit holds inside the form parser too.
+        def upload():
+            yield b'--b\r\nContent-Disposition: form-data; name="file"; '
+            yield b'filename="cv.txt"\r\n\r\n'
+            yield from chunks()
+            yield b"\r\n--b--\r\n"
+
+        streamed_upload = client.post(
+            "/match",
+            content=upload(),
+            headers={"content-type": "multipart/form-data; boundary=b"},
+        )
+        assert streamed_upload.status_code == 413
+
+
+def test_api_version_is_the_package_version():
+    import tomllib
+    from pathlib import Path
+
+    import joblens
+
+    pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    declared = tomllib.loads(pyproject.read_text(encoding="utf-8"))["project"]
+    assert api.app.version == joblens.__version__ == declared["version"]
+
+
+def test_latest_prompt_version_sorts_numerically(tmp_path, monkeypatch):
+    from joblens.llm import prompts
+
+    for stem in ("v1", "v2", "v10", "v9"):
+        (tmp_path / "demo").mkdir(exist_ok=True)
+        (tmp_path / "demo" / f"{stem}.md").write_text("x", encoding="utf-8")
+    monkeypatch.setattr(prompts, "PROMPTS_DIR", tmp_path)
+    assert prompts.available("demo") == ["v1", "v2", "v9", "v10"]
+    assert prompts.latest("demo") == "v10"

@@ -146,7 +146,9 @@ suite scored is an unscored answer. Search and trends keep working because
 they never touch the LLM. This is deliberate; see Phase 4 in the README.
 
 **Cost control.** The rate limit is `RATE_LIMIT_PER_MINUTE` (default 10) per
-client IP per process. `joblens_llm_cost_usd_today` is the number to watch.
+client IP per process, counted only for requests that pass validation (a
+422, 413 or 415 spends nothing). `joblens_llm_cost_usd_today` is the number
+to watch.
 If it is climbing from one IP, lower the limit and restart; if it is climbing
 from many, take `/chat` and `/match` offline by unsetting
 `ANTHROPIC_API_KEY` (the endpoints then return 503 and cost nothing) until

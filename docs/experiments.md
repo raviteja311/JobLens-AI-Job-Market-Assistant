@@ -1268,3 +1268,54 @@ bytes, both before any model call.
 
 **Decision.** All five fixed and tested. The eval gate still passes. The
 section-chunking regression is recorded, not reverted.
+
+## 2026-10-01 - A second documentation audit: salaries without a currency, and a gate that never compared
+
+**How they were found.** The same exercise as the entry above, one week
+later: every claim in the README and the code comments checked against the
+code and the database.
+
+**1. A missing currency was assumed to be dollars.** `training_frame` and
+`trends._priced` filled an empty `salary_currency` with "USD". Two training
+rows had none: "145k-165k + equity" and "150k-250k", both Hacker News. Both
+are now dropped, in one shared function (`salary_model.salary_in_usd`) that
+also gives `/trends` the per-bound check the training frame already had.
+Same corpus, same folds:
+
+| | 109 rows, missing currency as USD | 107 rows, dropped |
+| --- | ---: | ---: |
+| ridge MAE (USD) | 49,383 | 53,503 |
+| ridge R2 | 0.307 | 0.213 |
+| ridge vs median | +16.8% | +10.0% |
+| text permutation importance | +13,580 (sd 8,729) | +12,126 (sd 10,955) |
+| trends median salary (90 days) | 182,000 | 182,000 |
+
+Two rows moved the headline by almost seven points, which says more about
+107 rows than about those two. The decision does not change: no salary
+endpoint.
+
+**2. A guessed period was annualised.** `parse_salary` called a bare figure
+under 1,000 hourly, so "65" was stored as 135,200 a year, which is the exact
+failure the README said the parser avoided. A bare figure now keeps no
+period unless it is in the thousands (read as annual, a factor of 1).
+Removing the guess exposed two postings that had been right by accident:
+"$90-$110/hour USD" and "$23-$34 USD/hour" state their period, but the hour
+pattern wanted "hr" and missed "/hour", so only the guess made them hourly.
+The pattern now reads "/hour" and a spaced "50 / hour", and re-parsing all
+113 stored salary strings gives exactly what is stored, so no re-parse was
+needed.
+
+**3. The regression gate compared each run with itself.** `joblens eval`
+recorded the new run and then asked for the last recorded run, which was
+the new one, so the 0.05 tolerance could never fire; and in CI, where the
+database is new every time, there was no previous run anyway. The baseline
+is now read before recording, and falls back to the committed
+`data/eval_baseline.json`, written by `joblens eval --update-baseline`. Its
+numbers are the current table for all six configurations (vector (whole)
+recall@10 0.653, nDCG@10 0.612; hybrid + rerank MRR 0.797), re-measured on
+this corpus with no change. The CI corpus is a fresh ingest, so the first
+CI comparison against it is also a measurement of corpus drift.
+
+**Decision.** All fixed with regression tests. The judge's faithfulness and
+completeness are no longer regression-gated, which is what the code comment
+had always claimed.

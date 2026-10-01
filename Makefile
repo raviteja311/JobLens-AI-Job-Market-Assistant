@@ -102,7 +102,8 @@ format:
 
 check: lint test
 
-# Phase 7. One image serves the API and the UI; the command picks which.
+# Phase 7. The Dockerfile builds two images, `runtime` (the API, the last
+# stage and so the default) and `ui`; compose builds both. This builds the API.
 image:
 	docker build -t joblens:local .
 

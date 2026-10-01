@@ -75,11 +75,6 @@ def snippet_text(snippet: str) -> str:
     return text[:280] + ("..." if len(text) > 280 else "")
 
 
-# Same pattern the backend uses to decide an answer is grounded
-# (joblens.rag.chat._CITATION).
-CITATION = re.compile(r"\[(\d+)\]")
-
-
 def source_line(citation: dict) -> str:
     return (
         f"{citation['n']}. [{md(citation['title'])}]({citation['url']}) · "
@@ -241,12 +236,12 @@ if chat_tab.open:
                         ":orange-badge[:material/info: no sources cited] The "
                         "postings did not answer this, and the reply says so."
                     )
-                # `citations` is every posting the model was given. Only the
-                # ones the answer actually cites are its sources; listing all
-                # six under that heading would claim support it never used.
-                cited_numbers = {int(n) for n in CITATION.findall(body["answer"])}
-                cited = [c for c in body["citations"] if c["n"] in cited_numbers]
-                rest = [c for c in body["citations"] if c["n"] not in cited_numbers]
+                # The API returns only the cited postings as `citations`, and
+                # everything the model was given as `retrieved`; the rest are
+                # shown apart so they are not read as support for the answer.
+                cited = body["citations"]
+                numbers = {c["n"] for c in cited}
+                rest = [c for c in body.get("retrieved", []) if c["n"] not in numbers]
                 if cited:
                     st.markdown("**Sources**")
                     for citation in cited:

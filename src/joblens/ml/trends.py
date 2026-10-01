@@ -18,7 +18,7 @@ from __future__ import annotations
 import pandas as pd
 
 from joblens.ml import dataset
-from joblens.ml.salary_model import FX_TO_USD, MAX_ANNUAL_USD, MIN_ANNUAL_USD
+from joblens.ml.salary_model import salary_in_usd
 from joblens.ml.skills import skill_counts, skill_matrix
 
 
@@ -125,9 +125,10 @@ def _priced(frame: pd.DataFrame) -> pd.DataFrame:
     if frame.empty:
         return frame
     work = frame.copy()
-    midpoint = work[["salary_min_year", "salary_max_year"]].mean(axis=1, skipna=True)
-    work["salary_usd"] = midpoint * work["salary_currency"].fillna("USD").map(FX_TO_USD)
-    return work[work["salary_usd"].between(MIN_ANNUAL_USD, MAX_ANNUAL_USD)]
+    # The same rule as the salary model: no currency means no price, and each
+    # bound has to be plausible, not only the midpoint.
+    work["salary_usd"], usable = salary_in_usd(work)
+    return work[usable]
 
 
 def summary(frame: pd.DataFrame, days: int = 90) -> dict:

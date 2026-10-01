@@ -85,7 +85,7 @@ its derivative.
 Only 23% of postings state a salary at all. Of those, the text says things
 like `$120k-$150k`, `up to 90,000 GBP`, `from €60k`, `$60/hr`, `competitive`,
 and `DOE`. The parser handles ranges, `up to`, `from`, hourly and monthly
-rates and six currencies, and it recognises the strings that mean "we are
+rates and nine currencies, and it recognises the strings that mean "we are
 not telling you".
 
 The rule that mattered: hourly and monthly figures are annualised only when
@@ -103,8 +103,10 @@ there are roughly 500 salary-disclosing postings.
 
 Nine days later, at 109 rows and with a salary parser bug fixed (one unit
 suffix on a range, as in "$150 - 210K", had been stored as a minimum of
-150, on 24 of 113 postings), the ridge beat the median by 16.8%, and it is
-still wrong by about $49k on an average posting. The more useful lesson
+150, on 24 of 113 postings), the ridge beat the median by 16.8%, and it was
+still wrong by about $49k on an average posting. Two of those salaries had
+no currency and had been counted as dollars; dropping them took the ridge
+to 10.0% over the median and about $54k of error. The more useful lesson
 came from asking which input mattered. Permutation importance on one 25%
 test split said the text, by a wide margin. The corpus was then rebuilt from
 the boards, one priced row fewer and the rest mostly the same, and the same

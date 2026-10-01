@@ -82,8 +82,10 @@ def run(
     queries = queries if queries is not None else golden.verified_only(golden.load())
     if not queries:
         raise ValueError(
-            "no verified golden queries. Run `python -m joblens label` first: "
-            "an eval with nothing to compare against is worse than no eval."
+            "no verified golden queries. Judge a candidate pool with "
+            "`python scripts/golden_pool.py` and merge the grades with "
+            "`python scripts/golden_apply.py` first: an eval with nothing to "
+            "compare against is worse than no eval."
         )
 
     embedder = get_embedder()

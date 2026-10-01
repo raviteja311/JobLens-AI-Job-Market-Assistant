@@ -10,9 +10,9 @@ README section or experiment that produced it. Dates are as of 2026-09-26.
 - **Built an end-to-end job intelligence platform** ingesting AI/ML postings
   daily from 2 sources (Hacker News "Who is hiring", RemoteOK) into a
   bronze/silver Postgres schema with content-hash and embedding dedup,
-  salary parsing across six currencies, and idempotent re-processing from
-  raw payloads; 466 postings collected, 34 of 400 malformed comments per
-  fetch detected and counted rather than dropped. *(Phase 1, Phase 3)*
+  salary parsing across nine currencies, and idempotent re-processing from
+  raw payloads; 466 postings collected, 33 of 400 malformed comments on the
+  latest fetch detected and counted rather than dropped. *(Phase 1, Phase 3)*
 
 - **Built a retrieval golden set and eval harness** for a pgvector RAG
   system: 58 judged queries, 1,379 candidates pooled from every retriever and
@@ -25,10 +25,14 @@ README section or experiment that produced it. Dates are as of 2026-09-26.
   all; the grade 0 and 1 judgements have had no human pass.
 
 - **Built an LLM evaluation suite** (retrieval metrics, LLM-as-judge with a
-  Cohen's kappa calibration check, structural refusal detection) that runs in
-  GitHub Actions and fails the build on regression; caught a prompt scoping
-  defect and fixed it with a versioned prompt, faithfulness 0.69 to 0.75 on
-  A/B. *(Phase 5)*
+  Cohen's kappa calibration check, structural refusal detection) whose
+  retrieval suite runs in GitHub Actions and fails the build on an absolute
+  floor or on a drop of more than 0.05 against a committed baseline; caught a
+  prompt scoping defect and fixed it with a versioned prompt, faithfulness
+  0.69 to 0.75 on A/B. *(Phase 5)* Say, if asked: the baseline was measured
+  on the dev corpus while CI scores a fresh ingest, so a CI failure can be
+  corpus drift; the chat suite is not in CI; and the judge is uncalibrated
+  (kappa 0.00 on 20 hand-scored answers that were all 2s).
 
 - **Ran a LoRA distillation experiment** (Qwen2.5-0.5B student, llama3.1 8B
   teacher, 242 labelled postings): diagnosed a silent loss-masking failure

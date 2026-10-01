@@ -172,7 +172,10 @@ that says "2" to everything would score around 70% agreement with a kappa
 of zero. Until 20 hand-graded answers exist, `Calibration.trustworthy`
 returns False and the README says the judge scores are a smoke test.
 
-I have not graded those 20 answers. Writing the calibration code and then
+When I did grade those 20 answers, I gave every one a 2 on both scales. The
+judge agreed 65% and 95% of the time with a kappa of 0.00, which is not a
+verdict on the judge: with no variation in my scores, kappa cannot tell it
+from chance. So it stays uncalibrated. Writing the calibration code and then
 quoting uncalibrated scores as if they meant something would have been the
 most dishonest thing in the repository, and it would have been invisible.
 
@@ -184,9 +187,12 @@ Retrieval runs in GitHub Actions on every pull request that touches
 retrieval code, prompts or the golden set. Floors live next to the metric
 code, not in the workflow file, so a threshold change shows up in a pull
 request beside whatever needed it. Refusal accuracy has a hard floor of
-0.75. Everything else is compared to the previous run with a tolerance of
-0.05, because the corpus grows daily and a gate that fires on noise gets
-commented out within a week, after which there is no gate.
+0.75. Everything else except the judge's scores is compared to the previous
+run with a tolerance of 0.05, because the corpus grows daily and a gate that
+fires on noise gets commented out within a week, after which there is no
+gate. CI starts from an empty database, so there "the previous run" is a
+committed baseline file; until that file existed, the regression check
+silently never ran in CI.
 
 Chat is not in the pull-request gate. A local Llama on a GitHub runner takes
 about half an hour for eight questions. It runs on demand and before a

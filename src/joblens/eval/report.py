@@ -8,6 +8,11 @@ next to the change that needed it.
 History goes to a CSV as well as the database. The CSV is what the README
 chart reads and what survives someone dropping the database; the table is
 what the dashboard queries.
+
+The regression check compares against the last recorded run, and falls back
+to the committed data/eval_baseline.json when the database has none. CI
+starts from an empty database every time, so without the file the 0.05
+tolerance never applied there and only the absolute floors could fail it.
 """
 
 from __future__ import annotations
@@ -21,7 +26,9 @@ from pathlib import Path
 
 from joblens import db
 
-HISTORY_CSV = Path(__file__).resolve().parents[3] / "data" / "eval_history.csv"
+DATA_DIR = Path(__file__).resolve().parents[3] / "data"
+HISTORY_CSV = DATA_DIR / "eval_history.csv"
+BASELINE_JSON = DATA_DIR / "eval_baseline.json"
 HISTORY_FIELDS = (
     "timestamp",
     "suite",
@@ -39,19 +46,25 @@ REGRESSION_TOLERANCE = 0.05
 
 # Absolute floors. Below these the feature is broken regardless of trend.
 #
-# faithfulness is deliberately NOT here. It comes from the LLM judge, and the
-# judge is uncalibrated (see docs/experiments.md), so gating the build on it
-# would mean blocking merges on a number the repo itself says not to trust.
-# It is still recorded on every run, and it becomes a floor the day
-# `joblens calibrate` reports a usable kappa.
+# faithfulness and completeness have no floor. They come from the LLM judge,
+# and the judge is uncalibrated (kappa 0.00, see docs/experiments.md), so a
+# floor would block merges on a number the repo itself says not to trust.
+# They are recorded on every run and are left out of the regression check
+# too (UNGATED below); they become gated the day `joblens calibrate`
+# reports a usable kappa.
 #
-# refusal_accuracy is gated, because it is a deterministic string check over
-# questions the corpus cannot answer, and a system that invents answers to
-# those is broken in the way that matters most.
+# refusal_accuracy is gated, because it is a deterministic structural check
+# (`generation.is_refusal`: a must-refuse answer is right when it cites
+# nothing) over questions the corpus cannot answer, and a system that
+# invents answers to those is broken in the way that matters most.
 FLOORS = {
     "retrieval": {"ndcg@10": 0.45, "recall@10": 0.55},
     "chat": {"refusal_accuracy": 0.75},
 }
+
+# Recorded, never compared run to run. Cost is not a quality score, and the
+# judge's numbers are not trusted yet (see FLOORS).
+UNGATED = {"cost_usd", "faithfulness", "completeness"}
 
 
 def git_sha() -> str:
@@ -128,6 +141,47 @@ def previous(suite: str, config: str) -> dict | None:
         return None
 
 
+def committed_baseline(suite: str, config: str) -> dict | None:
+    """The scores in data/eval_baseline.json for this suite and config."""
+    if not BASELINE_JSON.exists():
+        return None
+    payload = json.loads(BASELINE_JSON.read_text(encoding="utf-8"))
+    return payload.get(suite, {}).get(config)
+
+
+def baseline_for(suite: str, config: str) -> dict:
+    """What a new run is compared against: the last recorded run, or the
+    committed baseline when the database has none (a fresh CI database).
+
+    Call it before `record`. Afterwards the last recorded run is the new run
+    itself, and a run compared with itself never regresses, which is what
+    `joblens eval` did until this was split out.
+    """
+    return previous(suite, config) or committed_baseline(suite, config) or {}
+
+
+def write_baseline(suite: str, scores: dict[str, dict], **context) -> Path:
+    """Replace one suite's committed baseline with these per-config scores.
+
+    The file is meant to be committed, so a baseline change is a reviewed
+    diff rather than a side effect of whoever ran the eval last.
+    """
+    payload = {}
+    if BASELINE_JSON.exists():
+        payload = json.loads(BASELINE_JSON.read_text(encoding="utf-8"))
+    payload[suite] = {
+        config: {metric: round(float(v), 4) for metric, v in sorted(m.items())}
+        for config, m in scores.items()
+    }
+    payload.setdefault("measured", {})[suite] = {
+        "date": datetime.now(timezone.utc).date().isoformat(),
+        "git_sha": git_sha(),
+        **context,
+    }
+    BASELINE_JSON.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return BASELINE_JSON
+
+
 @dataclass
 class GateResult:
     passed: bool
@@ -143,8 +197,9 @@ class GateResult:
 def gate(
     suite: str, config: str, metrics: dict, baseline: dict | None = None
 ) -> GateResult:
-    """Fail on an absolute floor, or on a regression against the last run."""
-    baseline = baseline if baseline is not None else previous(suite, config)
+    """Fail on an absolute floor, or on a regression against the baseline:
+    the last recorded run, else the committed one (see `baseline_for`)."""
+    baseline = baseline if baseline is not None else baseline_for(suite, config)
     failures: list[str] = []
     checked: list[str] = []
 
@@ -159,9 +214,9 @@ def gate(
 
     if baseline:
         for metric, value in metrics.items():
-            if metric not in baseline or metric == "cost_usd":
+            if metric not in baseline or metric in UNGATED:
                 continue
-            checked.append(f"{metric} vs last run")
+            checked.append(f"{metric} vs baseline")
             drop = baseline[metric] - value
             if drop > REGRESSION_TOLERANCE:
                 failures.append(

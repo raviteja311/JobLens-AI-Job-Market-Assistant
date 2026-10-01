@@ -28,6 +28,12 @@ from joblens.salary import Salary, parse_salary
         # "AU$" contains neither "A$" nor "C$"; it was read as a bare "$".
         ("AU$120–160k", Salary(120000, 160000, "year", "AUD")),
         ("CA$90,000", Salary(90000, 90000, "year", "CAD")),
+        # Real salary_raw strings whose "/hour" the pattern did not read; they
+        # were only stored as hourly through the guess that no longer exists.
+        ("$90–$110/hour USD", Salary(90, 110, "hour", "USD")),
+        ("$23-$34 USD/hour", Salary(23, 34, "hour", "USD")),
+        ("50 / hour", Salary(50, 50, "hour", None)),
+        ("€6,000 / month", Salary(6000, 6000, "month", "EUR")),
     ],
 )
 def test_parses_common_shapes(text, expected):
@@ -57,9 +63,20 @@ def test_equity_tail_is_ignored():
     assert result.max == 150000
 
 
-def test_bare_small_number_is_treated_as_hourly():
-    assert parse_salary("65").period == "hour"
-    assert parse_salary("130000").period == "year"
+def test_a_bare_small_number_is_not_annualised_on_a_guess():
+    # It used to be called hourly and annualised: "65" became 135,200 a year.
+    salary = parse_salary("65")
+    assert salary == Salary(65, 65, None, None)
+    assert salary.annualised() == (None, None)
+    assert parse_salary("$60 - $80").annualised() == (None, None)
+    # A stated period still converts.
+    assert parse_salary("65 per hour").annualised() == (65 * 2080, 65 * 2080)
+
+
+def test_a_bare_figure_in_the_thousands_is_annual():
+    # "year" multiplies by 1, so reading it as annual invents nothing.
+    assert parse_salary("130000") == Salary(130000, 130000, "year", None)
+    assert parse_salary("130000").annualised() == (130000, 130000)
 
 
 def test_reversed_range_is_corrected():

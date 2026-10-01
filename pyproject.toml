@@ -1,6 +1,6 @@
 [project]
 name = "joblens"
-version = "0.1.0"
+version = "0.4.0"
 description = "AI job market assistant"
 requires-python = ">=3.12"
 # Upper bounds stop at the next major version. Without them a fresh install

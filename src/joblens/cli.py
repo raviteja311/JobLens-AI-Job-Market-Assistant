@@ -258,10 +258,19 @@ def cmd_eval(args: argparse.Namespace) -> int:
         print(result.as_table())
         print()
         best = result.best
+        baseline = reporting.baseline_for("retrieval", best.name)
         reporting.record("retrieval", best.name, result.queries, best.scores)
-        gate = reporting.gate("retrieval", best.name, best.scores)
+        gate = reporting.gate("retrieval", best.name, best.scores, baseline)
         print(gate.summary())
         failures.extend(gate.failures)
+        if args.update_baseline:
+            path = reporting.write_baseline(
+                "retrieval",
+                {config.name: config.scores for config in result.configs},
+                queries=result.queries,
+                corpus=result.corpus,
+            )
+            print(f"wrote {path}; commit it to move the CI baseline")
 
     if args.suite in ("chat", "all"):
         from joblens.eval import generation
@@ -271,8 +280,9 @@ def cmd_eval(args: argparse.Namespace) -> int:
         print(result.as_table())
         print()
         scores = result.scores
+        baseline = reporting.baseline_for("chat", result.prompt_version)
         reporting.record("chat", result.prompt_version, len(result.results), scores)
-        gate = reporting.gate("chat", result.prompt_version, scores)
+        gate = reporting.gate("chat", result.prompt_version, scores, baseline)
         print(gate.summary())
         failures.extend(gate.failures)
 
@@ -488,6 +498,11 @@ def build_parser() -> argparse.ArgumentParser:
     eval_cmd.add_argument("--no-judge", action="store_true")
     eval_cmd.add_argument(
         "--strict", action="store_true", help="exit 1 on a gate failure"
+    )
+    eval_cmd.add_argument(
+        "--update-baseline",
+        action="store_true",
+        help="write this run's retrieval scores to data/eval_baseline.json",
     )
     eval_cmd.set_defaults(func=cmd_eval)
 

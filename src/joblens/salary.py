@@ -36,8 +36,11 @@ CURRENCY_SYMBOLS = {
 CURRENCY_CODES = {"USD", "GBP", "EUR", "INR", "CAD", "AUD", "JPY", "CHF", "SEK"}
 
 
+# "/hour" used to slip past the hour pattern (it wanted "hr") and was only
+# right by accident, through the hourly guess for small numbers. With the
+# guess gone, the pattern has to read it.
 PERIOD_PATTERNS = [
-    ("hour", r"\b(?:per\s+hour|an?\s+hour|hourly|/\s*hro?u?r?|/\s*h\b|p\.?h\.?\b)"),
+    ("hour", r"\b(?:per\s+hour|an?\s+hour|hourly|/h(?:(?:ou)?rs?)?\b|p\.?h\.?\b)"),
     ("day", r"\b(?:per\s+day|a\s+day|daily|/\s*day)"),
     ("week", r"\b(?:per\s+week|a\s+week|weekly|/\s*w(?:k|eek)?\b)"),
     ("month", r"\b(?:per\s+month|a\s+month|monthly|/\s*mo(?:nth)?\b|p\.?m\.?\b)"),
@@ -77,10 +80,11 @@ class Salary:
         return self.min is not None or self.max is not None
 
     def annualised(self) -> tuple[float | None, float | None]:
-        """Both bounds converted to a yearly figure, for comparing postings
-        Returns (None, None) if we nevwe worked out the period, because
+        """Both bounds converted to a yearly figure, for comparing postings.
+        Returns (None, None) if the text never stated the period, because
         multiplying by a guessed factor is how you end up with a $60/hr
-        contract sitting in the data as a $6o salary.
+        contract sitting in the data as a $60 salary. parse_salary only fills
+        in "year" for a bare figure in the thousands, which multiplies by 1.
         """
         if not self.period:
             return (None, None)
@@ -121,22 +125,26 @@ def _detect_currency(text: str) -> str | None:
 
 
 def _detect_period(text: str) -> str | None:
-    lowered = text.lower()
+    # "50 / hour" has no word boundary before the slash, so the patterns'
+    # leading \b never matched it. Closing the gap first fixes every period.
+    lowered = re.sub(r"\s*/\s*", "/", text.lower())
     for period, pattern in PERIOD_PATTERNS:
         if re.search(pattern, lowered):
             return period
     return None
 
 
-def _infer_period(value: float) -> str:
+def _infer_period(value: float) -> str | None:
     """
-    Fallback when the text does not sat.
+    Fallback when the text does not say.
 
-    A bare 65 in a salary field is an hourly rate; a bare 130000 is annual.
-    The cutoff is arbitrary but it is right far more often than it is wrong,
-    and salary_raw stays in the database so we can audit it later.
+    A bare 130000 is annual, and calling it "year" multiplies it by 1, so
+    nothing is invented. A bare 65 is probably an hourly rate, but "probably"
+    is a guess, and annualising a guess is how a 65 becomes a 135,200 salary.
+    So a small figure keeps no period: its min and max are stored as written
+    and it is never annualised. salary_raw stays in the database either way.
     """
-    return "hour" if value < 1000 else "year"
+    return "year" if value >= 1000 else None
 
 
 def parse_salary(text: str | None) -> Salary:

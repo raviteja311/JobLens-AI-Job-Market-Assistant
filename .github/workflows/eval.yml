@@ -3,6 +3,13 @@ name: eval
 # The gate. An eval that only prints numbers is a report; this one fails the
 # build, which is the difference between measuring quality and having it.
 #
+# The database here is new on every run, so there is never a previous run to
+# compare with. The regression check falls back to data/eval_baseline.json,
+# committed scores for every retrieval configuration, and a drop of more than
+# 0.05 against it fails the job. The baseline was measured on the dev corpus
+# and this job scores a fresh ingest, so a big gap can be corpus drift rather
+# than a code change; the job summary shows which metric moved.
+#
 # Retrieval only. The chat suite needs a model, and a local Llama on a GitHub
 # runner takes half an hour, so /chat is scored on a schedule and before a
 # release rather than on every push. Pretending otherwise would give a green
@@ -14,6 +21,7 @@ on:
       - "src/joblens/eval/**"
       - "prompts/**"
       - "data/golden/**"
+      - "data/eval_baseline.json"
   workflow_dispatch:
   workflow_call:
 

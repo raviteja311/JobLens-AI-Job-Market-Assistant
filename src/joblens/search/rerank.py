@@ -8,7 +8,8 @@ said "no PhD required" and the posting demands one.
 
 A cross-encoder reads both together and scores the pair. It cannot be indexed
 and has to run per candidate, so it only ever sees the top few results from a
-cheap retriever. First stage picks 60 from 465, second stage orders those 60.
+cheap retriever. The first stage returns `limit * 3` candidates (30 for the
+API's default of 10) and the second stage orders those.
 """
 
 from __future__ import annotations

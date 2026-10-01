@@ -33,7 +33,7 @@ class SearchResponse(BaseModel):
 
 
 class Citation(BaseModel):
-    """A source the answer is allowed to have used."""
+    """One posting the model was given, numbered as the answer cites it."""
 
     n: int
     posting_id: int
@@ -50,7 +50,12 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     question: str
     answer: str
+    # The postings the answer cites with [n], and nothing else. Listing every
+    # retrieved posting here claimed support the answer never used.
     citations: list[Citation]
+    # Everything the model was given, cited or not, so a client can still
+    # show what retrieval found.
+    retrieved: list[Citation] = Field(default_factory=list)
     # True when retrieval found nothing worth answering from. The endpoint
     # says so rather than letting the model improvise, and the flag lets a
     # client render that case differently.

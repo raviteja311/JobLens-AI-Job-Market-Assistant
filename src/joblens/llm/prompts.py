@@ -49,7 +49,17 @@ def available(name: str) -> list[str]:
     directory = PROMPTS_DIR / name
     if not directory.exists():
         return []
-    return sorted(p.stem for p in directory.glob("*.md"))
+    return sorted((p.stem for p in directory.glob("*.md")), key=_version_key)
+
+
+def _version_key(stem: str) -> tuple:
+    # Numeric, not alphabetical: as strings "v10" sorts before "v2", and
+    # latest() would quietly go back eight versions.
+    return tuple(
+        (0, int(part), "") if part.isdigit() else (1, 0, part)
+        for part in re.split(r"(\d+)", stem)
+        if part
+    )
 
 
 def latest(name: str) -> str:
