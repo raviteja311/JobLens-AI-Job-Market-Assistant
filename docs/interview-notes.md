@@ -95,9 +95,16 @@ the same queries you report on?
   about 27 ms a query. pgvector 0.8's `hnsw.iterative_scan = relaxed_order`
   at `ef_search = 40` also returns the full count, at 0.99 overlap with exact
   and about 5 ms. Exact search on this table takes about 28 to 38 ms.
-- **Not yet fixed.** `vector (section)` and `hybrid (section)` in every eval
-  table so far are scored on this truncated search. The Phase 3 reranker
-  experiments are not affected: they all use `whole`.
+- **Fixed on 2026-10-08** with `set local hnsw.iterative_scan =
+  relaxed_order` inside `vector_search`, chosen over `ef_search = 100`
+  because that only matched exact search by costing as much as an exact scan
+  (about 78 ms against 31). A regression test forces the index plan and
+  returns 0 of 50 postings without the fix.
+- **The fix did not improve the scores.** On 23 LLM-judged queries vector
+  (section) is flat (MRR 0.632 to 0.631) and hybrid (section) slightly lower
+  (recall@10 0.439 to 0.399, within noise). It is a correctness fix: the
+  search now returns what it is asked for. The Phase 3 reranker experiments
+  were never affected; they all use `whole`.
 - A measurement trap found on the way: psycopg prepares a statement after 5
   executions and keeps its plan. Measuring "exact" and "HNSW" on one
   connection silently reused the exact plan and showed no loss at all. Each
@@ -105,7 +112,8 @@ the same queries you report on?
 
 **Likely follow-ups.** Pre-filter vs post-filter in vector search, and how
 pgvector handles it. When is HNSW not worth it? Why not a partial index or a
-separate table per strategy? How did you notice?
+separate table per strategy? How did you notice? Why ship a fix that did not
+raise the metric?
 
 **My answer.**
 

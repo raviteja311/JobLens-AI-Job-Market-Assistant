@@ -1502,8 +1502,39 @@ better at about 5 ms. Exact search takes about 28 to 38 ms.
 was scored on a truncated search. The Phase 3 reranker experiments use
 `whole` and are unaffected.
 
-**Decision.** Not fixed yet; recorded in `docs/interview-notes.md` (question
-2). The candidate fixes are measurable with the existing harness.
+**Decision, same day: fixed with iterative index scans.** `vector_search` now
+runs `set local hnsw.iterative_scan = relaxed_order` in its own transaction.
+The candidates, measured head to head (one connection each, no prepared
+plans):
+
+| setting | full count | overlap with exact, limit 30 / 50 | p50 ms |
+| --- | --- | ---: | ---: |
+| ef_search = 40, the bug | no | 0.798 / 0.516 | about 25 |
+| ef_search = 100 | yes | 1.000 / 1.000 | about 78 |
+| iterative_scan = relaxed_order | yes | 0.991 / 0.997 | about 31 |
+| iterative_scan = strict_order | yes | 0.926 / 0.939 | about 28 |
+
+ef_search = 100 matches exact search only by costing what an exact scan
+costs (about 77 ms here), which says the index is not doing much at all at
+5,604 chunks; relaxed_order keeps the index useful as the table grows. A
+regression test (`tests/test_vector_search.py`) forces the index plan and
+fails without the fix: 0 of 50 postings, because every candidate the index
+returns is a crowding 'whole' chunk that the filter then drops.
+
+Effect on the section configurations (provisional, 23 LLM-judged queries):
+
+| configuration | recall@10 | MRR | nDCG@10 |
+| --- | ---: | ---: | ---: |
+| vector (section), before | 0.621 | 0.632 | 0.570 |
+| vector (section), after | 0.611 | 0.631 | 0.565 |
+| hybrid (section), before | 0.439 | 0.656 | 0.456 |
+| hybrid (section), after | 0.399 | 0.653 | 0.434 |
+
+The fix is a correctness fix and did not raise these numbers. A top 10 needs
+only 40 chunks, which the bug mostly delivered, so vector (section) is flat.
+Hybrid (section) asks each arm for 50 candidates and used to get about 26
+from the vector arm; with the full 50 it is slightly lower, within noise at
+23 queries. Correct and better on a metric are different claims.
 
 **Also measured, same day (provisional, 23 LLM-judged queries).** The RRF k
 sweep (`scripts/rrf_sweep.py`) is flat from k = 30 to 300; k = 10 is 0.03 MRR

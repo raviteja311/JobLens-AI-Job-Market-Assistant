@@ -112,12 +112,38 @@ def vector_search(
     section strategy one posting can occupy several of the top slots. The
     posting's score is its best chunk: a role that matches the query in one
     section is a match, and averaging would punish long postings.
+
+    The HNSW index covers every strategy and model at once, because pgvector
+    cannot index a subset, so the planner filters on strategy after the index
+    scan. A plain HNSW scan stops after about hnsw.ef_search (40) candidates,
+    and the filter then drops some of them: asking for 30 section postings
+    came back short on 38 of 58 golden queries, and asking for 50 returned
+    about 26. Iterative index scans (pgvector 0.8) keep scanning until the
+    filtered LIMIT is met. relaxed_order lets the index hand rows back slightly
+    out of order, which the outer query re-sorts by similarity anyway:
+    measured at 0.99 overlap with an exact scan for about 6 ms
+    (docs/experiments.md, 2026-10-08). For the whole strategy the planner
+    skips the index and sorts the 697 rows exactly, and this setting is moot.
     """
     embedder = embedder or get_embedder()
     vector = embedder.encode([query])[0]
     literal = "[" + ",".join(f"{v:.6f}" for v in vector) + "]"
 
-    rows = conn.execute(
+    # SET LOCAL, inside a transaction of its own, so the setting is scoped to
+    # this search even on a connection that runs in autocommit.
+    with conn.transaction():
+        conn.execute(ITERATIVE_SCAN)
+        rows = _nearest(conn, literal, strategy, embedder.name, limit, chunk_multiplier)
+    return [
+        _hit(row, float(row["score"]), "vector", i + 1) for i, row in enumerate(rows)
+    ]
+
+
+ITERATIVE_SCAN = "set local hnsw.iterative_scan = relaxed_order"
+
+
+def _nearest(conn, literal, strategy, model, limit, chunk_multiplier) -> list[dict]:
+    return conn.execute(
         f"""
         with nearest as (
             select posting_id, content,
@@ -137,11 +163,8 @@ def vector_search(
          order by score desc
          limit %s
         """,
-        (literal, strategy, embedder.name, literal, limit * chunk_multiplier, limit),
+        (literal, strategy, model, literal, limit * chunk_multiplier, limit),
     ).fetchall()
-    return [
-        _hit(row, float(row["score"]), "vector", i + 1) for i, row in enumerate(rows)
-    ]
 
 
 def reciprocal_rank_fusion(
