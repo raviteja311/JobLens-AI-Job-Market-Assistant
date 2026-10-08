@@ -208,31 +208,34 @@ def search(
     strategy: str = "whole",
     limit: int = 20,
     rerank: bool = False,
+    rerank_config=None,
 ) -> list[SearchHit]:
-    """One entry point, so the eval harness scores exactly what /search serves."""
+    """One entry point, so the eval harness scores exactly what /search serves.
+
+    `rerank_config` (a rerank.RerankConfig) is for the Phase 3 experiments;
+    None means the shipped defaults.
+    """
+    if rerank:
+        from joblens.search.rerank import DEFAULT, rerank_hits
+
+        rerank_config = rerank_config or DEFAULT
+        first_stage = rerank_config.pool(limit)
+    else:
+        first_stage = limit
+
     if mode == "keyword":
-        hits = keyword_search(conn, query, limit=limit if not rerank else limit * 3)
+        hits = keyword_search(conn, query, limit=first_stage)
     elif mode == "vector":
         hits = vector_search(
-            conn,
-            query,
-            embedder=embedder,
-            strategy=strategy,
-            limit=limit if not rerank else limit * 3,
+            conn, query, embedder=embedder, strategy=strategy, limit=first_stage
         )
     elif mode == "hybrid":
         hits = hybrid_search(
-            conn,
-            query,
-            embedder=embedder,
-            strategy=strategy,
-            limit=limit if not rerank else limit * 3,
+            conn, query, embedder=embedder, strategy=strategy, limit=first_stage
         )
     else:
         raise ValueError(f"unknown mode {mode!r}. known: keyword, vector, hybrid")
 
     if rerank:
-        from joblens.search.rerank import rerank_hits
-
-        hits = rerank_hits(query, hits, limit=limit)
+        hits = rerank_hits(query, hits, limit=limit, config=rerank_config, conn=conn)
     return hits[:limit]
