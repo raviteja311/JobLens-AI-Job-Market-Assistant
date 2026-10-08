@@ -23,60 +23,94 @@ found a candidate (`found by:` in the pool) before deciding.
 
 ## General rules
 
-1. **Read the posting, not the title.** Titles mislead in both directions:
-   "Associate Manager - Data Engineer" is a manager role, "Analyst II, Data
-   Science" is a data scientist role, "Senior Software Engineer - AI" may be
-   a backend role that calls an LLM API. Decide from the responsibilities
-   and requirements.
-2. **Absence is not evidence.** If the query asks for something the posting
-   does not mention (a team size, an interview format, a tool), the posting
-   has not met that constraint. It can still be a 1 if everything else fits;
-   it cannot be a 2.
-3. **One constraint missed by one step is a 1. Missed outright, or two
-   missed, is a 0.** "One step" is defined per constraint below.
-4. **When torn between two grades, give the lower one** and move on. A
+1. **Read the whole posting, not the title.** Titles mislead in both
+   directions: "Associate Manager - Data Engineer" is a manager role,
+   "Analyst II, Data Science" is a data scientist role, "Senior Software
+   Engineer - AI" may be a backend role that calls an LLM API. Decide from
+   the responsibilities and requirements, which usually sit below the
+   company introduction. The pool prints the full description for this
+   reason.
+2. **A specific rule beats a general one.** The constraint sections below
+   say what a missing detail means for location, work mode, level and
+   skills. Rule 3 covers only constraints with no specific rule (team size,
+   interview format, company stage, intent).
+3. **Absence is not evidence.** If the query asks for something the posting
+   does not mention and no section below covers it, the constraint is not
+   met: one step, so the posting can still be a 1 but not a 2.
+4. **One constraint missed by one step is a 1. Missed outright, or two
+   constraints each missed by a step, is a 0.**
+5. **When torn between two grades, give the lower one** and move on. A
    consistent strict grader is worth more than an inconsistent generous one.
-5. **Duplicates get the same grade.** The same role posted twice (same
-   company and title, different requisition id, for example Brillio's
-   "Lead AI Engineer I" series) is graded identically.
-6. **Talent pools and generic listings** ("Future Opportunities",
+6. **Duplicates with the same text get the same grade.** The same role
+   posted under several requisition ids (Brillio's "Lead AI Engineer I"
+   series) is graded identically. If the text differs, for example one of
+   three "Senior AI/ML Engineer" postings asks for 6+ years and the others
+   for 2-4, grade each by its own text.
+7. **Pasted boilerplate does not count.** Some postings (Brillio) paste the
+   same generic skills block above unrelated roles. Grade from the role's
+   own responsibilities and requirements.
+8. **No real description** (a title and company only): at most a 1, and
+   only if the title alone meets every constraint the query states.
+9. **Talent pools and generic listings** ("Future Opportunities",
    "Expression of Interest") are at most a 1: there is no concrete role to
    apply to.
-7. **Time-box it.** About 30 seconds per candidate. If a posting needs more
-   than a minute to decide, give the lower grade and write the query id in
-   your notes so the rule can be sharpened.
+10. **Time-box it.** About 30 seconds per candidate. If a posting needs more
+    than a minute, give the lower grade and write the query id in your notes
+    so the rule can be sharpened.
 
 ## Constraints, and what "one step" means
 
 ### Role family
 
-The family the query names: data analyst, data engineer, data scientist, ML
-engineer, MLOps, AI/LLM engineer, BI developer, researcher, analytics
-manager.
+| Family | One step away (adjacent) |
+| --- | --- |
+| Data analyst (incl. product, business, people analytics) | BI developer, analytics engineer, an analytics-heavy data scientist |
+| BI developer | data analyst, analytics engineer |
+| Data engineer (incl. analytics engineer, data platform) | BI developer, Python developer building data pipelines, MLOps |
+| Data scientist | data analyst doing modelling, ML engineer, applied scientist, researcher |
+| ML engineer | data scientist, MLOps, AI/LLM engineer, applied scientist |
+| MLOps / ML platform | ML engineer, data engineer, platform engineer serving models |
+| AI / LLM engineer (incl. GenAI, agents, RAG) | ML engineer, NLP engineer |
+| Applied scientist / researcher | data scientist, ML engineer |
+| Quant researcher | quant trader, quant developer |
 
-- Same family: meets it.
-- Adjacent family (analyst and BI developer, data scientist and ML engineer,
-  ML engineer and MLOps, AI engineer and ML engineer): one step.
-- Anything else, including a software engineer whose job only touches data
-  or AI in passing: missed outright.
-- "AI" or "data" in a title is not enough. A support, sales, security,
-  programme management or content role with "AI" in the title is a 0 for
-  every role query, however it was retrieved.
+- Same family: meets it. Adjacent: one step. Anything else: missed
+  outright, including a backend or full-stack engineer who only calls an AI
+  service, and support, sales, security, programme management, solutions
+  architecture or content roles with "AI" or "data" in the title.
+- **Managers** belong to the family they manage. "Analytics manager" is the
+  data analyst family at the manager rung; an engineering manager of an ML
+  team is the ML engineer family at the manager rung. Mentoring without
+  people management is not managing: one step for a "managing a team" query.
+- **Forward-deployed and solutions roles** are in a family only if the job
+  is building or deploying that family's systems for customers. Pre-sales
+  and support work is not.
+- **NLP** is met by work on text or language models, including LLM, RAG and
+  agent work. Speech recognition is NLP when the query says speech.
 
 ### Experience level
 
-The ladder: **intern/fresher (0-1 years) → junior (1-3) → mid (3-5) →
-senior (5-8) → lead/staff/principal (8+) → head/director.**
+The ladder, one rung each:
 
-- Use the years the posting states. Use the title only if no years are
-  given, and remember "Associate" means junior at some companies (Beghou)
-  and a step above senior at others (Sigmoid's "Associate Lead").
+**intern/fresher (0-1 years) → junior (1-3) → mid (3-5) → senior (5-8) →
+lead, staff, manager, associate manager (8+) → principal, senior manager →
+head, director, VP.**
+
+- Use the years the posting states; use the title only if no years are
+  given. "Associate" means junior at some companies (Beghou "Associate
+  Consultant") and lead-level at others (Sigmoid "Associate Lead"); when the
+  title and the text disagree, the text wins.
 - A range in the query ("2-4 years") is met if the posting's required range
   overlaps it.
 - One rung away: one step. Two or more: missed outright. A fresher query
   against a senior posting is always 0.
-- "Fresher" or "entry level" is a 2 only if the posting says 0-1 or 0-2
-  years, names freshers or new graduates, or is an internship.
+- "Fresher" or "entry level" is met only if the posting says 0-1 or 0-2
+  years, names freshers or new graduates, or is a full-time graduate role.
+  An internship for current students is one step from a graduate query.
+- No level stated anywhere (years or title): one step.
+- A role-family query with a level built in ("head of data or director of
+  analytics", "analytics manager") uses that level: a VP role against
+  "analytics manager" is two rungs, so missed outright.
 
 ### Location
 
@@ -90,11 +124,12 @@ senior (5-8) → lead/staff/principal (8+) → head/director.**
 
 ### Work mode
 
-- "Remote" is met only if the posting says remote and open to India.
-  "Remote" with a different country, or "hybrid": one step. Onsite: missed.
-- "Hybrid" is met by hybrid. Onsite or fully remote: one step.
+- "Remote" or "work from home" is met only if the posting says remote and
+  open to India. Hybrid, or remote for another country: one step. An office
+  location with no mention of remote work is treated as onsite: missed.
+- "Hybrid" is met by hybrid. Onsite, an office location with no mode
+  stated, or fully remote: one step.
 - "Onsite" is met by onsite or an office location with no remote mention.
-- "Work from home" means remote.
 - "US shift" or "US time zone" is met only if the posting states overlap
   with US hours. Remote without hours stated: one step.
 
@@ -105,26 +140,35 @@ senior (5-8) → lead/staff/principal (8+) → head/director.**
 - A query naming several tools ("Airflow dbt Snowflake") is met if most are
   central and the rest appear. Only one of them, or all only as
   nice-to-have: one step.
-- None of them: missed outright, even if the role family is right.
+- None of them anywhere in the full text: missed outright, even if the role
+  family is right. With the whole description in front of you, a tool the
+  posting never names is not part of the job.
+- The same ecosystem counts: LangGraph for LangChain, Delta Lake or Spark
+  work at Databricks for Databricks. A RAG pipeline counts for "vector
+  databases" only if it names a vector store or describes embedding search.
+- Synonyms count: retention for churn, experimentation for A/B testing.
 
 ### Company type and domain
 
 - "Fintech", "healthcare", "insurance", "e-commerce" and similar are met if
   the company's business is in that domain **or** the role's own work is
-  (an insurance analytics team at a consulting firm meets "insurance
-  analytics").
+  (Capco's data roles for bank clients meet "fintech"; an insurance
+  analytics team at a consulting firm meets "insurance analytics").
 - "Startup" is met if the posting or company describes itself as one, or is
   clearly early stage. Not stated: one step.
 - "Product company" vs "service company": a company selling its own product
   vs one doing client work (consulting, outsourcing, staffing). Not
   determinable from the posting: one step.
+- "AI for cybersecurity" means applying AI to security problems. Securing AI
+  systems is one step.
 
 ### Negations ("not cloud-heavy", "Azure not AWS", "without DSA rounds")
 
 - Met only if the posting satisfies the positive part **and** shows the
   negated thing is absent or minor (for example Azure required and AWS not
   mentioned, or AWS listed only as a nice-to-have).
-- The negated thing is a core requirement: missed outright.
+- The negated thing is a core requirement: missed outright. A role that
+  explicitly requires data structures and algorithms misses "without DSA".
 - The posting gives no evidence either way (no posting describes its
   interview rounds): the negation is not met, so the best possible grade is
   1. It is expected that some hard queries have no 2 at all. That is a true
@@ -136,7 +180,9 @@ senior (5-8) → lead/staff/principal (8+) → head/director.**
 Grade the role against the intent, not the words. "Analyst wanting to move
 into ML" is a 2 for an analyst or junior data scientist role with real
 modelling work and a level the analyst can get; a senior ML engineer role
-is a 0, however well it matches the words.
+is a 0, however well it matches the words. If the posting states no level,
+that is one step. "Machine learning role" means a job whose main work is
+building models, which includes data scientists who do; MLOps is one step.
 
 ## Worked examples from the pool
 
@@ -147,7 +193,7 @@ is a 0, however well it matches the words.
 | junior machine learning engineer Bengaluru | Sr. Machine Learning Engineer, Conga, Bangalore | 0 | Senior vs junior is two rungs. |
 | associate consultant analytics for freshers | Associate Consultant- Advanced Analytics (I0048), Beghou, Bangalore | 2 or 1 | 2 if it states 0-2 years or new graduates; 1 if it asks for 2-3 years. |
 | quant researcher at a trading firm | Quantitative Researcher (2027 Graduate), Graviton Research Capital, Gurugram | 2 | Exact role and firm type. |
-| AI for cybersecurity | Senior Technical Consultant - Forward Deployed AI Security Engineer, AHEAD, Gurugram | 2 or 1 | 2 if the work is applying AI to security; 1 if it is securing AI systems. Decide once and apply it to every similar posting. |
+| AI for cybersecurity | Senior Technical Consultant - Forward Deployed AI Security Engineer, AHEAD, Gurugram | 2 or 1 | 2 if the work is applying AI to security; 1 if it is securing AI systems (see Company type and domain). |
 | MLOps engineer India | Full Stack Engineering Lead - AI & GenAI, WPP, Chennai | 0 | Wrong family: full-stack lead. |
 
 ## Recording grades
@@ -183,3 +229,14 @@ means a rule needs work before the numbers are worth quoting.
 ## Changes to this guide
 
 - 2026-10-08: first version.
+- 2026-10-08: second version, before any human grading. The pool had been
+  cutting every description at 1,400 characters, so the first LLM pass graded
+  company introductions rather than requirements; the pool now prints the
+  whole text and rule 1 says so. Six LLM graders then reported where the
+  rules were ambiguous, and each gap was settled: a specific rule beats
+  "absence is not evidence" (rule 2), duplicates follow their text (6),
+  pasted boilerplate and title-only postings (7, 8), a full adjacency table
+  for role families, managers and forward-deployed roles, manager rungs on
+  the ladder, title vs text for "Associate", no stated level, internships vs
+  graduate queries, office location with no mode for remote and hybrid
+  queries, tool ecosystems and synonyms, and AI-for-security.
