@@ -158,7 +158,7 @@ fails instead of skipping when Postgres is unreachable.
 
 ```
 src/joblens/         ingestion pipeline, sources, database
-src/joblens/ml/      Phase 2: skills, salary model, clustering, trends
+src/joblens/ml/      Phase 2: skills, clustering, trends
 src/joblens/search/  Phase 3: chunking, embeddings, retrieval, reranking
 src/joblens/llm/     Phase 4: LLM backends, versioned prompts, call logging
 src/joblens/rag/     Phase 4: grounded chat, resume matching
@@ -200,20 +200,22 @@ network.
 **Storage** is bronze/silver. `raw_postings` keeps the payload exactly as the
 source sent it, one row each time a posting is new or changed, so history is
 retained without storing an identical copy every day. `postings` holds our
-interpretation. When the salary parser turns out to be wrong, `transform`
+interpretation. When a parser or filter turns out to be wrong, `transform`
 re-runs over the raw layer instead of waiting two weeks to re-collect.
 
 **Cleaning** strips HTML with the stdlib, normalises locations against a
 lookup table rather than a geocoder, and parses salary out of free text:
 ranges, `up to`, `from`, hourly and monthly rates, nine currencies (USD, GBP,
 EUR, INR, JPY, CAD and AUD by symbol or ISO code, CHF and SEK by code), and
-the strings that mean "we are not telling you". Hourly and monthly figures are
+Indian formats (LPA, lakh, lac, crore, Rs), and the strings that mean "we
+are not telling you". Hourly and monthly figures are
 annualised only when the period was actually stated; a guessed period is how a
 $60/hr contract ends up in the data as a $60 salary. A bare figure in the
 thousands is read as annual, which multiplies it by one; a bare small figure
 such as `65` keeps its min and max but no period, and is never annualised.
-A salary with no currency is left out of the salary model and `/trends`
-rather than assumed to be dollars.
+The parser stays, but nothing downstream uses it any more: the Greenhouse,
+Lever and Ashby boards publish no salaries, so the salary features were
+removed on 2026-10-08 (see Limitations).
 
 **Dedup** is an exact match on a normalised content hash of title, company and
 location, with seniority words removed. It counts duplicates rather than
@@ -248,61 +250,13 @@ one known skill is found, is **59.0%**.
 | llm | 61 | 13.1% |
 | kubernetes | 50 | 10.7% |
 
-**Salary regression: better than the baseline, not good enough to serve.**
-The first run, 106 postings with a salary that parsed, 5-fold CV, MAE as the
-headline because a few 750k postings dominate RMSE:
-
-| model | MAE (USD) | RMSE (USD) | R2 | vs median |
-| --- | ---: | ---: | ---: | ---: |
-| ridge | 62,904 | 88,374 | -0.098 | +1.8% |
-| ridge_log | 63,119 | 88,790 | -0.064 | +1.4% |
-| median | 64,042 | 86,859 | -0.036 | +0.0% |
-| random_forest | 68,563 | 97,385 | -0.340 | -7.1% |
-| gradient_boosting | 78,292 | 113,514 | -1.113 | -22.3% |
-
-The ridge's 1.8% edge was inside the noise, and its top features were `money`,
-`worth` and `meaningful`, which is what 106 rows against 14,000 TF-IDF columns
-looks like.
-
-Part of that noise turned out to be the parser. A range with one unit suffix
-("$150 - 210K", "100-200k CHF") stored its minimum without the `k`, and
-"$130,000 CAD" was stored as USD. 24 of the 113 salary-stating postings had a
-minimum about 1,000 times too small, which dragged their training target, the
-midpoint, down by tens of thousands of dollars. With the parser fixed and each
-bound checked separately (2026-09-26, 109 usable postings):
-
-| model | MAE (USD) | RMSE (USD) | R2 | vs median |
-| --- | ---: | ---: | ---: | ---: |
-| ridge | 49,383 | 69,449 | 0.307 | +16.8% |
-| ridge_log | 51,414 | 76,265 | 0.246 | +13.4% |
-| random_forest | 54,561 | 80,851 | 0.053 | +8.1% |
-| median | 59,386 | 93,682 | -0.044 | +0.0% |
-| gradient_boosting | 63,717 | 97,238 | -0.910 | -7.3% |
-
-Two of those 109 had no currency at all ("145k-165k + equity", "150k-250k")
-and had been filled in as dollars. A salary with no currency is now dropped
-rather than assumed, and the same run on the remaining rows (2026-10-01, 107
-usable postings) gives back part of the gain:
-
-| model | MAE (USD) | RMSE (USD) | R2 | vs median |
-| --- | ---: | ---: | ---: | ---: |
-| ridge | 53,503 | 73,309 | 0.213 | +10.0% |
-| ridge_log | 54,559 | 80,459 | 0.134 | +8.3% |
-| random_forest | 54,991 | 81,329 | 0.078 | +7.5% |
-| gradient_boosting | 56,896 | 82,022 | -0.020 | +4.3% |
-| median | 59,475 | 93,615 | -0.007 | +0.0% |
-
-The ridge still beats the median, and it is off by about $54k on an average
-posting. **There is no salary prediction endpoint** and there will not be one
-until there are roughly 500 salary-disclosing postings.
-
-Permutation importance on the held-out rows of every CV fold
-(`train-salary --importance`) says where what little signal there is lives:
-shuffling the text costs the ridge **12.1k** of MAE (sd 11.0k), and every
-other column is within one standard deviation of nothing. The text is the
-only column that matters, and it is not enough. The first version measured
-this on a single 28-row test split, and one re-ingest flipped its ranking;
-the write-up is in `docs/experiments.md`.
+**Salary regression (removed 2026-10-08).** On the v1 global corpus the best
+model, a ridge on 107 salary-stating postings, beat predicting the median by
+10% and was still off by about $54k a posting, so it was never served. The
+Indian board corpus publishes no salaries at all, so the model, the
+`train-salary` command and the salary figures in `/trends` were removed
+rather than kept running on nothing. The v1 runs, including the parser bugs
+that had been inflating the error, are in `docs/experiments.md`.
 
 **Clustering.** TF-IDF and k-means, k chosen by silhouette, clusters labelled
 from their own centroid terms. k=10 gives nameable families such as
@@ -329,9 +283,8 @@ noise from titles as well as descriptions. TF-IDF stays on the dashboard
 because ten nameable groups beat six vague ones; the embedding run is the
 sanity check.
 
-**Trends.** Top skills, demand by region, remote share and median
-advertised salary. Every share is reported against the postings that
-could have answered the question: 65% are remote, but only 23% state a salary.
+**Trends.** Top skills, demand by region and remote share. Every share is
+reported against the postings that could have answered the question.
 
 ### Phase 3: Embeddings and semantic search
 
@@ -793,11 +746,9 @@ Kept current and honest.
 - **The LLM judge is uncalibrated.** See Phase 5.
 - **Hybrid retrieval is worse than vector alone** on these queries. It is kept
   for rare-token queries, which the current golden set under-represents.
-- **No salary prediction.** The best model (ridge) beats predicting the
-  median by 10.0% but is still off by about $54k on an average posting, which
-  is not good enough to serve until there are roughly 500 salaried postings.
-- **Salary figures cover 23% of postings** and those are not a random sample.
-- **Currency conversion uses rates frozen on 2025-09-01.**
+- **No salary information.** None of the Greenhouse, Lever or Ashby postings
+  states pay, so there is no salary prediction, no salary band and no salary
+  figure anywhere in the product. The parser is kept for a future source.
 - **Locations are a lookup table, not a geocoder.** 37% of postings have no
   usable location.
 - **Skill extraction knows 80 skills** and nothing else.

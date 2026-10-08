@@ -1451,3 +1451,23 @@ MRR wins, then the lowest p95.** MRR because it is the metric the rule is
 written in. Chosen by Jetti Raviteja. On the provisional numbers it would
 pick TinyBERT-L-2 with max_length 256; the human-judged run decides.
 `scripts/rerank_experiments.py` applies it and names the winner.
+
+---
+
+## 2026-10-08 - Salary dropped from the project
+
+**Decision.** Phase 4 of the fix plan (salary on INR data, as a model or as
+bands) is skipped, and the salary features are removed: the regression model
+(`ml/salary_model.py`), the `train-salary` command and `make train`, the
+salary-by-skill table, and the salary coverage and median in `/trends` and on
+the dashboard. Chosen by Jetti Raviteja.
+
+**Why.** None of the 697 Greenhouse, Lever and Ashby postings states pay, and
+the one source with structured INR salaries (Adzuna) was removed earlier the
+same day. A model or band table with no rows behind it is a claim with
+nothing to back it, which the fix plan says to delete.
+
+**Kept.** The salary parser (`salary.py`, including the LPA, lakh and crore
+handling), the salary columns on `postings`, and the "with salary" count in
+`stats`, as dormant plumbing in case a salary source returns. The v1 salary
+entries above stay as history.

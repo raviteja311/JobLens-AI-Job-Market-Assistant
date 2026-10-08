@@ -1,14 +1,14 @@
 """The numbers behind the dashboard. Plain pandas, no model.
 
 Nothing here is clever, and that is deliberate: these are the aggregates a
-user actually asks for ("what is in demand", "where are the jobs", "does
-knowing Kubernetes pay"), and they should be readable by anyone checking
+user actually asks for ("what is in demand", "where are the jobs"), and
+they should be readable by anyone checking
 whether the dashboard is lying.
 
 The one thing worth being careful about is the denominator. Every share is
 reported against the postings that could have answered the question, not
-against the whole corpus: salary figures only over postings with a parsed
-salary, trends only over postings with a date. Mixing those two is how a
+against the whole corpus: trends only over postings with a date. Mixing
+those is how a
 dashboard ends up claiming half the market is remote when really half the
 postings did not say.
 """
@@ -18,7 +18,6 @@ from __future__ import annotations
 import pandas as pd
 
 from joblens.ml import dataset
-from joblens.ml.salary_model import salary_in_usd
 from joblens.ml.skills import skill_counts, skill_matrix
 
 
@@ -80,57 +79,6 @@ def remote_share(frame: pd.DataFrame) -> float:
     return float(frame["is_remote"].mean())
 
 
-def salary_by_skill(
-    frame: pd.DataFrame, min_postings: int = 5, top_n: int = 20
-) -> pd.DataFrame:
-    """Median advertised salary for postings mentioning each skill.
-
-    This is an association and nothing more. Skills cluster with seniority and
-    with industry, so "mlops pays more" here mostly means "postings that say
-    mlops are also more senior". The regression in salary_model.py is the
-    place that tries to hold the other columns still; this table does not.
-    """
-    priced = _priced(frame)
-    if priced.empty:
-        return pd.DataFrame(columns=["skill", "postings", "median_usd"])
-
-    matrix = skill_matrix(priced)
-    overall = float(priced["salary_usd"].median())
-    rows = []
-    for skill in matrix.columns:
-        members = priced.loc[matrix[skill].to_numpy()]
-        if len(members) < min_postings:
-            continue
-        median = float(members["salary_usd"].median())
-        rows.append(
-            {
-                "skill": skill,
-                "postings": len(members),
-                "median_usd": median,
-                "vs_overall": median / overall - 1,
-            }
-        )
-    if not rows:
-        return pd.DataFrame(columns=["skill", "postings", "median_usd"])
-    return (
-        pd.DataFrame(rows)
-        .sort_values("median_usd", ascending=False)
-        .head(top_n)
-        .reset_index(drop=True)
-    )
-
-
-def _priced(frame: pd.DataFrame) -> pd.DataFrame:
-    """Postings with a salary we believe, converted to USD."""
-    if frame.empty:
-        return frame
-    work = frame.copy()
-    # The same rule as the salary model: no currency means no price, and each
-    # bound has to be plausible, not only the midpoint.
-    work["salary_usd"], usable = salary_in_usd(work)
-    return work[usable]
-
-
 def summary(frame: pd.DataFrame, days: int = 90) -> dict:
     """One dict with everything the dashboard and the CLI both want."""
     if frame.empty:
@@ -141,17 +89,11 @@ def summary(frame: pd.DataFrame, days: int = 90) -> dict:
         cutoff = pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=days)
         recent = frame[frame["posted_at"].isna() | (frame["posted_at"] >= cutoff)]
 
-    priced = _priced(recent)
     return {
         "window_days": days,
         "postings": int(len(recent)),
         "sources": recent["source"].value_counts().to_dict(),
         "remote_share": round(remote_share(recent), 3),
-        "with_salary": int(len(priced)),
-        "salary_coverage": round(len(priced) / len(recent), 3) if len(recent) else 0.0,
-        "median_salary_usd": (
-            round(float(priced["salary_usd"].median())) if len(priced) else None
-        ),
         "top_skills": top_skills(recent, 15).to_dict(orient="records"),
         "top_regions": demand_by_location(recent, 10).to_dict(orient="records"),
     }

@@ -316,23 +316,6 @@ if trends_tab.open:
         with st.container(horizontal=True):
             st.metric("Postings", summary["postings"], border=True)
             st.metric("Remote", f"{summary['remote_share']:.0%}", border=True)
-            st.metric(
-                "State a salary",
-                f"{summary['salary_coverage']:.0%}",
-                border=True,
-                help="Every figure on this tab is reported against the postings "
-                "that could answer it; most postings never state pay.",
-            )
-            st.metric(
-                "Median salary",
-                (
-                    f"${summary['median_salary_usd']:,}"
-                    if summary["median_salary_usd"]
-                    else "-"
-                ),
-                border=True,
-                help=f"Across the {summary['with_salary']} postings that state one.",
-            )
 
         skills_col, regions_col = st.columns([3, 2])
         with skills_col:
