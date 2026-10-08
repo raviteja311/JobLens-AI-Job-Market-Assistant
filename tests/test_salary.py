@@ -96,3 +96,65 @@ def test_does_not_annualise_when_period_is_unknown():
 
 def test_canadian_dollars_are_not_us_dollars():
     assert parse_salary("C$110,000 per year").currency == "CAD"
+
+
+# Indian salary formats. A lakh is 100,000 and a crore 10,000,000, and LPA
+# ("lakhs per annum") states the period and the currency in three letters.
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        # The plan's table.
+        ("₹6-10 LPA", Salary(600000, 1000000, "year", "INR")),
+        ("6 - 10 LPA", Salary(600000, 1000000, "year", "INR")),
+        ("8 lakhs per annum", Salary(800000, 800000, "year", "INR")),
+        ("8 L p.a.", Salary(800000, 800000, "year", "INR")),
+        ("₹1.2 Cr", Salary(12000000, 12000000, "year", "INR")),
+        ("₹50,000 per month", Salary(50000, 50000, "month", "INR")),
+        # Spellings and shapes Indian postings use.
+        ("12 LPA", Salary(1200000, 1200000, "year", "INR")),
+        ("12.5 LPA", Salary(1250000, 1250000, "year", "INR")),
+        ("10LPA", Salary(1000000, 1000000, "year", "INR")),
+        ("INR 12-18 LPA", Salary(1200000, 1800000, "year", "INR")),
+        ("₹12 LPA - ₹18 LPA", Salary(1200000, 1800000, "year", "INR")),
+        ("CTC: 12 to 18 LPA", Salary(1200000, 1800000, "year", "INR")),
+        ("5 lacs", Salary(500000, 500000, "year", "INR")),
+        ("4 lac per annum", Salary(400000, 400000, "year", "INR")),
+        ("5-8 Lakhs", Salary(500000, 800000, "year", "INR")),
+        ("8 lakh", Salary(800000, 800000, "year", "INR")),
+        ("Rs. 8 lakh", Salary(800000, 800000, "year", "INR")),
+        ("Rs 50,000 per month", Salary(50000, 50000, "month", "INR")),
+        ("₹10 L - ₹15 L p.a.", Salary(1000000, 1500000, "year", "INR")),
+        ("1.5 lakh per month", Salary(150000, 150000, "month", "INR")),
+        ("₹1.2 Cr - 1.5 Cr", Salary(12000000, 15000000, "year", "INR")),
+        ("1 crore", Salary(10000000, 10000000, "year", "INR")),
+        ("Up to 20 LPA", Salary(None, 2000000, "year", "INR")),
+        ("upto 12 LPA", Salary(None, 1200000, "year", "INR")),
+        ("12 LPA + ESOPs", Salary(1200000, 1200000, "year", "INR")),
+        ("Competitive, 10-15 LPA", Salary(1000000, 1500000, "year", "INR")),
+    ],
+)
+def test_parses_indian_formats(text, expected):
+    assert parse_salary(text) == expected
+
+
+def test_a_monthly_rupee_salary_annualises():
+    assert parse_salary("₹50,000 per month").annualised() == (600000, 600000)
+    assert parse_salary("1.5 lakh per month").annualised() == (1800000, 1800000)
+
+
+def test_a_bare_l_is_not_a_lakh():
+    # Only "L p.a." is read as lakhs. A lone L is too ambiguous to multiply.
+    assert parse_salary("10L") == Salary(10, 10, None, None)
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Experience: 3-5 years, 10-15 LPA", Salary(1000000, 1500000, "year", "INR")),
+        ("0-1 years, 3.5 LPA", Salary(350000, 350000, "year", "INR")),
+        ("5+ yrs, $150,000", Salary(150000, 150000, "year", "USD")),
+        ("2 to 4 years experience", Salary()),
+    ],
+)
+def test_experience_is_not_read_as_pay(text, expected):
+    assert parse_salary(text) == expected

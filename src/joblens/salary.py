@@ -53,7 +53,8 @@ PERIOD_PATTERNS = [
 
 NUMBER = r"\d{1,3}(?:[,\s]\d{2,3})+(?:\.\d+)?\s*[kK]?|\d+(?:\.\d+)?\s*[kK]?"
 RANGE_SEPARATOR = r"\s*(?:--|-|–|—|to|and)\s*[\$£€₹¥]?\s*"
-UPPER_BOUND_ONLY = re.compile(r"\bup\s+to\b", re.I)
+# "upto" as one word is common in Indian postings.
+UPPER_BOUND_ONLY = re.compile(r"\bup\s*to\b", re.I)
 # A plus glued to the number ("$100k+") means "and up". A plus with a space
 # before it ("$150,000 + equity") introduces a supplement and the figure is a
 # point value; `\b` cannot express that, which is why the old `\+` branch
@@ -66,6 +67,65 @@ NON_NUMERIC_NOISE = re.compile(
     r"\b(?:competitive|negotiable|doe|depending\s+on\s+experience|market\s+rate|tbd)\b",
     re.I,
 )
+
+
+# Indian units. A lakh is 100,000 rupees and a crore 10,000,000, so "6-10 LPA"
+# is 600,000 to 1,000,000 a year. LPA ("lakhs per annum") states the period
+# itself. A bare "L" counts only before "p.a." or "per annum": "10L" alone
+# could be anything, and multiplying a guess by 100,000 is a large error.
+INDIAN_UNIT = (
+    r"(lpa|lakhs?|lacs?|crores?|cr|l(?=\s*(?:p\.?\s*a\b|per\s+annum)))(?![a-z])"
+)
+INDIAN_NUMBER = r"(?<![\d,.])(\d+(?:\.\d+)?)"
+# On the low end of a range a bare "L" is safe: the high end must still carry
+# a real unit, as in "10 L - 15 L p.a.".
+INDIAN_LOW_UNIT = r"(lpa|lakhs?|lacs?|crores?|cr|l)(?![a-z])"
+INDIAN_RANGE = re.compile(
+    rf"{INDIAN_NUMBER}\s*(?:{INDIAN_LOW_UNIT})?{RANGE_SEPARATOR}"
+    rf"{INDIAN_NUMBER}\s*{INDIAN_UNIT}",
+    re.I,
+)
+INDIAN_AMOUNT = re.compile(rf"{INDIAN_NUMBER}\s*{INDIAN_UNIT}", re.I)
+PER_ANNUM_UNIT = re.compile(r"(?<![a-z])lpa(?![a-z])", re.I)
+# "3-5 years" is experience, not pay, and Indian postings often put it right
+# before the CTC ("3-5 years, 10-15 LPA"). The range search takes the first
+# range it sees, so the experience figure goes before parsing starts.
+# "per year" survives: the number has to be directly followed by "years".
+EXPERIENCE = re.compile(
+    r"\d+(?:\.\d+)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?)?\s*\+?\s*(?:years?|yrs?)\b",
+    re.I,
+)
+
+
+def _unit_factor(unit: str) -> int:
+    return 10_000_000 if unit.lower().startswith("cr") else 100_000
+
+
+def _expand_indian_units(text: str) -> tuple[str, bool]:
+    """Rewrite lakh and crore amounts as plain rupees, so the rest of the
+    parser sees "600000 - 1000000" where the posting said "6-10 LPA".
+    Returns the rewritten text and whether any Indian unit was found.
+
+    Ranges go first, because one unit usually covers both ends: in "6-10
+    LPA" the 6 is lakhs too. A unit on the low end ("10L - 15L p.a.",
+    "1.2 Cr - 1.5 Cr") is respected when it is there.
+    """
+
+    def expand_range(match: re.Match) -> str:
+        low, low_unit, high, high_unit = match.groups()
+        low_factor = _unit_factor(low_unit or high_unit)
+        return (
+            f"{round(float(low) * low_factor)} - "
+            f"{round(float(high) * _unit_factor(high_unit))}"
+        )
+
+    def expand_amount(match: re.Match) -> str:
+        value, unit = match.groups()
+        return str(round(float(value) * _unit_factor(unit)))
+
+    expanded = INDIAN_RANGE.sub(expand_range, text)
+    expanded = INDIAN_AMOUNT.sub(expand_amount, expanded)
+    return expanded, expanded != text
 
 
 @dataclass(frozen=True)
@@ -121,6 +181,9 @@ def _detect_currency(text: str) -> str | None:
     for symbol, code in CURRENCY_SYMBOLS.items():
         if len(symbol) == 1 and symbol in text:
             return code
+    # "Rs" and "Rs." are how Indian postings write the rupee without a ₹ key.
+    if re.search(r"\brs\.?(?=\s*\d|\s)", text, re.I):
+        return "INR"
     return None
 
 
@@ -155,6 +218,14 @@ def parse_salary(text: str | None) -> Salary:
     if not re.search(r"\d", cleaned):
         return Salary()
 
+    # Before anything else reads the numbers, so "10-15 LPA" next to
+    # "competitive" already looks like a salary to the noise check below.
+    cleaned = EXPERIENCE.sub(" ", cleaned)
+    if not re.search(r"\d", cleaned):
+        return Salary()
+    per_annum = bool(PER_ANNUM_UNIT.search(cleaned))
+    cleaned, indian = _expand_indian_units(cleaned)
+
     if NON_NUMERIC_NOISE.search(cleaned) and not re.search(
         r"[\$£€₹]|\d{4,}|\d+\s*[kK]\b", cleaned
     ):
@@ -162,8 +233,9 @@ def parse_salary(text: str | None) -> Salary:
 
     body = re.split(r"\bplus\b|\+", cleaned, maxsplit=1)[0]
 
-    currency = _detect_currency(cleaned)
-    period = _detect_period(cleaned)
+    # Lakhs and crores are rupees whether or not the posting says so.
+    currency = _detect_currency(cleaned) or ("INR" if indian else None)
+    period = "year" if per_annum else _detect_period(cleaned)
 
     range_match = re.search(rf"({NUMBER}){RANGE_SEPARATOR}({NUMBER})", body)
 
