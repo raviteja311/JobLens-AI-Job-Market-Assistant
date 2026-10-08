@@ -198,7 +198,8 @@ network.
 | Adzuna | 0 | required | registered but skipped without a key |
 
 **Storage** is bronze/silver. `raw_postings` keeps the payload exactly as the
-source sent it, one row per fetch, history retained. `postings` holds our
+source sent it, one row each time a posting is new or changed, so history is
+retained without storing an identical copy every day. `postings` holds our
 interpretation. When the salary parser turns out to be wrong, `transform`
 re-runs over the raw layer instead of waiting two weeks to re-collect.
 

@@ -103,6 +103,28 @@ def test_raw_rows_round_trip(conn):
     assert stored["position"] == "ML Engineer"
 
 
+def test_raw_rows_store_changes_only(conn):
+    run_id = db.start_run(conn, "remoteok")
+    payload = {"id": "42", "position": "ML Engineer", "company": "Acme"}
+    item = RawItem(source="remoteok", source_id="42", payload=payload)
+    assert db.insert_raw(conn, [item], run_id) == 1
+    # The same payload again, even with its keys in another order.
+    reordered = RawItem(
+        source="remoteok", source_id="42", payload=dict(reversed(payload.items()))
+    )
+    assert db.insert_raw(conn, [reordered], run_id) == 0
+    # A real change is stored, and so is the same id from another source.
+    changed = RawItem(
+        source="remoteok", source_id="42", payload={**payload, "position": "Lead"}
+    )
+    other_source = RawItem(source="adzuna", source_id="42", payload=payload)
+    assert db.insert_raw(conn, [changed, other_source], run_id) == 2
+    # Going back to the old text is a change from the latest copy.
+    assert db.insert_raw(conn, [item], run_id) == 1
+    count = conn.execute("select count(*) as n from raw_postings").fetchone()["n"]
+    assert count == 4
+
+
 def test_run_log_records_success(conn):
     run_id = db.start_run(conn, "remoteok")
     db.finish_run(conn, run_id, status="ok", fetched=10, inserted=8, updated=2)

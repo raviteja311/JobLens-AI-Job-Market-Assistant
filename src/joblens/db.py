@@ -5,6 +5,7 @@ able to read the exact SQL matters more than saving a few lines.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import uuid
 from collections.abc import Iterable, Iterator
@@ -81,20 +82,76 @@ def finish_run(
     conn.commit()
 
 
+# Bronze keeps a posting's history, but only its changes. A board returns
+# every open job on every run, and storing an identical copy of 24,000 jobs
+# a day fills a free-tier database in days while recording nothing new.
+#
+# The check sends hashes, not payloads: shipping 24,000 payloads to Postgres
+# just to compare them took almost two minutes, and their hashes take a
+# fraction of a second. Only the payloads that changed are sent after it.
+CHANGED_RAW_SQL = """
+    select i.position
+      from unnest(%(sources)s::text[], %(source_ids)s::text[], %(hashes)s::text[])
+           with ordinality as i(source, source_id, hash, position)
+     where i.hash is distinct from (
+           select r.payload_hash
+             from raw_postings r
+            where r.source = i.source and r.source_id = i.source_id
+            order by r.fetched_at desc, r.id desc
+            limit 1)
+"""
+
+
+def payload_hash(payload: dict) -> str:
+    """A stable hash of a payload. Sorted keys and fixed separators, so the
+    same content always hashes the same whatever order the API sent it in."""
+    canonical = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    return hashlib.md5(canonical.encode("utf-8")).hexdigest()
+
+
 def insert_raw(
     conn: psycopg.Connection, items: Iterable[RawItem], run_id: uuid.UUID
 ) -> int:
-    rows = [(i.source, i.source_id, json.dumps(i.payload), run_id) for i in items]
-    if not rows:
+    """Store the items that are new or changed since their last stored copy.
+    Returns how many rows were written, which is 0 for a run that found
+    nothing new."""
+    items = list(items)
+    if not items:
         return 0
-    with conn.cursor() as cur:
-        cur.executemany(
-            """
-            insert into raw_postings (source, source_id, payload, run_id)
-            values (%s, %s, %s, %s)
-            """,
-            rows,
+    hashes = [payload_hash(i.payload) for i in items]
+    changed = conn.execute(
+        CHANGED_RAW_SQL,
+        {
+            "sources": [i.source for i in items],
+            "source_ids": [i.source_id for i in items],
+            "hashes": hashes,
+        },
+    ).fetchall()
+    rows = []
+    for row in changed:
+        index = row["position"] - 1  # `with ordinality` counts from 1
+        item = items[index]
+        rows.append(
+            (
+                item.source,
+                item.source_id,
+                json.dumps(item.payload),
+                hashes[index],
+                run_id,
+            )
         )
+    if rows:
+        with conn.cursor() as cur:
+            cur.executemany(
+                """
+                insert into raw_postings
+                    (source, source_id, payload, payload_hash, run_id)
+                values (%s, %s, %s, %s, %s)
+                """,
+                rows,
+            )
     conn.commit()
     return len(rows)
 
