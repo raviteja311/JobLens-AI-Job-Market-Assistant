@@ -3,4 +3,352 @@ grades:
   0: not relevant
   1: acceptable
   2: exactly what was asked
-queries: []
+queries:
+- id: q01
+  query: fresher data analyst job in Hyderabad
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q02
+  query: junior machine learning engineer Bengaluru
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q03
+  query: data engineer jobs in Pune
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q04
+  query: data scientist role in Chennai
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q05
+  query: analytics manager Gurgaon
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q06
+  query: AI engineer Noida
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q07
+  query: business intelligence developer
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q08
+  query: MLOps engineer India
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q09
+  query: applied scientist LLM Bangalore
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q10
+  query: data analyst internship
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q11
+  query: SQL and Power BI analyst role
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q12
+  query: Tableau dashboard developer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q13
+  query: Spark and Databricks data engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q14
+  query: Airflow dbt Snowflake data pipelines
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q15
+  query: LLM RAG engineer with LangChain
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q16
+  query: PyTorch deep learning engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q17
+  query: Kafka streaming data engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q18
+  query: computer vision engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q19
+  query: NLP engineer for text or speech
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q20
+  query: python developer for data pipelines
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q21
+  query: fine-tuning LLMs and vector databases
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q22
+  query: forecasting and time series data scientist
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q23
+  query: product analyst with A/B testing and experimentation
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q24
+  query: 0-1 years experience data scientist
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q25
+  query: entry level AI engineer for 2026 graduates
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q26
+  query: 2-4 years experience data engineer Bangalore
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q27
+  query: senior data scientist 5+ years
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q28
+  query: lead data engineer managing a team
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q29
+  query: principal or staff machine learning engineer
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q30
+  query: head of data or director of analytics
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q31
+  query: associate consultant analytics for freshers
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q32
+  query: remote data engineering job India
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q33
+  query: work from home data analyst
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q34
+  query: hybrid ML engineer role Bengaluru
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q35
+  query: remote LLM engineer India
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q36
+  query: onsite data scientist Mumbai
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q37
+  query: remote analytics job with US shift
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q38
+  query: fintech analytics job
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q39
+  query: AI startup NLP role
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q40
+  query: payments fraud detection data scientist
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q41
+  query: healthcare data analyst
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q42
+  query: insurance analytics role
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q43
+  query: e-commerce recommendation systems engineer
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q44
+  query: supply chain analytics
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q45
+  query: marketing analytics and customer churn
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q46
+  query: pharma analytics consulting associate
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q47
+  query: quant researcher at a trading firm
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q48
+  query: AI for cybersecurity
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
+- id: q49
+  query: python role without DSA rounds
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q50
+  query: MLOps but not cloud-heavy
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q51
+  query: data analyst wanting to move into machine learning
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q52
+  query: machine learning role that is not just building dashboards
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q53
+  query: GenAI role at a product company not a service company
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q54
+  query: data engineer with Azure not AWS
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q55
+  query: research role publishing AI papers
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q56
+  query: statistics and SQL for business decisions
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q57
+  query: customer facing forward deployed AI engineer
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
+- id: q58
+  query: AI agents engineer
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
