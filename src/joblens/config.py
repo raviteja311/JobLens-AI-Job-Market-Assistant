@@ -35,7 +35,19 @@ class Settings(BaseSettings):
 
     adzuna_app_id: str | None = None
     adzuna_app_key: str | None = None
-    adzuna_country: str = "gb"
+    adzuna_country: str = "in"
+    # One search per query. Adzuna's `what` is an AND of its words, so a
+    # single broad query misses most of the role family; several narrow ones
+    # cover it, and the overlap is removed by job id in adzuna.fetch().
+    adzuna_queries: list[str] = [
+        "data scientist",
+        "data analyst",
+        "machine learning",
+        "AI engineer",
+        "python developer",
+        "NLP",
+        "data engineer",
+    ]
 
     # Phase 3. The local embedder needs nothing; the API one is only used to
     # reproduce the cost/quality comparison.

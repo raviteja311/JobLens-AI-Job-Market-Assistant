@@ -20,38 +20,52 @@ from joblens.sources.base import client, get_json
 name = "adzuna"
 API_URL = "https://api.adzuna.com/v1/api/jobs/{country}/search/{page}"
 RESULTS_PER_PAGE = 50
+# Hard stop per query. Duplicates across queries mean a query can need more
+# pages than its share suggests, but never an unbounded number.
+MAX_PAGES = 20
 
 
 def fetch(limit: int = 200) -> list[RawItem]:
+    """Run every query in settings.adzuna_queries, each with an equal share
+    of `limit`, so the first query cannot use up the whole budget. A job that
+    matches several queries is kept once."""
     settings = get_settings()
-    if not settings.adzuna_enabled:
+    if not settings.adzuna_enabled or not settings.adzuna_queries:
         return []
     items: list[RawItem] = []
-    pages = max(1, -(-limit // RESULTS_PER_PAGE))  # ceiling division
+    seen: set[str] = set()
+    share = max(1, -(-limit // len(settings.adzuna_queries)))  # ceiling division
     with client() as http:
-        for page in range(1, pages + 1):
-            payload = get_json(
-                http,
-                API_URL.format(country=settings.adzuna_country, page=page),
-                params={
-                    "app_id": settings.adzuna_app_id,
-                    "app_key": settings.adzuna_app_key,
-                    "results_per_page": RESULTS_PER_PAGE,
-                    "what": "machine learning engineer",
-                    "content-type": "application/json",
-                },
-            )
-            results = payload.get("results", [])
-            if not results:
-                break
-            for entry in results:
-                if not entry.get("id"):
-                    continue
-                items.append(
-                    RawItem(source=name, source_id=str(entry["id"]), payload=entry)
+        for query in settings.adzuna_queries:
+            taken = 0
+            for page in range(1, MAX_PAGES + 1):
+                payload = get_json(
+                    http,
+                    API_URL.format(country=settings.adzuna_country, page=page),
+                    params={
+                        "app_id": settings.adzuna_app_id,
+                        "app_key": settings.adzuna_app_key,
+                        "results_per_page": RESULTS_PER_PAGE,
+                        "what": query,
+                        "content-type": "application/json",
+                    },
                 )
-                if len(items) >= limit:
-                    return items
+                results = payload.get("results", [])
+                if not results:
+                    break
+                for entry in results:
+                    job_id = str(entry.get("id") or "")
+                    if not job_id or job_id in seen:
+                        continue
+                    seen.add(job_id)
+                    items.append(RawItem(source=name, source_id=job_id, payload=entry))
+                    taken += 1
+                    if len(items) >= limit:
+                        return items
+                    if taken >= share:
+                        break
+                if taken >= share:
+                    break
     return items
 
 
