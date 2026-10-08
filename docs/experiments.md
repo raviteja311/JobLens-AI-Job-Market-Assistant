@@ -1319,3 +1319,35 @@ CI comparison against it is also a measurement of corpus drift.
 **Decision.** All fixed with regression tests. The judge's faithfulness and
 completeness are no longer regression-gated, which is what the code comment
 had always claimed.
+
+---
+
+## 2026-10-08 - Reranker decision rule, fixed before any result
+
+**Pre-registration.** Written and committed before any reranker experiment
+was run on the Indian corpus (697 postings). Nobody has seen a reranker
+number on this corpus yet; the v1 numbers (global corpus) are context, not
+evidence.
+
+**Rule.** The cross-encoder reranker is on by default for `/search` only if
+its best configuration improves MRR over the hybrid baseline by **at least
++0.05 absolute** while keeping **p95 latency under 500 ms per query** on this
+laptop's CPU. Otherwise hybrid is the default and rerank stays opt-in
+(`?rerank=true`).
+
+- Baseline: hybrid (whole), no rerank, same queries, same run.
+- Latency: wall-clock per query over the judged queries, warm models,
+  p95 over all queries in the run. Measured on the 7.3 GB, 12-core laptop
+  with CPU-only torch.
+- Judgements: the human-verified golden queries. Runs scored against LLM
+  grades before the human grades exist are labelled provisional and cannot
+  trigger the rule.
+- Chosen by Jetti Raviteja. X = 0.05 because a smaller gain could flip with
+  a few relabels at about 25 judged queries; Y = 500 ms because a search above
+  that stops feeling interactive.
+
+**Experiments this rule will judge** (fix plan, Phase 3): candidate pool size
+(20, 30, 50), what text the cross-encoder reads (snippet, title plus the
+first ~400 tokens, best-matching section), score fusion with the first stage
+(alpha 0.3, 0.5, 0.7), and a cheaper model (TinyBERT-L-2) and/or
+`max_length=256`.
