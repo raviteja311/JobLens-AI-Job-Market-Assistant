@@ -189,3 +189,31 @@ def test_load_embeddings_aligns_rows_and_drops_the_unembedded(conn):
     for row, posting_id in enumerate(subset["id"]):
         expected = 0.25 if posting_id == ids[0] else 0.5
         assert vectors[row, 0] == pytest.approx(expected)
+
+
+def test_keyword_search_finds_a_city_named_only_in_the_location(conn):
+    # Migration 005: before it, a city was searchable only if the description
+    # repeated it, and most postings do not.
+    from joblens.search import retrieval
+
+    in_pune = Posting.build(
+        source="remoteok",
+        source_id="pune",
+        title="Data Engineer",
+        company="Acme",
+        url="https://example.com/pune",
+        location="Pune, Maharashtra, India",
+        description_html="<p>Build pipelines.</p>",
+    )
+    elsewhere = Posting.build(
+        source="remoteok",
+        source_id="chennai",
+        title="Data Engineer",
+        company="Acme",
+        url="https://example.com/chennai",
+        location="Chennai, India",
+        description_html="<p>Build pipelines.</p>",
+    )
+    db.upsert_postings(conn, [in_pune, elsewhere])
+    hits = retrieval.keyword_search(conn, "pune", limit=5)
+    assert [h.location for h in hits] == ["Pune, Maharashtra, India"]

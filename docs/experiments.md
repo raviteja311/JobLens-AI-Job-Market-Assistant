@@ -1540,3 +1540,70 @@ from the vector arm; with the full 50 it is slightly lower, within noise at
 sweep (`scripts/rrf_sweep.py`) is flat from k = 30 to 300; k = 10 is 0.03 MRR
 better than the shipped 60, within noise. Vector (whole) alone beats hybrid
 (whole), MRR 0.696 against 0.596, with keyword alone at 0.431.
+
+---
+
+## 2026-10-08 - Cities were not searchable: location indexing and a city vote
+
+**Symptom.** In manual testing, "data engineer Pune" through hybrid search put
+one Pune posting in the top ten; the top three were in Hyderabad and Chennai.
+
+**Cause.** The posting's `location` field was indexed nowhere. Keyword search
+read title, company and description; the embeddings read "Title at Company"
+and the description. A city was findable only when the description repeated
+it, which 28 of the 93 Pune postings do. Keyword search also ORs the query
+terms, so a long posting saying "data" many times outranks one that says
+"Pune" once.
+
+**Measure.** `scripts/city_precision.py`: for the 10 golden queries that name
+a city, the share of the top ten located in that city. It needs no relevance
+labels, so it is not affected by the pooling bias below.
+
+**Changes, one at a time.**
+
+1. Index the location: migration 005 adds `location` to `search_vector` at
+   weight B, and `chunking` puts it in every chunk header ("Title at
+   Company, Location"); both indexes rebuilt.
+2. `ts_rank_cd` length normalisation, flags 1, 2, 8, 16 and 32: none beat
+   the current 0 on city precision (32 is a monotonic rescale and ranks
+   identically). Not adopted; `TS_RANK_NORMALIZATION` stays 0 as an
+   experiment hook.
+3. A city vote in hybrid search (`search/places.py`): when the query names a
+   city, in-city postings among the fused top `CITY_BOOST_WINDOW * limit`
+   get a third RRF vote. A boost, not a filter.
+
+**Result.**
+
+| stage | keyword | vector (whole) | hybrid (whole) | Pune, hybrid |
+| --- | ---: | ---: | ---: | ---: |
+| before | 0.28 | 0.29 | 0.28 | 0.1 |
+| 1. location indexed | 0.33 | 0.39 | 0.36 | 0.4 |
+| 3. city vote, window 3 x limit | 0.33 | 0.39 | **0.68** | **0.6** |
+
+The window was chosen by Jetti Raviteja from this sweep (hybrid only):
+
+| window (fused top N) | city precision | Pune | Chennai | provisional recall@10 / MRR |
+| ---: | ---: | ---: | ---: | --- |
+| none | 0.36 | 0.4 | 0.2 | 0.390 / 0.571 |
+| 20 | 0.59 | 0.6 | 0.4 | 0.401 / 0.576 |
+| 30 (chosen, 3 x 10) | 0.68 | 0.6 | 0.7 | 0.384 / 0.575 |
+| 100 | 0.78 | 0.9 | 0.9 | 0.375 / 0.575 |
+
+A wider window wins more city matches but promotes in-city jobs in the wrong
+role: at 100, "data scientist role in Chennai" ranked Chennai data engineers
+and data stewards above data scientists elsewhere, which the labelling guide
+grades the other way round. The window keeps a weak role match from riding
+the city vote. On the live API, "data engineer Pune" now returns 7 Pune data
+roles in its top ten.
+
+**Relevance, and why it cannot decide this.** Provisional relevance on the 23
+LLM-judged queries barely moved (hybrid whole MRR 0.596 before, 0.575 after;
+vector whole recall@10 0.472 to 0.435). Two reasons not to read much into it:
+only 4 of those 23 queries name a city, and the judged pool was built from the
+old index, so 17 to 31% of the new top-ten results have never been judged and
+count as irrelevant. Any change that surfaces different postings is penalised
+until the pool is topped up.
+
+**Consequence for the golden set.** The labelling pool was built from the old
+index, so it no longer matches what search returns. It has to be rebuilt
+before human grading starts.

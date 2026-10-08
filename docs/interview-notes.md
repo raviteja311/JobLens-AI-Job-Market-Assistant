@@ -248,11 +248,41 @@ student win? Why did loss look fine while the model was broken?
 - Hybrid is slower than both arms together (169 ms against 54 + 30): it asks
   each arm for 50 candidates, and `ts_headline` over 50 long postings is
   expensive.
-- Not yet tried: `ts_rank_cd` normalisation flags (for example 1 or 32), or
-  weighting the arms. Both are measurable with the existing harness.
+- `ts_rank_cd` normalisation flags were tried on 2026-10-08 and none helped
+  city queries (question 7). Weighting the arms is not yet tried.
 
 **Likely follow-ups.** When would keyword search beat vectors? Would you
 remove the keyword arm? How would you fix the length bias?
+
+**My answer.**
+
+>
+
+---
+
+## 7. "Search for 'data engineer Pune' returned Hyderabad jobs. Why, and what did you do?"
+
+**Facts** (`docs/experiments.md`, 2026-10-08).
+
+- Found by manual testing, not by the eval: the golden set had city queries,
+  but relevance metrics on 23 queries hid it.
+- Root cause: the `location` field was not indexed. Keyword search read
+  title, company and description; embeddings read "Title at Company" and the
+  description. Only 28 of 93 Pune postings repeat "Pune" in the text.
+- Fix 1: location into the search vector (migration 005, weight B) and into
+  every chunk header. City precision@10 for hybrid 0.28 to 0.36.
+- Tried and rejected: `ts_rank_cd` length normalisation; no flag helped.
+- Fix 2: query understanding. `places.query_city` reads the city out of the
+  query and in-city postings in the fused top 30 get a third RRF vote. Hybrid
+  city precision 0.36 to 0.68; Pune 0.1 to 0.6 (7 of 10 live).
+- The trade-off was measured: a wider window wins more city matches but
+  promotes in-city jobs in the wrong role (the Chennai case).
+- Why relevance numbers could not judge it: pooling bias, 17 to 31% of new
+  results unjudged.
+
+**Likely follow-ups.** Why a boost and not a filter? What is pooling bias and
+how do you fix it? How would this scale to "near Pune" or "Maharashtra"? Why
+not let the LLM parse the query?
 
 **My answer.**
 

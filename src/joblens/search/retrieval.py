@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from joblens.search import places
 from joblens.search.embeddings import Embedder, get_embedder
 
 # The constant from the original RRF paper. It damps the contribution of the
@@ -78,12 +79,20 @@ _OR_QUERY = """
 """
 
 
+# ts_rank_cd's normalization flags. 0 is none: a long posting that repeats
+# "data", "engineer" and "analyst" outranks a short exact match, which put the
+# same few long postings first for unrelated queries. 1 divides by
+# 1 + log(document length). Measured in docs/experiments.md (2026-10-08).
+TS_RANK_NORMALIZATION = 0
+
+
 def keyword_search(conn, query: str, limit: int = 20) -> list[SearchHit]:
     """Postgres full-text search over the stored tsvector."""
     rows = conn.execute(
         f"""
         with q as (select {_OR_QUERY} as query)
-        {_SELECT}, ts_rank_cd(p.search_vector, q.query) as score,
+        {_SELECT},
+               ts_rank_cd(p.search_vector, q.query, {TS_RANK_NORMALIZATION}) as score,
                ts_headline('english', p.description, q.query,
                            'MaxWords=30, MinWords=10, MaxFragments=1') as snippet
           from postings p, q
@@ -213,15 +222,44 @@ def hybrid_search(
     limit: int = 20,
     candidates: int = 50,
     rrf_k: int = RRF_K,
+    city_boost: bool | None = None,
 ) -> list[SearchHit]:
-    """Both retrievers, fused. The default for /search."""
+    """Both retrievers, fused. The default for /search.
+
+    When the query names an Indian city, the postings located there among
+    the fused top CITY_BOOST_WINDOW * limit are added as a third ranked list,
+    so each gets one more 1 / (k + rank) vote. It is a boost, not a filter:
+    remote and other-city postings still rank, below equally good ones in
+    the named city. The window keeps a weak role match from riding the city
+    vote: boosting any in-city candidate put Chennai data engineers and data
+    stewards above data scientists for "data scientist role in Chennai". See
+    places.py for why neither retriever honours a city on its own, and
+    docs/experiments.md (2026-10-08) for the measurements.
+    """
     runs = {
         "keyword": keyword_search(conn, query, limit=candidates),
         "vector": vector_search(
             conn, query, embedder=embedder, strategy=strategy, limit=candidates
         ),
     }
+    city = places.query_city(query) if _boost(city_boost) else None
+    if city is not None:
+        fused = reciprocal_rank_fusion(runs, limit=CITY_BOOST_WINDOW * limit, k=rrf_k)
+        local = [hit for hit in fused if places.in_city(hit.location, city)]
+        if local:
+            runs["city"] = local
     return reciprocal_rank_fusion(runs, limit=limit, k=rrf_k)
+
+
+# Whether hybrid search adds the city vote when a call does not say, and how
+# far down the fused list an in-city posting may be and still get it, as a
+# multiple of the page size (30 for the API's default of 10).
+CITY_BOOST = True
+CITY_BOOST_WINDOW = 3
+
+
+def _boost(value: bool | None) -> bool:
+    return CITY_BOOST if value is None else value
 
 
 def search(

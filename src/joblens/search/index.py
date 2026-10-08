@@ -70,7 +70,7 @@ def build_index(
 
         rows = conn.execute(
             """
-            select p.id, p.title, p.company, p.description
+            select p.id, p.title, p.company, p.description, p.location
               from postings p
              where not exists (
                    select 1 from posting_chunks c
@@ -96,6 +96,7 @@ def build_index(
                     row["title"],
                     row["company"],
                     row["description"] or "",
+                    row["location"],
                 )
             )
 
