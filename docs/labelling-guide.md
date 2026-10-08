@@ -70,21 +70,33 @@ found a candidate (`found by:` in the pool) before deciding.
 | Data scientist | data analyst doing modelling, ML engineer, applied scientist, researcher |
 | ML engineer | data scientist, MLOps, AI/LLM engineer, applied scientist |
 | MLOps / ML platform | ML engineer, data engineer, platform engineer serving models |
-| AI / LLM engineer (incl. GenAI, agents, RAG) | ML engineer, NLP engineer |
-| Applied scientist / researcher | data scientist, ML engineer |
+| AI / LLM engineer (incl. GenAI, agents, RAG) | ML engineer, NLP engineer, applied scientist or researcher building GenAI models |
+| Applied scientist / researcher | data scientist, ML engineer, AI/LLM engineer (when building GenAI models) |
 | Quant researcher | quant trader, quant developer |
 
 - Same family: meets it. Adjacent: one step. Anything else: missed
   outright, including a backend or full-stack engineer who only calls an AI
   service, and support, sales, security, programme management, solutions
   architecture or content roles with "AI" or "data" in the title.
+- **Grade the work, not the title** (rule 1): an "analyst" whose work is
+  mostly building dashboards is a BI developer.
+- **Product managers**, including data-product and AI product managers, are
+  a wrong family: 0.
 - **Managers** belong to the family they manage. "Analytics manager" is the
   data analyst family at the manager rung; an engineering manager of an ML
-  team is the ML engineer family at the manager rung. Mentoring without
-  people management is not managing: one step for a "managing a team" query.
-- **Forward-deployed and solutions roles** are in a family only if the job
-  is building or deploying that family's systems for customers. Pre-sales
-  and support work is not.
+  team is the ML engineer family at the manager rung. A query that names an
+  individual role ("MLOps engineer") with no level is one step from a
+  manager of that team, because manager is a different rung. Mentoring
+  without people management is not managing: one step for a "managing a
+  team" query.
+- **Forward-deployed, specialist and solutions roles** are in a family only
+  if the job is building or deploying that family's systems for customers.
+  Pre-sales and support work is not. When a role does both, whichever takes
+  most of the listed responsibilities decides.
+- A data engineer who runs ML training jobs is adjacent to MLOps, not to ML
+  engineer: against an ML-role query it is a 0.
+- A **"python role"** is hands-on coding with Python as a stated
+  requirement; Python as one of several accepted languages counts.
 - **NLP** is met by work on text or language models, including LLM, RAG and
   agent work. Speech recognition is NLP when the query says speech.
 
@@ -93,15 +105,18 @@ found a candidate (`found by:` in the pool) before deciding.
 The ladder, one rung each:
 
 **intern/fresher (0-1 years) → junior (1-3) → mid (3-5) → senior (5-8) →
-lead, staff, manager, associate manager (8+) → principal, senior manager →
-head, director, VP.**
+lead, staff, manager, associate manager (8-11) → principal, senior manager
+(12-14) → head, director, VP (15+).**
 
 - Use the years the posting states; use the title only if no years are
   given. "Associate" means junior at some companies (Beghou "Associate
   Consultant") and lead-level at others (Sigmoid "Associate Lead"); when the
   title and the text disagree, the text wins.
 - A range in the query ("2-4 years") is met if the posting's required range
-  overlaps it.
+  overlaps it. A shared endpoint is an overlap: "3-5 years" meets "5+" and
+  meets junior's 1-3.
+- A line such as "Specialization: Lead Data Engineer" states the lead rung,
+  even with no years.
 - One rung away: one step. Two or more: missed outright. A fresher query
   against a senior posting is always 0.
 - "Fresher" or "entry level" is met only if the posting says 0-1 or 0-2
@@ -124,6 +139,10 @@ head, director, VP.**
 
 ### Work mode
 
+- When the location field and the text disagree (the header says remote,
+  the text requires on-site, or the reverse), the text wins.
+- A work mode stated anywhere in the posting counts, including the benefits
+  section ("hybrid working where appropriate" is hybrid).
 - "Remote" or "work from home" is met only if the posting says remote and
   open to India. Hybrid, or remote for another country: one step. An office
   location with no mention of remote work is treated as onsite: missed.
@@ -139,7 +158,10 @@ head, director, VP.**
   day-to-day responsibilities.
 - A query naming several tools ("Airflow dbt Snowflake") is met if most are
   central and the rest appear. Only one of them, or all only as
-  nice-to-have: one step.
+  nice-to-have: one step. A two-part skill query ("forecasting and time
+  series") works the same way: only one part named is one step.
+- A tool named only as one example or alternative ("LangChain, LlamaIndex
+  or similar", "e.g. Snowflake, dbt") appears but is not central: one step.
 - None of them anywhere in the full text: missed outright, even if the role
   family is right. With the whole description in front of you, a tool the
   posting never names is not part of the job.
@@ -153,12 +175,15 @@ head, director, VP.**
 - "Fintech", "healthcare", "insurance", "e-commerce" and similar are met if
   the company's business is in that domain **or** the role's own work is
   (Capco's data roles for bank clients meet "fintech"; an insurance
-  analytics team at a consulting firm meets "insurance analytics").
+  analytics team at a consulting firm meets "insurance analytics"). US
+  health-payer (health plan) analytics meets "insurance".
 - "Startup" is met if the posting or company describes itself as one, or is
   clearly early stage. Not stated: one step.
 - "Product company" vs "service company": a company selling its own product
-  vs one doing client work (consulting, outsourcing, staffing). Not
-  determinable from the posting: one step.
+  vs one doing client work (consulting, outsourcing, staffing). An in-house
+  team building for its own business (a hedge fund's GenAI team) is not a
+  service company, so it meets "product company". Not determinable from
+  the posting: one step.
 - "AI for cybersecurity" means applying AI to security problems. Securing AI
   systems is one step.
 
@@ -183,31 +208,6 @@ modelling work and a level the analyst can get; a senior ML engineer role
 is a 0, however well it matches the words. If the posting states no level,
 that is one step. "Machine learning role" means a job whose main work is
 building models, which includes data scientists who do; MLOps is one step.
-
-## Open questions: decide before grading
-
-The full-text LLM pass (2026-10-08) still hit these. Each has a proposed
-answer. Accept, change or strike each one, then move the answers into the
-rules above and delete this section. Do not start grading with it here.
-
-| # | Question | Proposed answer |
-| --- | --- | --- |
-| 1 | Where do 9-15+ years sit, when the ladder's years stop at 8+? | 8-11 lead/staff/manager, 12-14 principal/senior manager, 15+ head/director. |
-| 2 | Does a range touching the query's at one end overlap ("3-5 years" vs "5+", or vs junior's 1-3)? | Yes: a shared endpoint is an overlap, so the level is met. |
-| 3 | An "analyst" title whose work is mostly building dashboards: analyst or BI developer? | Grade the work (rule 1): it is a BI developer. |
-| 4 | A tool named only as one example ("LangChain, LlamaIndex or similar", "e.g. Snowflake, dbt"): central? | It appears but is not central: one step. |
-| 5 | Does a query saying "engineer" with no level include managers of that team? | Manager is a different rung from an individual contributor: one step. |
-| 6 | Specialist or solutions architects who both build customer workloads and support pre-sales? | Whichever takes most of the listed responsibilities decides the family. |
-| 7 | Product managers, including data-product and AI product managers? | Wrong family: 0. |
-| 8 | Location field says remote, text says on-site (or the reverse)? | The text wins. |
-| 9 | Hybrid mentioned only in the benefits section? | It is stated, so it counts as hybrid. |
-| 10 | Does US health-payer (health plan) analytics count as "insurance"? | Yes. |
-| 11 | Applied scientist or researcher building GenAI models vs an AI/LLM engineer query? | Adjacent: one step. |
-| 12 | A data engineer who runs ML training jobs vs an ML-role query? | Not adjacent to ML engineer: 0 (it is adjacent to MLOps). |
-| 13 | What is a "python role"? | Python is a stated requirement and the job is hands-on coding; one of several accepted languages counts. |
-| 14 | A two-part skill query ("forecasting and time series") where only one part is named? | Same as several tools: one step. |
-| 15 | An in-house team at a non-tech firm (a hedge fund's GenAI team): product or service company? | Not a service company: it builds for its own business, so it meets "product company". |
-| 16 | A "Specialization: Lead Data Engineer" line with no years: is the level stated? | Yes: it states the lead rung. |
 
 ## Worked examples from the pool
 
@@ -265,3 +265,13 @@ means a rule needs work before the numbers are worth quoting.
   the ladder, title vs text for "Associate", no stated level, internships vs
   graduate queries, office location with no mode for remote and hybrid
   queries, tool ecosystems and synonyms, and AI-for-security.
+- 2026-10-08: third version, before any human grading. The full-text LLM
+  pass raised 16 more questions; Jetti Raviteja accepted every proposed
+  answer and they are now in the rules: years above 8 on the ladder, shared
+  range endpoints, dashboard analysts as BI developers, tools named as
+  examples, managers vs individual-role queries, mixed build and pre-sales
+  roles, product managers, location field vs text, hybrid in benefits,
+  health-payer analytics as insurance, applied scientists vs AI/LLM
+  engineers, data engineers running ML jobs, python roles, two-part skill
+  queries, in-house teams as product companies, and stated specialisation
+  lines.
