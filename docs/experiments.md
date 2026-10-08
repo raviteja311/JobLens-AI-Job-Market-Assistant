@@ -1607,3 +1607,14 @@ until the pool is topped up.
 **Consequence for the golden set.** The labelling pool was built from the old
 index, so it no longer matches what search returns. It has to be rebuilt
 before human grading starts.
+
+**Follow-up, same day: the labelling pool now includes hybrid search.** The
+pool had drawn the top ten from keyword, vector (whole) and vector (section)
+only, never from hybrid, the default search: 31% of hybrid's top ten had
+never been judged even before the city vote. Hybrid (whole) now contributes
+its top 30, the exact pool the reranker reorders, so every reranked top ten
+is judged too, and hybrid (section) its top 10 (`label.POOL_MODES`). Rebuilt
+before any human grading: the 25-query human subset went from 604 to 918
+candidates (about 47% more grading, chosen by Jetti Raviteja so that the
+pre-registered Phase 3 run is not biased against reranking by unjudged
+postings).
