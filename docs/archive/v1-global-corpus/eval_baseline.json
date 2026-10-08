@@ -1,0 +1,66 @@
+{
+  "retrieval": {
+    "keyword": {
+      "mrr": 0.5497,
+      "ndcg@10": 0.3854,
+      "ndcg@5": 0.3449,
+      "precision@10": 0.3517,
+      "precision@5": 0.3724,
+      "recall@10": 0.3884,
+      "recall@5": 0.2163
+    },
+    "vector (whole)": {
+      "mrr": 0.7614,
+      "ndcg@10": 0.6121,
+      "ndcg@5": 0.551,
+      "precision@10": 0.5069,
+      "precision@5": 0.5897,
+      "recall@10": 0.6531,
+      "recall@5": 0.3738
+    },
+    "vector (section)": {
+      "mrr": 0.7432,
+      "ndcg@10": 0.5472,
+      "ndcg@5": 0.5204,
+      "precision@10": 0.4552,
+      "precision@5": 0.5414,
+      "recall@10": 0.5358,
+      "recall@5": 0.3326
+    },
+    "hybrid (whole)": {
+      "mrr": 0.7701,
+      "ndcg@10": 0.5532,
+      "ndcg@5": 0.5478,
+      "precision@10": 0.4483,
+      "precision@5": 0.5828,
+      "recall@10": 0.5468,
+      "recall@5": 0.3673
+    },
+    "hybrid (section)": {
+      "mrr": 0.7537,
+      "ndcg@10": 0.5269,
+      "ndcg@5": 0.5071,
+      "precision@10": 0.4345,
+      "precision@5": 0.5138,
+      "recall@10": 0.5037,
+      "recall@5": 0.3105
+    },
+    "hybrid + rerank": {
+      "mrr": 0.797,
+      "ndcg@10": 0.5767,
+      "ndcg@5": 0.5592,
+      "precision@10": 0.4534,
+      "precision@5": 0.5621,
+      "recall@10": 0.5529,
+      "recall@5": 0.3616
+    }
+  },
+  "measured": {
+    "retrieval": {
+      "date": "2026-10-01",
+      "git_sha": "c432136",
+      "queries": 58,
+      "corpus": 466
+    }
+  }
+}
