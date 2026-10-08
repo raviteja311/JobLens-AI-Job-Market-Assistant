@@ -1351,3 +1351,69 @@ laptop's CPU. Otherwise hybrid is the default and rerank stays opt-in
 first ~400 tokens, best-matching section), score fusion with the first stage
 (alpha 0.3, 0.5, 0.7), and a cheaper model (TinyBERT-L-2) and/or
 `max_length=256`.
+
+---
+
+## 2026-10-08 - Reranker experiments, provisional (LLM-judged)
+
+**Status.** Provisional. Scored against LLM grades, so under the rule
+pre-registered above it cannot change the default. It is here to show which
+levers are worth the human-judged run, and to fix the candidate list for that
+run before any human grade exists.
+
+**Setup.** `scripts/rerank_experiments.py --judgements ...`. The 25-query
+human-grading subset (seed 20261008), judged by Claude Opus 5.5 from the full
+posting text under the final labelling guide; 23 queries have at least one
+relevant posting (q01 and q24 have none). Corpus: 697 postings. Hybrid
+(whole) first stage. Every reranked row changes one thing from the shipped
+reranker (MiniLM-L6, snippet text, pool of 30, pure reorder). Latency is one
+pass on the laptop CPU with warm models; p95 is nearest-rank over 23 queries,
+so it is the 22nd slowest query.
+
+**Result.**
+
+| configuration | recall@10 | MRR | nDCG@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| hybrid (whole), baseline | 0.374 | 0.596 | 0.412 | 189 | 306 |
+| rerank as shipped (snippet, pool 30) | 0.506 | 0.729 | 0.523 | 3094 | 3556 |
+| 3.2 document = head | 0.503 | 0.717 | 0.549 | 2828 | 3130 |
+| 3.2 document = best section | 0.586 | 0.763 | 0.592 | 1719 | 2028 |
+| 3.3 pool = 20 | 0.469 | 0.706 | 0.495 | 1847 | 2289 |
+| 3.3 pool = 50 | 0.465 | 0.678 | 0.469 | 3686 | 3997 |
+| 3.4 alpha = 0.3 | 0.476 | 0.733 | 0.519 | 3038 | 3467 |
+| 3.4 alpha = 0.5 | 0.449 | 0.684 | 0.485 | 3041 | 3470 |
+| 3.4 alpha = 0.7 | 0.394 | 0.646 | 0.432 | 3004 | 3496 |
+| 3.5 TinyBERT-L-2 | 0.500 | 0.728 | 0.511 | 412 | 557 |
+| 3.5 max_length = 256 | 0.478 | 0.692 | 0.500 | 1813 | 2053 |
+| 3.5 TinyBERT-L-2, max_length = 256 | 0.480 | 0.725 | 0.496 | 299 | 326 |
+
+What it suggests, all to be confirmed on human grades:
+
+- Reranking raised recall@10 here (0.374 to 0.506), the opposite of v1. The
+  likely reason is a weak first stage: keyword search keeps ranking the same
+  long postings first for unrelated queries (ts_rank_cd without length
+  normalisation), so the reranker has more to correct.
+- The text the cross-encoder reads matters most. The best-matching section
+  beat the snippet on every metric and was faster, plausibly because a
+  section (about 800 characters) is shorter than the snippet a whole-posting
+  chunk produces (about 1,800).
+- 30 is the best pool. 50 adds distractors faster than it adds relevant
+  postings.
+- Fusion with the first-stage score hurts, monotonically in alpha: the first
+  stage is not worth keeping a share of.
+- TinyBERT-L-2 matches MiniLM-L6 on MRR (0.728 vs 0.729) at about a seventh
+  of the latency. Only TinyBERT with max_length 256 passes the rule here:
+  +0.129 MRR at p95 326 ms.
+
+**Candidates declared for the human-judged run.** The table changes one thing
+at a time, so the obvious pairing of the best text with the cheap model was
+never run. Naming it after seeing these numbers is a choice informed by them;
+naming it now, before any human grade exists, keeps the human-judged run a
+test rather than a search. Added to `scripts/rerank_experiments.py`:
+
+- TinyBERT-L-2 reading the best section
+- TinyBERT-L-2 reading the best section, max_length 256
+
+Nothing else will be added before the human-judged run. That run applies the
+pre-registered rule to every configuration in the script as it stands at
+this commit.

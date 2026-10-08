@@ -59,6 +59,17 @@ CONFIGURATIONS = (
     _rerank("3.5 TinyBERT-L-2", model=TINY),
     _rerank("3.5 max_length = 256", max_length=256),
     _rerank("3.5 TinyBERT-L-2, max_length = 256", model=TINY, max_length=256),
+    # Combinations, added on 2026-10-08 after the provisional LLM-judged run
+    # and before any human grade existed (docs/experiments.md). They pair
+    # the best text (3.2) with the cheap model (3.5), so they are named here,
+    # ahead of the human-judged run, rather than picked after it.
+    _rerank("combo TinyBERT-L-2, best section", model=TINY, document="section"),
+    _rerank(
+        "combo TinyBERT-L-2, best section, max_length = 256",
+        model=TINY,
+        document="section",
+        max_length=256,
+    ),
 )
 
 
