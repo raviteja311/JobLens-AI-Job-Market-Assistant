@@ -11,6 +11,8 @@ on the same queries, with warm models.
 The decision rule was fixed before any of these numbers existed
 (docs/experiments.md, 2026-10-08): rerank is on by default only if its best
 configuration gains at least +0.05 MRR over hybrid with p95 under 500 ms.
+When several configurations pass, the highest MRR wins and then the lowest
+p95 (added to the rule on 2026-10-08, before any human grade existed).
 It is applied at the end, and only to the human-verified golden set: a run
 scored against anything else (`--judgements`) is printed as provisional and
 cannot decide anything.
@@ -84,6 +86,14 @@ def queries_from(path: Path) -> list[golden.GoldenQuery]:
     ]
 
 
+def winner(passing: list):
+    """The tie-break, pre-registered with the rule: highest MRR among the
+    passing configurations, then lowest p95. None if nothing passes."""
+    if not passing:
+        return None
+    return min(passing, key=lambda c: (-c.scores["mrr"], c.p95_ms))
+
+
 def verdict(report, provisional: bool) -> str:
     by_name = {c.name: c for c in report.configs}
     base = by_name[BASELINE]
@@ -102,13 +112,19 @@ def verdict(report, provisional: bool) -> str:
         f"configurations meeting the rule (MRR >= +{MIN_MRR_GAIN}, p95 <"
         f" {MAX_P95_MS:.0f} ms): {', '.join(c.name for c in passing) or 'none'}",
     ]
+    chosen = winner(passing)
+    if chosen:
+        lines.append(
+            f"tie-break (highest MRR, then lowest p95): {chosen.name}:"
+            f" MRR {chosen.scores['mrr']:.3f}, p95 {chosen.p95_ms:.0f} ms"
+        )
     if provisional:
         lines.append(
             "PROVISIONAL: not scored on the human-verified golden set, so this"
             " run cannot decide the default."
         )
-    elif passing:
-        lines.append("decision: rerank ON by default, with the passing config.")
+    elif chosen:
+        lines.append(f"decision: rerank ON by default, configured as {chosen.name}.")
     else:
         lines.append("decision: hybrid stays the default; rerank stays opt-in.")
     return "\n".join(lines)

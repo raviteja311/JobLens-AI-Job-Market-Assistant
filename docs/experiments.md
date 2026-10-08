@@ -1417,3 +1417,37 @@ test rather than a search. Added to `scripts/rerank_experiments.py`:
 Nothing else will be added before the human-judged run. That run applies the
 pre-registered rule to every configuration in the script as it stands at
 this commit.
+
+**Addendum, same day: the two declared combinations, run provisionally.**
+Same queries and LLM grades, in one pass with four reference rows so the
+latencies compare within a run.
+
+| configuration | recall@10 | MRR | nDCG@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| hybrid (whole), baseline | 0.374 | 0.596 | 0.412 | 177 | 203 |
+| rerank as shipped | 0.506 | 0.729 | 0.523 | 2947 | 3360 |
+| 3.2 best section (MiniLM-L6) | 0.586 | 0.763 | 0.592 | 1678 | 1970 |
+| 3.5 TinyBERT-L-2, max_length 256 | 0.480 | 0.725 | 0.496 | 304 | 321 |
+| combo TinyBERT-L-2, best section | 0.525 | 0.713 | 0.524 | 316 | 366 |
+| combo TinyBERT-L-2, best section, max_length 256 | 0.525 | 0.713 | 0.524 | 322 | 363 |
+
+- Both combinations pass the rule (+0.117 MRR, p95 about 365 ms). Against
+  TinyBERT with max_length 256 they trade a slightly worse top result (MRR
+  0.713 vs 0.725) for better recall and nDCG (0.525 vs 0.480, 0.524 vs
+  0.496). The full-size model gained on every metric from reading sections;
+  TinyBERT gains only below the first position.
+- The two combinations are identical: a best-matching section is already
+  shorter than 256 tokens, so the cap never bites.
+- Quality is reproducible: the four repeated rows scored exactly as in the
+  first run. Latency is not: the baseline's p95 moved from 306 ms to 203 ms
+  between runs. A p95 within about 100 ms of the 500 ms ceiling is not a
+  safe pass on one run.
+
+**Addendum to the rule: a tie-break.** Three configurations now pass, and
+the rule as pre-registered did not say which becomes the default when more
+than one does. Added on 2026-10-08, after these provisional numbers and
+before any human grade existed: **among passing configurations, the highest
+MRR wins, then the lowest p95.** MRR because it is the metric the rule is
+written in. Chosen by Jetti Raviteja. On the provisional numbers it would
+pick TinyBERT-L-2 with max_length 256; the human-judged run decides.
+`scripts/rerank_experiments.py` applies it and names the winner.
