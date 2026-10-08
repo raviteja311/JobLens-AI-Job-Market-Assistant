@@ -154,6 +154,7 @@ def run(
                     limit=limit,
                     rerank=config["rerank"],
                     rerank_config=config.get("rerank_config"),
+                    rrf_k=config.get("rrf_k", retrieval.RRF_K),
                 )
                 latencies.append((time.perf_counter() - query_began) * 1000)
                 per_query[query.id] = metrics.score_run(

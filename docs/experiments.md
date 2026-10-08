@@ -1471,3 +1471,41 @@ nothing to back it, which the fix plan says to delete.
 handling), the salary columns on `postings`, and the "with salary" count in
 `stats`, as dormant plumbing in case a salary source returns. The v1 salary
 entries above stay as history.
+
+---
+
+## 2026-10-08 - HNSW post-filtering truncates the section search
+
+**Finding.** One HNSW index covers all of `posting_chunks` (697 `whole` and
+4,907 `section` chunks; pgvector 0.8.6, defaults m = 16, ef_construction =
+64, ef_search = 40). For `whole`, the planner never uses it: a btree filter
+to 697 rows and an exact sort is cheaper. For `section` it does, and applies
+the strategy filter after the index scan, so a query can only see about
+`ef_search` chunks. `vector_search` asks for `limit * 4`.
+
+**Measured** over the 58 golden queries against exact search (each setting
+on its own connection; psycopg's prepared statements otherwise reuse the
+first setting's plan and hide the effect):
+
+| postings requested | ef_search = 40 (default) | queries short | overlap with exact |
+| ---: | --- | ---: | ---: |
+| 10 | 10 | 0 / 58 | 0.960 |
+| 20 | 13 to 20 | 11 / 58 | 0.909 |
+| 30 | 13 to 30, mean 24.9 | 38 / 58 | 0.798 |
+| 50 | 13 to 50, mean 25.8 | 58 / 58 | 0.516 |
+
+`ef_search = 100` matches exact search at every size (about 27 ms a query);
+`hnsw.iterative_scan = relaxed_order` at ef_search 40 reaches 0.99 overlap or
+better at about 5 ms. Exact search takes about 28 to 38 ms.
+
+**Consequence.** Every `vector (section)` and `hybrid (section)` number so far
+was scored on a truncated search. The Phase 3 reranker experiments use
+`whole` and are unaffected.
+
+**Decision.** Not fixed yet; recorded in `docs/interview-notes.md` (question
+2). The candidate fixes are measurable with the existing harness.
+
+**Also measured, same day (provisional, 23 LLM-judged queries).** The RRF k
+sweep (`scripts/rrf_sweep.py`) is flat from k = 30 to 300; k = 10 is 0.03 MRR
+better than the shipped 60, within noise. Vector (whole) alone beats hybrid
+(whole), MRR 0.696 against 0.596, with keyword alone at 0.431.

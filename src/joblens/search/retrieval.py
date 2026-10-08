@@ -189,6 +189,7 @@ def hybrid_search(
     strategy: str = "whole",
     limit: int = 20,
     candidates: int = 50,
+    rrf_k: int = RRF_K,
 ) -> list[SearchHit]:
     """Both retrievers, fused. The default for /search."""
     runs = {
@@ -197,7 +198,7 @@ def hybrid_search(
             conn, query, embedder=embedder, strategy=strategy, limit=candidates
         ),
     }
-    return reciprocal_rank_fusion(runs, limit=limit)
+    return reciprocal_rank_fusion(runs, limit=limit, k=rrf_k)
 
 
 def search(
@@ -209,6 +210,7 @@ def search(
     limit: int = 20,
     rerank: bool = False,
     rerank_config=None,
+    rrf_k: int = RRF_K,
 ) -> list[SearchHit]:
     """One entry point, so the eval harness scores exactly what /search serves.
 
@@ -231,7 +233,12 @@ def search(
         )
     elif mode == "hybrid":
         hits = hybrid_search(
-            conn, query, embedder=embedder, strategy=strategy, limit=first_stage
+            conn,
+            query,
+            embedder=embedder,
+            strategy=strategy,
+            limit=first_stage,
+            rrf_k=rrf_k,
         )
     else:
         raise ValueError(f"unknown mode {mode!r}. known: keyword, vector, hybrid")
