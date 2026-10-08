@@ -1,50 +1,60 @@
 """Greenhouse public job boards.
 
-Official, keyless and per-company: one GET per board, for every greenhouse
-company in data/companies_in.yaml (see sources/companies.py). The response is
-{"jobs": [...], "meta": {...}}. Fields a Posting needs:
+Official and keyless: https://developers.greenhouse.io/job-board.html
+One GET per company board in data/companies_in.yaml; the shared loop is in
+sources/boards.py. The response is {"jobs": [...], "meta": {...}}.
 
-    jobs[].id, title, location.name, absolute_url, updated_at, and content,
-    which is HTML-escaped (html.unescape it before it reaches Posting.build).
-
-The parsing quirks were already solved in TypeScript in EasyJobs/lib/ats/greenhouse.ts;
-port them rather than rediscovering them. A saved response for unit tests is
-tests/fixtures/greenhouse_jobs.json.
-
-TODO(phase 1): implement fetch() and to_posting(). Until then this source
-raises NotImplementedError, which ingest records as a failed run without
-stopping the other sources.
+Quirk: with content=true the description arrives HTML-escaped ("&lt;p&gt;"),
+so it is unescaped once before strip_html can see the tags. Ported from
+EasyJobs/lib/ats/greenhouse.ts.
 """
 
 from __future__ import annotations
 
+import html
+
 from joblens.models import Posting, RawItem
-from joblens.sources import companies  # noqa: F401 - for to_posting()
-from joblens.sources.base import client, get_json  # noqa: F401 - for fetch()
+from joblens.sources.boards import SLUG_KEY, company_of, fetch_boards, parse_iso
+from joblens.sources.filters import is_india, is_target_role
 
 name = "greenhouse"
 BOARD_URL = "https://boards-api.greenhouse.io/v1/boards/{slug}/jobs"
-# Pause between boards. These are free APIs; be a polite client.
-DELAY_SECONDS = 0.5
+
+
+def _location(job: dict) -> str | None:
+    return ((job.get("location") or {}).get("name") or "").strip() or None
 
 
 def fetch(limit: int = 200) -> list[RawItem]:
-    """GET every board in companies.for_provider(name), sleeping DELAY_SECONDS
-    between boards, until `limit` items. Request with params={"content": "true"}.
-
-    to_posting() only receives the payload, not the RawItem, so store the
-    board slug inside the payload (for example payload["_slug"] = slug).
-    source_id is f"{slug}:{job_id}", so ids never collide across companies.
-    """
-    raise NotImplementedError("greenhouse.fetch: phase 1 TODO")
+    return fetch_boards(
+        name,
+        BOARD_URL,
+        params={"content": "true"},
+        jobs_of=lambda response: response.get("jobs") or [],
+        title_of=lambda job: job.get("title"),
+        location_of=_location,
+        limit=limit,
+    )
 
 
 def to_posting(payload: dict) -> Posting | None:
-    """One job payload to a Posting, or None to skip it.
-
-    Company name comes from companies.by_slug(name, payload["_slug"]), not
-    from the API. Return None when filters.is_india(location) or
-    filters.is_target_role(title) fails; the raw payload is still in bronze,
-    so a later `joblens transform` can re-apply different filters offline.
-    """
-    raise NotImplementedError("greenhouse.to_posting: phase 1 TODO")
+    title = payload.get("title")
+    location = _location(payload)
+    company = company_of(name, payload)
+    if not title or not company:
+        return None
+    if not is_india(location) or not is_target_role(title):
+        return None
+    return Posting.build(
+        source=name,
+        source_id=f"{payload[SLUG_KEY]}:{payload['id']}",
+        title=title,
+        company=company,
+        url=payload.get("absolute_url", ""),
+        location=location,
+        description_html=html.unescape(payload.get("content") or ""),
+        # first_published is when the job went up; updated_at moves on edits.
+        posted_at=parse_iso(
+            payload.get("first_published") or payload.get("updated_at")
+        ),
+    )
