@@ -117,7 +117,7 @@ def test_raw_rows_store_changes_only(conn):
     changed = RawItem(
         source="remoteok", source_id="42", payload={**payload, "position": "Lead"}
     )
-    other_source = RawItem(source="adzuna", source_id="42", payload=payload)
+    other_source = RawItem(source="lever", source_id="42", payload=payload)
     assert db.insert_raw(conn, [changed, other_source], run_id) == 2
     # Going back to the old text is a change from the latest copy.
     assert db.insert_raw(conn, [item], run_id) == 1
@@ -137,7 +137,7 @@ def test_run_log_records_success(conn):
 
 
 def test_run_log_records_failure(conn):
-    run_id = db.start_run(conn, "adzuna")
+    run_id = db.start_run(conn, "greenhouse")
     db.finish_run(conn, run_id, status="failed", error="429 from upstream")
     row = conn.execute(
         "select status, error from ingestion_runs where run_id = %s", (run_id,)

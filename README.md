@@ -32,9 +32,9 @@ open http://localhost:8501
 ```mermaid
 flowchart LR
     subgraph sources [Job boards]
-        HN[Hacker News Who is hiring]
-        RO[RemoteOK]
-        AD[Adzuna, optional]
+        GH[Greenhouse boards]
+        LV[Lever boards]
+        AB[Ashby boards]
     end
     sources -->|daily, GitHub Actions| ING[Ingestion pipeline<br/>fetch, parse, clean, count duplicates]
     ING --> RAW[(raw_postings<br/>bronze)]
@@ -193,9 +193,9 @@ network.
 
 | source | postings | API key | notes |
 | --- | ---: | --- | --- |
-| Hacker News "Who is hiring" | 367 | none | free-text comments, no schema at all |
-| RemoteOK | 99 | none | structured, entirely remote |
-| Adzuna | 0 | required | registered but skipped without a key |
+| Greenhouse | 395 | none | 161 Indian company boards; description HTML-escaped |
+| Lever | 229 | none | 71 boards; description split into titled lists |
+| Ashby | 73 | none | 59 boards; country in a separate address field |
 
 **Storage** is bronze/silver. `raw_postings` keeps the payload exactly as the
 source sent it, one row each time a posting is new or changed, so history is

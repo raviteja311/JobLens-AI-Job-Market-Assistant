@@ -23,8 +23,6 @@ jobs:
 
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
-      ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
       USER_AGENT: ${{ vars.USER_AGENT }}
 
     steps:

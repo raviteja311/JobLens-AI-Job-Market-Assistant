@@ -67,7 +67,7 @@ FAMILIES = {
 
 SENIORITY = {"Junior": 0.7, "": 1.0, "Senior": 1.35}
 REGIONS = ["London, United Kingdom", "New York, United States", "Berlin, Germany", None]
-SOURCES = ["remoteok", "hackernews", "adzuna"]
+SOURCES = ["greenhouse", "lever", "ashby"]
 
 
 def build_corpus(n: int = 160, seed: int = 7) -> pd.DataFrame:

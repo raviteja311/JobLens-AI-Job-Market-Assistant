@@ -33,22 +33,6 @@ class Settings(BaseSettings):
 
     request_timeout: float = 20.0
 
-    adzuna_app_id: str | None = None
-    adzuna_app_key: str | None = None
-    adzuna_country: str = "in"
-    # One search per query. Adzuna's `what` is an AND of its words, so a
-    # single broad query misses most of the role family; several narrow ones
-    # cover it, and the overlap is removed by job id in adzuna.fetch().
-    adzuna_queries: list[str] = [
-        "data scientist",
-        "data analyst",
-        "machine learning",
-        "AI engineer",
-        "python developer",
-        "NLP",
-        "data engineer",
-    ]
-
     # Phase 3. The local embedder needs nothing; the API one is only used to
     # reproduce the cost/quality comparison.
     embedder: str = "local"
@@ -99,10 +83,6 @@ class Settings(BaseSettings):
     # seconds of HEAD requests per start. If the cache is ever deleted, model
     # loading fails until this is turned off again.
     hf_hub_offline: bool = False
-
-    @property
-    def adzuna_enabled(self) -> bool:
-        return bool(self.adzuna_app_id and self.adzuna_app_key)
 
     @property
     def llm_enabled(self) -> bool:

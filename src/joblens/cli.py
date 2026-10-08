@@ -408,7 +408,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--source",
         action="append",
         choices=sorted(sources.REGISTRY),
-        help="repeatable. Defaults to adzuna, greenhouse, lever and ashby.",
+        help="repeatable. Defaults to greenhouse, lever and ashby.",
     )
     ingest.add_argument("--limit", type=int, default=200)
     ingest.set_defaults(func=cmd_ingest)

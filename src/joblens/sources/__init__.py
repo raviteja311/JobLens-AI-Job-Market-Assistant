@@ -7,17 +7,16 @@ postings are mostly US and global, and keeping the modules lets the archived
 v1 corpus (docs/archive/v1-global-corpus) still be re-parsed.
 """
 
-from joblens.sources import adzuna, ashby, greenhouse, hackernews, lever, remoteok
+from joblens.sources import ashby, greenhouse, hackernews, lever, remoteok
 
 REGISTRY = {
     remoteok.name: remoteok,
     hackernews.name: hackernews,
-    adzuna.name: adzuna,
     greenhouse.name: greenhouse,
     lever.name: lever,
     ashby.name: ashby,
 }
-DEFAULT_SOURCES = [adzuna.name, greenhouse.name, lever.name, ashby.name]
+DEFAULT_SOURCES = [greenhouse.name, lever.name, ashby.name]
 
 
 def get(source_name: str):

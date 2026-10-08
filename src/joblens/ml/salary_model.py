@@ -9,8 +9,8 @@ that state is most of what this file is for.
 Two things about this data that shape everything below:
 
   * Only a minority of postings state a salary at all, and the ones that do
-    are not a random sample. Boards that require a salary field skew the set
-    towards Adzuna and away from Hacker News. Every score here is therefore a
+    are not a random sample. Boards with a structured salary field are over-
+    represented and free-text boards under-represented. Every score here is therefore a
     score on salary-disclosing postings, not on the job market.
   * Salaries arrive in several currencies. They are converted with frozen
     rates below, which is wrong by however much the rates have moved. It is

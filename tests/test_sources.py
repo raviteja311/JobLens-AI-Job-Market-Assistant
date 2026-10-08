@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from joblens.sources import adzuna, hackernews, remoteok
+from joblens.sources import hackernews, remoteok
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -84,75 +84,3 @@ def test_hn_ignores_comments_that_are_not_job_posts(hn_comments):
 
 def test_hn_ignores_deleted_comments(hn_comments):
     assert hackernews.to_posting(hn_comments[3]) is None
-
-
-def test_adzuna_parses_a_posting():
-    entry = load("adzuna_search.json")["results"][0]
-    posting = adzuna.to_posting(entry)
-    assert posting.company == "Halcyon Data Ltd"
-    assert posting.salary_min == 55000
-    assert posting.salary_max == 70000
-    assert posting.salary_period == "year"
-
-
-def test_adzuna_discards_predicted_salaries():
-    # Adzuna's own estimate, not something the employer published. Training a
-    # salary model on another model's output teaches you nothing.
-    entry = load("adzuna_search.json")["results"][1]
-    posting = adzuna.to_posting(entry)
-    assert posting.salary_min is None
-
-
-def test_adzuna_is_skipped_without_credentials(monkeypatch):
-    monkeypatch.delenv("ADZUNA_APP_ID", raising=False)
-    monkeypatch.delenv("ADZUNA_APP_KEY", raising=False)
-    adzuna.get_settings.cache_clear()
-    assert adzuna.fetch(limit=10) == []
-
-
-@pytest.fixture
-def adzuna_pages(monkeypatch):
-    """Fake Adzuna: two queries, two pages each, where "b" repeats job 2."""
-    pages = {
-        ("a", 1): [{"id": 1}, {"id": 2}],
-        ("a", 2): [{"id": 3}],
-        ("b", 1): [{"id": 2}, {"id": 4}],
-        ("b", 2): [{"id": 5}],
-    }
-    calls = []
-
-    def fake_get_json(http, url, *, params=None, attempts=3):
-        page = int(url.rsplit("/", 1)[1])
-        calls.append((params["what"], page))
-        assert "/jobs/in/" in url
-        return {"results": pages.get((params["what"], page), [])}
-
-    class FakeClient:
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *exc):
-            return False
-
-    monkeypatch.setenv("ADZUNA_APP_ID", "test-id")
-    monkeypatch.setenv("ADZUNA_APP_KEY", "test-key")
-    monkeypatch.setenv("ADZUNA_COUNTRY", "in")
-    monkeypatch.setenv("ADZUNA_QUERIES", '["a", "b"]')
-    monkeypatch.setattr(adzuna, "get_json", fake_get_json)
-    monkeypatch.setattr(adzuna, "client", FakeClient)
-    monkeypatch.setattr(adzuna, "RESULTS_PER_PAGE", 2)
-    adzuna.get_settings.cache_clear()
-    yield calls
-    adzuna.get_settings.cache_clear()
-
-
-def test_adzuna_runs_every_query_and_keeps_a_job_once(adzuna_pages):
-    items = adzuna.fetch(limit=100)
-    assert [item.source_id for item in items] == ["1", "2", "3", "4", "5"]
-    assert {query for query, _ in adzuna_pages} == {"a", "b"}
-
-
-def test_adzuna_splits_the_limit_across_queries(adzuna_pages):
-    # A limit of 4 is 2 per query, so "a" must not take all four slots.
-    items = adzuna.fetch(limit=4)
-    assert [item.source_id for item in items] == ["1", "2", "4", "5"]
