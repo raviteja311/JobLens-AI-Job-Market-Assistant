@@ -184,6 +184,31 @@ is a 0, however well it matches the words. If the posting states no level,
 that is one step. "Machine learning role" means a job whose main work is
 building models, which includes data scientists who do; MLOps is one step.
 
+## Open questions: decide before grading
+
+The full-text LLM pass (2026-10-08) still hit these. Each has a proposed
+answer. Accept, change or strike each one, then move the answers into the
+rules above and delete this section. Do not start grading with it here.
+
+| # | Question | Proposed answer |
+| --- | --- | --- |
+| 1 | Where do 9-15+ years sit, when the ladder's years stop at 8+? | 8-11 lead/staff/manager, 12-14 principal/senior manager, 15+ head/director. |
+| 2 | Does a range touching the query's at one end overlap ("3-5 years" vs "5+", or vs junior's 1-3)? | Yes: a shared endpoint is an overlap, so the level is met. |
+| 3 | An "analyst" title whose work is mostly building dashboards: analyst or BI developer? | Grade the work (rule 1): it is a BI developer. |
+| 4 | A tool named only as one example ("LangChain, LlamaIndex or similar", "e.g. Snowflake, dbt"): central? | It appears but is not central: one step. |
+| 5 | Does a query saying "engineer" with no level include managers of that team? | Manager is a different rung from an individual contributor: one step. |
+| 6 | Specialist or solutions architects who both build customer workloads and support pre-sales? | Whichever takes most of the listed responsibilities decides the family. |
+| 7 | Product managers, including data-product and AI product managers? | Wrong family: 0. |
+| 8 | Location field says remote, text says on-site (or the reverse)? | The text wins. |
+| 9 | Hybrid mentioned only in the benefits section? | It is stated, so it counts as hybrid. |
+| 10 | Does US health-payer (health plan) analytics count as "insurance"? | Yes. |
+| 11 | Applied scientist or researcher building GenAI models vs an AI/LLM engineer query? | Adjacent: one step. |
+| 12 | A data engineer who runs ML training jobs vs an ML-role query? | Not adjacent to ML engineer: 0 (it is adjacent to MLOps). |
+| 13 | What is a "python role"? | Python is a stated requirement and the job is hands-on coding; one of several accepted languages counts. |
+| 14 | A two-part skill query ("forecasting and time series") where only one part is named? | Same as several tools: one step. |
+| 15 | An in-house team at a non-tech firm (a hedge fund's GenAI team): product or service company? | Not a service company: it builds for its own business, so it meets "product company". |
+| 16 | A "Specialization: Lead Data Engineer" line with no years: is the level stated? | Yes: it states the lead rung. |
+
 ## Worked examples from the pool
 
 | Query | Posting | Grade | Why |
