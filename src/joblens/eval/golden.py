@@ -11,6 +11,10 @@ Two decisions worth stating.
 shifts, which would silently re-point every judgement at a different job. The
 source's own id is the only identifier that survives a rebuild.
 
+**`verified` means a human graded every judgement on the query.** Not "was
+reviewed", not "an LLM was confident". scripts/golden_apply.py enforces it
+with a required --grader flag, and the eval scores verified queries only.
+
 **Relevance is graded, not binary.** 2 means this is what the query asked
 for; 1 means a reasonable person would accept it; 0 means no. The difference
 between a retriever that puts the 2s first and one that puts the 1s first is
@@ -86,7 +90,7 @@ def save(queries: list[GoldenQuery], path: Path | None = None) -> Path:
 
 
 def verified_only(queries: list[GoldenQuery]) -> list[GoldenQuery]:
-    """Queries a human has actually checked. The eval reports on these."""
+    """Queries where a human graded every judgement. The eval scores these."""
     return [q for q in queries if q.verified and q.relevant_keys]
 
 

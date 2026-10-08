@@ -88,7 +88,7 @@ def pool(
 
 
 def apply_judgements(
-    query: GoldenQuery, graded: dict[str, int], verified: bool = True
+    query: GoldenQuery, graded: dict[str, int], *, verified: bool
 ) -> GoldenQuery:
     """Merge new grades into a query, keeping the zeros.
 
