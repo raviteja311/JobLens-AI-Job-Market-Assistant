@@ -149,6 +149,10 @@ raise the metric?
   least +0.05 over hybrid, p95 under 500 ms): +0.129 at about 320 ms.
 - The rule and its tie-break were written down before the results that
   decide them (`docs/experiments.md`).
+- The rule's metric then changed from MRR to nDCG@10, before the decisive
+  run: on the human golden set every configuration but keyword scored MRR
+  0.84 to 0.93, so MRR could no longer tell them apart. The change, and why,
+  is recorded (`docs/experiments.md`, 2026-10-09).
 
 **Likely follow-ups.** Bi-encoder vs cross-encoder. Why does a bigger pool
 make it worse? What is pre-registration and why bother? Is 23 queries enough

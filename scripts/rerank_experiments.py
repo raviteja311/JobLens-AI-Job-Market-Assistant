@@ -10,9 +10,12 @@ on the same queries, with warm models.
 
 The decision rule was fixed before any of these numbers existed
 (docs/experiments.md, 2026-10-08): rerank is on by default only if its best
-configuration gains at least +0.05 MRR over hybrid with p95 under 500 ms.
-When several configurations pass, the highest MRR wins and then the lowest
-p95 (added to the rule on 2026-10-08, before any human grade existed).
+configuration gains at least +0.05 over hybrid with p95 under 500 ms. When
+several configurations pass, the best score wins and then the lowest p95.
+The metric was MRR until 2026-10-09, when it moved to nDCG@10 before the
+decisive run: on the human golden set MRR is near its ceiling (about 28
+relevant postings per query), so it could no longer separate configurations
+(docs/experiments.md, 2026-10-09).
 It is applied at the end, and only to the human-verified golden set: a run
 scored against anything else (`--judgements`) is printed as provisional and
 cannot decide anything.
@@ -28,7 +31,9 @@ from joblens.eval import golden
 from joblens.eval import retrieval as eval_retrieval
 from joblens.search.rerank import RerankConfig
 
-MIN_MRR_GAIN = 0.05
+METRIC = "ndcg@10"
+METRIC_LABEL = "nDCG@10"
+MIN_GAIN = 0.05
 MAX_P95_MS = 500.0
 TINY = "cross-encoder/ms-marco-TinyBERT-L-2-v2"
 BASELINE = "hybrid (whole)"
@@ -87,11 +92,11 @@ def queries_from(path: Path) -> list[golden.GoldenQuery]:
 
 
 def winner(passing: list):
-    """The tie-break, pre-registered with the rule: highest MRR among the
+    """The tie-break, pre-registered with the rule: highest METRIC among the
     passing configurations, then lowest p95. None if nothing passes."""
     if not passing:
         return None
-    return min(passing, key=lambda c: (-c.scores["mrr"], c.p95_ms))
+    return min(passing, key=lambda c: (-c.scores[METRIC], c.p95_ms))
 
 
 def verdict(report, provisional: bool) -> str:
@@ -101,22 +106,23 @@ def verdict(report, provisional: bool) -> str:
     passing = [
         c
         for c in reranked
-        if c.scores["mrr"] - base.scores["mrr"] >= MIN_MRR_GAIN
-        and c.p95_ms < MAX_P95_MS
+        if c.scores[METRIC] - base.scores[METRIC] >= MIN_GAIN and c.p95_ms < MAX_P95_MS
     ]
-    best = max(reranked, key=lambda c: c.scores["mrr"])
+    best = max(reranked, key=lambda c: c.scores[METRIC])
+    m = METRIC_LABEL
     lines = [
-        f"baseline {BASELINE}: MRR {base.scores['mrr']:.3f}, p95 {base.p95_ms:.0f} ms",
-        f"best reranker by MRR: {best.name}: MRR {best.scores['mrr']:.3f}"
-        f" ({best.scores['mrr'] - base.scores['mrr']:+.3f}), p95 {best.p95_ms:.0f} ms",
-        f"configurations meeting the rule (MRR >= +{MIN_MRR_GAIN}, p95 <"
+        f"baseline {BASELINE}: {m} {base.scores[METRIC]:.3f}, p95 {base.p95_ms:.0f} ms",
+        f"best reranker by {m}: {best.name}: {m} {best.scores[METRIC]:.3f}"
+        f" ({best.scores[METRIC] - base.scores[METRIC]:+.3f}),"
+        f" p95 {best.p95_ms:.0f} ms",
+        f"configurations meeting the rule ({m} >= +{MIN_GAIN}, p95 <"
         f" {MAX_P95_MS:.0f} ms): {', '.join(c.name for c in passing) or 'none'}",
     ]
     chosen = winner(passing)
     if chosen:
         lines.append(
-            f"tie-break (highest MRR, then lowest p95): {chosen.name}:"
-            f" MRR {chosen.scores['mrr']:.3f}, p95 {chosen.p95_ms:.0f} ms"
+            f"tie-break (highest {m}, then lowest p95): {chosen.name}:"
+            f" {m} {chosen.scores[METRIC]:.3f}, p95 {chosen.p95_ms:.0f} ms"
         )
     if provisional:
         lines.append(

@@ -1663,3 +1663,116 @@ the count would be about 13/20. Quote 17/20 with "AI-adjacent roles counted".
 **What it shows.** The location filter is reliable. The role filter's weak
 spot is a bare "AI" in the title, which admits marketing, design, support and
 hardware roles at companies whose product is AI.
+
+---
+
+## 2026-10-09 - The human golden set: agreement with the LLM judge, and the first human baseline
+
+**Setup.** Jetti Raviteja graded all 918 pooled candidates for the 25-query
+human subset (seed 20261009) on 2026-10-09, from summaries of the full
+posting text shown in chat, against `docs/labelling-guide.md`. The grades
+were merged with `scripts/golden_apply.py --grader human`, which marks the
+25 queries verified. Doubtful batches (grade counts that did not match,
+identical postings with different grades) were re-asked before saving.
+q24 ("0-1 years experience data scientist") has no relevant posting at all,
+so the eval skips it and 24 queries count. The LLM grades
+(`llm/grades_llm_current.json`, outside the repo) were not shown per query
+until the human grading was finished.
+
+**Agreement, human vs LLM** (`scripts/golden_agreement.py`, 918 pairs):
+
+| measure | value |
+| --- | ---: |
+| exact agreement | 0.418 |
+| kappa, linear weight | 0.238 |
+| kappa, unweighted | 0.157 |
+
+| human \ LLM | 0 | 1 | 2 |
+| --- | ---: | ---: | ---: |
+| 0 | 238 | 13 | 2 |
+| 1 | 301 | 82 | 38 |
+| 2 | 97 | 83 | 64 |
+
+The disagreement runs one way: the human grades are far more lenient. A
+mean of 73% of each query's pool is relevant (grade above 0) to the human
+and 32% to the LLM; 21 of 25 queries are at least half relevant to the
+human, 5 to the LLM. Agreement is high on the strict level queries (q01,
+q24 0.98; q02 0.87; q49 0.81; q05 0.74) and lowest where the guide caps a
+grade for a missed constraint on top of the role: q35 remote LLM engineer
+0.05, q34 hybrid ML engineer Bengaluru 0.07 (29 human 2s, 1 LLM 2), q53
+GenAI at a product company 0.09, q15 LangChain 0.10. Exact agreement is
+0.51 on the first 12 queries graded and 0.33 on the last 13.
+
+**Reading.** The human grades follow the role and treat work mode, city,
+level and negations softly; the guide, and the LLM, treat a missed
+constraint as a cap. The order effect also fits fatigue over a long
+session. Agreement cannot separate the two. The planned blind re-grade of
+10 queries (3+ days later) measures whether the human standard is stable,
+and decides whether the guide should be rewritten to match it or the
+low-agreement queries re-graded against the guide. No grade was changed on
+the strength of the LLM.
+
+**First human baseline** (`python -m joblens eval --suite retrieval
+--update-baseline`, 24 queries, 697 postings):
+
+| configuration | recall@5 | recall@10 | mrr | ndcg@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.106 | 0.219 | 0.735 | 0.448 | 24 | 58 |
+| vector (whole) | 0.154 | 0.287 | 0.889 | 0.700 | 18 | 21 |
+| vector (section) | 0.177 | 0.311 | 0.865 | 0.665 | 22 | 99 |
+| hybrid (whole) | 0.138 | 0.322 | 0.893 | 0.671 | 85 | 109 |
+| hybrid (section) | 0.163 | 0.293 | 0.837 | 0.641 | 80 | 94 |
+| hybrid + rerank | 0.167 | 0.299 | 0.927 | 0.707 | 2286 | 6494 |
+
+**What the numbers can and cannot say.**
+
+- MRR is near its ceiling. With about 28 relevant postings per query, a
+  relevant posting is almost always ranked first; every configuration but
+  keyword is between 0.84 and 0.93. The pre-registered reranker rule
+  (MRR +0.05 over hybrid at p95 under 500 ms) is therefore hard to meet on
+  this set for reasons that have nothing to do with the reranker: the
+  default rerank here is +0.034 over hybrid (whole). nDCG@10, which tells a
+  1 from a 2, still spreads the configurations (0.45 to 0.71).
+- Recall is capped by the size of the relevant sets. The best possible
+  recall@5 is 0.273 and recall@10 0.421, so the gate's absolute floor
+  (`recall@10 >= 0.55` in `report.FLOORS`) cannot be met by any retriever.
+  It was set when queries had a handful of relevant postings each. The gate
+  failed on that floor and on the drop against the old LLM-judged baseline
+  (recall@10 0.553 to 0.299); both are artefacts of the new judgements, not
+  regressions in search.
+- The rerank latency (p50 2.3 s, p95 6.5 s) is much higher than in the
+  provisional runs (around 320 ms p95 for TinyBERT at max_length 256): the
+  default configuration is MiniLM-L6 with no max_length, on full documents.
+  The whole run took 2 h 53 min of wall time, far more than the measured
+  per-query latencies add up to; not yet explained.
+
+**Still open.** The rewrite-or-re-grade question above, until the blind
+re-grade. The floor and the rule metric are settled in the next entry.
+
+---
+
+## 2026-10-09 - Two changes made before the decisive reranker run
+
+Both follow from the baseline above, and both were made before the decisive
+run on the human-verified set. No number from that run existed when they
+were decided.
+
+**1. The recall@10 floor is removed.** `report.FLOORS` for retrieval is now
+nDCG@10 >= 0.45 only. With about 28 relevant postings per query the best
+possible recall@10 is 0.421, so the old 0.55 floor could not be met by any
+retriever and would have kept the CI gate red forever. recall@5 and
+recall@10 are still in the regression check (a drop of more than 0.05
+against the committed baseline fails the build).
+
+**2. The reranker rule now uses nDCG@10 instead of MRR.** The rule reads:
+rerank is on by default only if its best configuration gains at least
++0.05 nDCG@10 over hybrid (whole) with p95 under 500 ms; among passing
+configurations the highest nDCG@10 wins, then the lowest p95. The threshold
+(+0.05), the latency bound and the tie-break order are unchanged; only the
+metric moved. Reason: on the human set MRR is between 0.84 and 0.93 for
+every configuration but keyword, so a +0.05 MRR gain is close to
+impossible however good the reranker is, while nDCG@10 spreads the same
+configurations from 0.45 to 0.71 and uses the 1 vs 2 distinction the
+graders made. This is a change to a pre-registered rule, and it is
+recorded as one: the provisional 2026-10-08 runs were judged under the MRR
+version and are not re-read under the new one.

@@ -18,9 +18,13 @@ def rx():
     return module
 
 
-def config(name, mrr, p95):
+def config(name, ndcg, p95):
     return ConfigScore(
-        name=name, scores={"mrr": mrr}, queries=1, seconds=0.0, latencies_ms=[p95]
+        name=name,
+        scores={"ndcg@10": ndcg},
+        queries=1,
+        seconds=0.0,
+        latencies_ms=[p95],
     )
 
 
@@ -30,7 +34,7 @@ def report(rx, *configs):
     )
 
 
-def test_highest_mrr_wins_then_lowest_p95(rx):
+def test_highest_ndcg_wins_then_lowest_p95(rx):
     passing = [config("a", 0.70, 400), config("b", 0.72, 450), config("c", 0.72, 300)]
     assert rx.winner(passing).name == "c"
     assert rx.winner([]) is None
@@ -41,7 +45,7 @@ def test_a_slow_or_small_gain_does_not_pass(rx):
         report(rx, config("slow", 0.80, 2000), config("small", 0.64, 300)),
         provisional=False,
     )
-    assert "meeting the rule (MRR >= +0.05, p95 < 500 ms): none" in text
+    assert "meeting the rule (nDCG@10 >= +0.05, p95 < 500 ms): none" in text
     assert "hybrid stays the default" in text
 
 
