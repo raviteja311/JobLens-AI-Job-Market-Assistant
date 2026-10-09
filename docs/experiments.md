@@ -1637,3 +1637,22 @@ scorecard step still publishes on failure (`if: always()`).
 
 **Consequence.** The `retrieval` check on pull request #2 now fails, correctly,
 until human-verified golden queries are merged and the baseline is redone.
+
+---
+
+## 2026-10-09 - Filter spot check (provisional, awaiting verification)
+
+**Setup.** 20 postings drawn at random (seed 20261009) from the 677 not shown
+in the 2026-10-08 sample; marked by Jetti Raviteja for "in India" and "target
+role" (`JobLens-labelling/spot_check_2026-10-09.csv`, outside the repo).
+
+**Recorded so far.** In India: 20/20. Target role: marked 20/20, but **not yet
+verified**. Seven rows look outside the target family by the labelling guide's
+role rules (product marketing, customer success, project management, data
+annotation, hardware intern, product design, product management) and three
+are borderline (AI automation, two AI security roles). If those seven hold,
+the filter's target-role precision is about 13/20 or lower. The flagged rows
+are marked in the CSV's `to_verify` column.
+
+**Not to be quoted** until the rows are re-checked against the posting text.
+What it already shows: a bare "AI" in a title is the filter's weak spot.
