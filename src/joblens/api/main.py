@@ -27,7 +27,7 @@ from joblens.llm.client import BackendUnavailable
 from joblens.ml import dataset, trends
 from joblens.rag import chat as chat_rag
 from joblens.rag import resume as resume_rag
-from joblens.search import rerank, retrieval
+from joblens.search import places, rerank, retrieval
 from joblens.search.embeddings import get_embedder
 
 log = logging.getLogger(__name__)
@@ -276,6 +276,7 @@ def search(
                 company=h.company,
                 url=h.url,
                 location=h.location,
+                cities=places.cities_in(h.location),
                 is_remote=h.is_remote,
                 score=round(h.score, 5),
                 ranks=h.ranks,

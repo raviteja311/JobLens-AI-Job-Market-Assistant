@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import pandas as pd
 
-from joblens.ml import dataset
 from joblens.ml.skills import skill_counts, skill_matrix
+from joblens.search import places
 
 
 def top_skills(frame: pd.DataFrame, top_n: int = 20) -> pd.DataFrame:
@@ -58,11 +58,24 @@ def skill_trend(
     return matrix.resample(freq).mean().dropna(how="all")
 
 
+NO_CITY = "City not stated"
+
+
 def demand_by_location(frame: pd.DataFrame, top_n: int = 15) -> pd.DataFrame:
-    """Posting counts by coarse region, with the remote share alongside."""
+    """Posting counts by Indian city, with the remote share alongside.
+
+    The location strings are free text ("India - Bengaluru", "Bangalore,
+    Karnataka", "Pune; Hyderabad"), so grouping them as written splits one
+    city across many rows. places.cities_in maps every spelling to one name.
+    A posting that lists several cities counts once for each, because it is
+    open in each; one that names no city ("India", "Remote") lands in
+    NO_CITY rather than being dropped.
+    """
     if frame.empty:
         return pd.DataFrame(columns=["region", "postings", "remote_share"])
-    work = dataset.with_region(frame)
+    work = frame[["location", "is_remote"]].copy()
+    work["region"] = [places.cities_in(loc) or [NO_CITY] for loc in work["location"]]
+    work = work.explode("region")
     grouped = (
         work.groupby("region")
         .agg(postings=("region", "size"), remote_share=("is_remote", "mean"))

@@ -58,3 +58,17 @@ def query_city(query: str) -> re.Pattern | None:
 
 def in_city(location: str | None, city: re.Pattern) -> bool:
     return bool(location and city.search(location))
+
+
+def cities_in(location: str | None) -> list[str]:
+    """Every known city a location names, by its first spelling, in the
+    order of CITY_SPELLINGS: "Pune; Bangalore, India" is ["Bengaluru", "Pune"].
+    Empty when it names none ("India", "IN", "Remote"). A missing location
+    from pandas arrives as NaN, which is truthy and not a string."""
+    if not isinstance(location, str) or not location:
+        return []
+    return [
+        spellings[0].title()
+        for spellings, pattern in _CITIES
+        if pattern.search(location)
+    ]

@@ -74,7 +74,8 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 
 CMD ["python", "-m", "streamlit", "run", "app.py", \
      "--server.address", "0.0.0.0", "--server.port", "8501", \
-     "--server.headless", "true", "--browser.gatherUsageStats", "false"]
+     "--server.headless", "true", "--browser.gatherUsageStats", "false", \
+     "--client.toolbarMode", "viewer"]
 
 
 # The API. Last on purpose: a plain `docker build .` must produce this one.

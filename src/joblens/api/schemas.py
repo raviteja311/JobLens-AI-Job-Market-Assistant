@@ -16,6 +16,10 @@ class SearchResult(BaseModel):
     company: str
     url: str
     location: str | None = None
+    # The Indian cities the location names, one spelling each
+    # (places.cities_in), so a client can filter by city without parsing
+    # "India - Bengaluru" and "Bangalore, Karnataka" itself.
+    cities: list[str] = Field(default_factory=list)
     is_remote: bool = False
     score: float
     # Which retrievers found it and where. Exposed because a search UI that

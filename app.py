@@ -19,6 +19,17 @@ import streamlit as st
 API = os.environ.get("JOBLENS_API", "http://127.0.0.1:8000")
 TIMEOUT = 300.0
 SERVE_COMMAND = "python -m joblens serve"
+# Search asks for more than it shows, so the city and remote filters have
+# something to filter: the first SHOWN appear, the rest sit behind "more".
+FETCH = 30
+SHOWN = 10
+ANY_CITY = "Any city"
+SEARCH_EXAMPLES = [
+    "machine learning engineer",
+    "data engineer in Pune",
+    "remote LLM engineer",
+    "Tableau dashboard developer",
+]
 
 st.set_page_config(page_title="JobLens", page_icon=":material/work:", layout="wide")
 
@@ -35,7 +46,7 @@ def api_get(path: str, **params):
 @st.cache_data(ttl=300, max_entries=200, show_spinner=False)
 def cached_search(q: str, mode: str, strategy: str, rerank: bool) -> dict:
     return api_get(
-        "/search", q=q, mode=mode, strategy=strategy, limit=10, rerank=rerank
+        "/search", q=q, mode=mode, strategy=strategy, limit=FETCH, rerank=rerank
     )
 
 
@@ -80,6 +91,40 @@ def source_line(citation: dict) -> str:
         f"{citation['n']}. [{md(citation['title'])}]({citation['url']}) · "
         f"{md(citation['company'])}"
     )
+
+
+def llm_off_notice(feature: str) -> None:
+    # The hosted demo runs with LLM_BACKEND=none (docs/deploy-azure.md): a
+    # model server does not fit a scale-to-zero budget. Saying so beats a
+    # button that fails with a 503.
+    st.info(
+        f"{feature} needs a language model, and this deployment runs without "
+        "one to stay inside a free hosting budget. Search and Trends work "
+        "fully. Run JobLens locally with Ollama to try it (see the README).",
+        icon=":material/smart_toy:",
+    )
+
+
+def result_card(result: dict, explain: bool) -> None:
+    with st.container(border=True):
+        st.markdown(
+            f"**[{md(result['title'])}]({result['url']})** · {md(result['company'])}"
+        )
+        tags = []
+        if result["is_remote"]:
+            tags.append(":green-badge[:material/home_work: remote]")
+        # The canonical city names when the API found any; the board's own
+        # wording ("India", "IN") otherwise, so nothing is hidden.
+        place = ", ".join(result.get("cities") or []) or result["location"]
+        if place:
+            tags.append(f":gray-badge[:material/location_on: {md(place)}]")
+        meta = " ".join(tags)
+        if explain and result["ranks"]:
+            meta += f"  :small[found by {found_by(result['ranks'])}]"
+        if meta:
+            st.markdown(meta)
+        if result["snippet"]:
+            st.caption(snippet_text(result["snippet"]))
 
 
 def show_limited(response: httpx.Response, fallback: str) -> bool:
@@ -127,7 +172,7 @@ llm_badge = (
     else ":gray-badge[:material/smart_toy: LLM off]"
 )
 st.markdown(
-    f"Real AI/ML job postings, searchable by meaning. "
+    f"AI, ML and data jobs in India, searchable by meaning. "
     f":blue-badge[{health['postings']} postings] {llm_badge}"
 )
 
@@ -144,58 +189,70 @@ search_tab, chat_tab, match_tab, trends_tab = st.tabs(
 
 
 if search_tab.open:
+    example = st.pills("Examples", SEARCH_EXAMPLES, label_visibility="collapsed")
     query = st.text_input(
         "What are you looking for?",
-        "remote machine learning engineer",
+        example or SEARCH_EXAMPLES[0],
         placeholder="e.g. remote LLM roles that need PyTorch",
     )
-    with st.container(horizontal=True, vertical_alignment="bottom"):
-        mode = st.segmented_control(
-            "Retrieval",
-            ["hybrid", "vector", "keyword"],
-            default="hybrid",
-            required=True,
-            help="Hybrid adds keyword search to vector search, which catches rare "
-            "terms like tool names that embeddings blur together.",
-        )
-        strategy = st.segmented_control(
-            "Chunking", ["whole", "section"], default="whole", required=True
-        )
-        rerank = st.toggle(
-            "Rerank",
-            help="A cross-encoder reorders the results. Better top result, "
-            "about 2 seconds slower.",
+    with st.expander("Search settings", icon=":material/tune:"):
+        with st.container(horizontal=True, vertical_alignment="bottom"):
+            mode = st.segmented_control(
+                "Retrieval",
+                ["hybrid", "vector", "keyword"],
+                default="hybrid",
+                required=True,
+                help="Hybrid adds keyword search to vector search, which catches "
+                "rare terms like tool names that embeddings blur together.",
+            )
+            strategy = st.segmented_control(
+                "Chunking", ["whole", "section"], default="whole", required=True
+            )
+            rerank = st.toggle(
+                "Rerank",
+                help="A cross-encoder reorders the results. About 3 seconds "
+                "slower, and on the golden set not enough better to be the "
+                "default.",
+            )
+        explain = st.toggle(
+            "Show why each result matched",
+            help="Which retriever found each posting, and at what rank.",
         )
 
     if query.strip():
         payload = cached_search(query.strip(), mode, strategy, rerank)
         results = payload["results"]
-        st.caption(f"{len(results)} results in {payload['took_ms']:.0f} ms")
-        if not results:
-            st.info("No postings matched. Try fewer or broader words.")
-        for result in results:
-            with st.container(border=True):
-                st.markdown(
-                    f"**[{md(result['title'])}]({result['url']})** · "
-                    f"{md(result['company'])}"
-                )
-                tags = []
-                if result["is_remote"]:
-                    tags.append(":green-badge[:material/home_work: remote]")
-                if result["location"]:
-                    tags.append(
-                        f":gray-badge[:material/location_on: {md(result['location'])}]"
-                    )
-                meta = " ".join(tags)
-                if result["ranks"]:
-                    meta += f"  :small[found by {found_by(result['ranks'])}]"
-                if meta:
-                    st.markdown(meta)
-                if result["snippet"]:
-                    st.caption(snippet_text(result["snippet"]))
+        cities = sorted({city for r in results for city in r.get("cities", [])})
+        with st.container(horizontal=True, vertical_alignment="bottom"):
+            city = st.selectbox("City", [ANY_CITY, *cities], width=220)
+            remote_only = st.toggle("Remote only")
+        kept = [
+            r
+            for r in results
+            if (city == ANY_CITY or city in r.get("cities", []))
+            and (r["is_remote"] or not remote_only)
+        ]
+        filtered = city != ANY_CITY or remote_only
+        count = f"{len(kept)} of {len(results)}" if filtered else f"{len(results)}"
+        st.caption(f"{count} results in {payload['took_ms']:.0f} ms")
+        if not kept:
+            st.info(
+                "None of these results match the filters. Clear them, or name "
+                "the city in the search instead."
+                if filtered
+                else "No postings matched. Try fewer or broader words."
+            )
+        for result in kept[:SHOWN]:
+            result_card(result, explain)
+        if len(kept) > SHOWN:
+            with st.expander(f"{len(kept) - SHOWN} more results"):
+                for result in kept[SHOWN:]:
+                    result_card(result, explain)
 
 
-if chat_tab.open:
+if chat_tab.open and not health["llm_enabled"]:
+    llm_off_notice("Chat")
+elif chat_tab.open:
     st.caption(
         "Answers come only from the retrieved postings, with a numbered source "
         "for every claim. When nothing relevant is found it says so instead of "
@@ -256,7 +313,9 @@ if chat_tab.open:
             st.caption(f"{body['took_ms'] / 1000:.1f} s · ${body['cost_usd']:.5f}")
 
 
-if match_tab.open:
+if match_tab.open and not health["llm_enabled"]:
+    llm_off_notice("Resume match")
+elif match_tab.open:
     st.caption(
         "Upload a resume to rank postings against it. The most useful part is "
         "what each posting wants that your resume does not mention."
@@ -309,7 +368,10 @@ if trends_tab.open:
         required=True,
         format_func=lambda d: f"{d} days",
     )
-    summary = cached_trends(days)
+    # The first load of a window reads every posting into pandas on the API,
+    # about 20 seconds; repeats come from the API's cache and this page's.
+    with st.spinner("Counting postings. The first load takes about 20 seconds."):
+        summary = cached_trends(days)
     if not summary.get("postings"):
         st.info("No postings in this window.")
     else:
@@ -337,18 +399,21 @@ if trends_tab.open:
             st.subheader("Where the jobs are")
             regions = pd.DataFrame(summary["top_regions"])
             if not regions.empty:
-                regions["region"] = regions["region"].replace("unknown", "not stated")
                 regions["remote_share"] = (regions["remote_share"] * 100).round()
                 st.dataframe(
                     regions,
                     hide_index=True,
                     column_config={
-                        "region": st.column_config.TextColumn("Region"),
+                        "region": st.column_config.TextColumn("City"),
                         "postings": st.column_config.NumberColumn("Postings"),
                         "remote_share": st.column_config.ProgressColumn(
                             "Remote", format="%d%%", min_value=0, max_value=100
                         ),
                     },
+                )
+                st.caption(
+                    "A posting open in several cities counts in each. City not "
+                    "stated means India-wide or remote postings."
                 )
         sources = " · ".join(f"{name} {n}" for name, n in summary["sources"].items())
         st.caption(f"Sources: {sources}. Updated daily.")

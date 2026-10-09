@@ -300,6 +300,23 @@ def test_search_strategy_defaults_to_the_setting(client, monkeypatch):
     assert seen["strategy"] == "section"
 
 
+def test_search_results_carry_canonical_cities(client, monkeypatch):
+    from joblens.search.retrieval import SearchHit
+
+    hit = SearchHit(
+        posting_id=1,
+        title="Data Engineer",
+        company="Acme",
+        url="https://example.com/1",
+        location="India - Bengaluru; Pune",
+        is_remote=False,
+        score=1.0,
+    )
+    monkeypatch.setattr(api.retrieval, "search", lambda conn, q, **kwargs: [hit])
+    result = client.get("/search?q=python").json()["results"][0]
+    assert result["cities"] == ["Bengaluru", "Pune"]
+
+
 # ---------------------------------------------------------------- doc audit
 
 

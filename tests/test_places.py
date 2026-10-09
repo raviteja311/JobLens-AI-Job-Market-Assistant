@@ -87,3 +87,20 @@ def test_chunk_headers_carry_the_location():
     # No location, no trailing comma.
     (bare,) = chunk_whole(1, "Data Engineer", "Acme", "Build pipelines.")
     assert bare.content.startswith("Data Engineer at Acme. ")
+
+
+@pytest.mark.parametrize(
+    "location, expected",
+    [
+        ("Bangalore, Karnataka, India", ["Bengaluru"]),
+        ("India - Bengaluru", ["Bengaluru"]),
+        ("Pune; Bangalore, India", ["Bengaluru", "Pune"]),
+        ("New Delhi", ["Delhi"]),
+        ("Gurgaon", ["Gurugram"]),
+        ("India", []),
+        ("Remote", []),
+        (None, []),
+    ],
+)
+def test_cities_in_names_each_city_once_by_its_first_spelling(location, expected):
+    assert places.cities_in(location) == expected

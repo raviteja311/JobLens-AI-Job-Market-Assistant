@@ -30,13 +30,26 @@ SEARCH = {
             "title": "ML [Senior] *Engineer*",
             "company": "Acme_Co",
             "url": "https://example.com/1",
-            "location": "Berlin",
+            "location": "India - Bengaluru",
+            "cities": ["Bengaluru"],
             "is_remote": True,
             "score": 0.03,
             "ranks": {"vector": 1, "keyword": 4},
-            "snippet": "Acme | ML | Berlin\nWe <b>build</b> models. "
+            "snippet": "Acme | ML | Bengaluru\nWe <b>build</b> models. "
             "[Apply here: https://jobs.example.com/1?ref=hn] www.example.com/x",
-        }
+        },
+        {
+            "posting_id": 2,
+            "title": "Data Engineer",
+            "company": "Beta",
+            "url": "https://example.com/2",
+            "location": "Pune, IN",
+            "cities": ["Pune"],
+            "is_remote": False,
+            "score": 0.02,
+            "ranks": {"keyword": 1},
+            "snippet": "",
+        },
     ],
 }
 TREND_SUMMARY = {
@@ -45,13 +58,16 @@ TREND_SUMMARY = {
     "sources": {"hackernews": 3},
     "remote_share": 0.5,
     "top_skills": [{"skill": "python", "postings": 3, "share": 1.0}],
-    "top_regions": [{"region": "unknown", "postings": 2, "remote_share": 0.5}],
+    "top_regions": [
+        {"region": "Bengaluru", "postings": 2, "remote_share": 0.5},
+        {"region": "City not stated", "postings": 1, "remote_share": 1.0},
+    ],
 }
 
 
-def _get(url, params=None, timeout=None):
+def _get(url, params=None, timeout=None, health=HEALTH):
     if url.endswith("/health"):
-        body = HEALTH
+        body = health
     elif url.endswith("/trends"):
         body = TREND_SUMMARY
     else:
@@ -90,13 +106,51 @@ def _markdown(at) -> list[str]:
     return [m.value for m in at.markdown]
 
 
-def test_search_card_escapes_the_title_and_explains_the_ranking():
-    at, _ = _run()
+def _search(act=None):
+    """Render the search tab, optionally after changing its widgets."""
+    at = AppTest.from_file(APP, default_timeout=30)
+    with mock.patch("httpx.get", side_effect=_get):
+        at.run()
+        if act:
+            act(at)
+            at.run()
+    assert not at.exception, at.exception
+    return at
+
+
+def _toggle(at, label):
+    return next(t for t in at.toggle if t.label == label)
+
+
+def test_search_card_escapes_the_title_and_names_the_city():
+    at = _search()
     md = _markdown(at)
     assert any(r"ML \[Senior\] \*Engineer\*" in m and r"Acme\_Co" in m for m in md)
-    assert any("found by keyword #4 · vector #1" in m for m in md)
+    # The API's canonical city, not the board's "India - Bengaluru".
+    assert any(":material/location_on: Bengaluru]" in m for m in md)
+    # The ranking internals stay out of the way until asked for.
+    assert not any("found by" in m for m in md)
     # The first snippet line repeats company and title; <b> tags and URLs go.
     assert any(c.value == "We build models." for c in at.caption)
+
+
+def test_the_ranking_is_explained_on_request():
+    at = _search(lambda at: _toggle(at, "Show why each result matched").set_value(True))
+    assert any("found by keyword #4 · vector #1" in m for m in _markdown(at))
+
+
+def test_search_filters_by_city_and_remote():
+    at = _search(lambda at: at.selectbox[0].set_value("Pune"))
+    assert at.selectbox[0].options == ["Any city", "Bengaluru", "Pune"]
+    md = _markdown(at)
+    assert any("Data Engineer" in m for m in md)
+    assert not any("Acme" in m for m in md)
+    assert any(c.value.startswith("1 of 2 results") for c in at.caption)
+
+    at = _search(lambda at: _toggle(at, "Remote only").set_value(True))
+    md = _markdown(at)
+    assert any("Acme" in m for m in md)
+    assert not any("Data Engineer" in m for m in md)
 
 
 def test_an_unreachable_api_says_how_to_start_it():
@@ -169,12 +223,28 @@ def test_rate_limit_and_backend_down_are_warnings(status, detail, expected):
     assert any(expected in w.value for w in at.warning)
 
 
-def test_trends_reports_regions_honestly():
+def test_trends_reports_cities_honestly():
     at, _ = _run(TRENDS)
     assert [m.label for m in at.metric] == ["Postings", "Remote"]
     regions = at.dataframe[0].value
-    assert regions["region"].tolist() == ["not stated"]
-    assert regions["remote_share"].tolist() == [50.0]
+    assert regions["region"].tolist() == ["Bengaluru", "City not stated"]
+    assert regions["remote_share"].tolist() == [50.0, 100.0]
+    assert any("counts in each" in c.value for c in at.caption)
+
+
+@pytest.mark.parametrize("tab, feature", [(CHAT, "Chat"), (MATCH, "Resume match")])
+def test_without_an_llm_the_llm_tabs_say_so(tab, feature):
+    off = {"postings": 697, "llm_backend": "none", "llm_enabled": False}
+    at = AppTest.from_file(APP, default_timeout=30)
+    with mock.patch(
+        "httpx.get", side_effect=lambda url, **kw: _get(url, health=off, **kw)
+    ):
+        at.run()
+        at.session_state["view"] = tab
+        at.run()
+    assert not at.exception, at.exception
+    assert any(f"{feature} needs a language model" in i.value for i in at.info)
+    assert not at.button
 
 
 def test_a_match_shows_the_fit_and_the_gaps():
