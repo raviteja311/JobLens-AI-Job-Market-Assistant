@@ -1744,7 +1744,9 @@ the strength of the LLM.
   provisional runs (around 320 ms p95 for TinyBERT at max_length 256): the
   default configuration is MiniLM-L6 with no max_length, on full documents.
   The whole run took 2 h 53 min of wall time, far more than the measured
-  per-query latencies add up to; not yet explained.
+  per-query latencies add up to. The decisive reranker run the same day
+  (14 configurations, same queries) took 10.5 min, so the slow run was the
+  machine at the time, not the code.
 
 **Still open.** The rewrite-or-re-grade question above, until the blind
 re-grade. The floor and the rule metric are settled in the next entry.
@@ -1776,3 +1778,67 @@ configurations from 0.45 to 0.71 and uses the 1 vs 2 distinction the
 graders made. This is a change to a pre-registered rule, and it is
 recorded as one: the provisional 2026-10-08 runs were judged under the MRR
 version and are not re-read under the new one.
+
+---
+
+## 2026-10-09 - The decisive reranker run: hybrid stays the default
+
+**Setup.** `python scripts/rerank_experiments.py` at commit 21874fc, on the
+24 human-verified queries (697 postings), all 14 configurations and the
+hybrid (whole) baseline in one pass with warm models, 10.5 min wall time.
+The rule, as amended in the previous entry before this run: rerank is on by
+default only if a configuration gains at least +0.05 nDCG@10 over hybrid
+(whole) with p95 under 500 ms; the highest nDCG@10 then the lowest p95
+breaks ties. Output kept at `JobLens-labelling/rerank_decisive_2026-10-09.md`
+(outside the repo).
+
+| configuration | recall@10 | mrr | ndcg@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| hybrid (whole) | 0.322 | 0.893 | 0.671 | 170 | 220 |
+| rerank: shipped (snippet, pool 30) | 0.299 | 0.927 | 0.707 | 2920 | 3383 |
+| 3.2 document = head | 0.316 | 0.924 | 0.727 | 2734 | 2926 |
+| 3.2 document = best section | 0.308 | 0.901 | 0.707 | 1786 | 1967 |
+| 3.3 pool = 20 | 0.292 | 0.879 | 0.687 | 1862 | 2158 |
+| 3.3 pool = 50 | 0.244 | 0.858 | 0.580 | 3569 | 4071 |
+| 3.4 alpha = 0.3 | 0.322 | 0.907 | 0.721 | 2869 | 3263 |
+| 3.4 alpha = 0.5 | 0.317 | 0.900 | 0.713 | 2896 | 3327 |
+| 3.4 alpha = 0.7 | 0.314 | 0.892 | 0.679 | 2923 | 3272 |
+| 3.5 TinyBERT-L-2 | 0.299 | 0.923 | 0.697 | 390 | 434 |
+| 3.5 max_length = 256 | 0.300 | 0.924 | 0.703 | 1784 | 1828 |
+| 3.5 TinyBERT-L-2, max_length = 256 | 0.296 | 0.923 | 0.692 | 303 | 329 |
+| combo TinyBERT-L-2, best section | 0.310 | 0.903 | 0.692 | 320 | 362 |
+| combo TinyBERT-L-2, best section, max_length = 256 | 0.310 | 0.903 | 0.692 | 321 | 366 |
+
+**Verdict.** No configuration meets the rule. The two that gain enough,
+document = head (+0.056) and alpha = 0.3 (+0.050), cost about 3 s at p95;
+every configuration under 500 ms is TinyBERT, and those gain +0.021 to
++0.026. **Hybrid (whole) stays the default and rerank stays opt-in.** No
+code changes: that was already the default.
+
+**The amendment did not decide it.** Under the original MRR version of the
+rule nothing passes either: the best MRR gain is +0.034 (the shipped
+reranker).
+
+**What held and what did not, against the provisional LLM-judged runs
+(2026-10-08).**
+
+- The provisional winner did not hold. TinyBERT at max_length 256 gained
+  +0.129 MRR on LLM grades and gains +0.030 MRR (+0.021 nDCG@10) here. Part of the gap
+  is the lenient human grades: hybrid starts far higher (MRR 0.893 here
+  against 0.596 provisionally), leaving less to gain.
+- A pool of 50 still hurts, now badly (-0.091 nDCG@10). Held.
+- Blending the first-stage score now helps a little at alpha 0.3 (+0.014
+  over the pure reorder), where provisionally it hurt monotonically. Did not
+  hold.
+- The best section no longer beats the snippet on quality (both 0.707); the
+  head of the posting is best. Did not hold.
+- Reranking now lowers recall@10 slightly (0.322 to 0.299), where
+  provisionally it raised it. The human sets have about 28 relevant postings
+  per query, so the top ten fills with relevant postings either way.
+
+**Caveats.** 24 queries; human grades from one grader whose agreement with
+the LLM judge is weak (kappa 0.24) and whose stability is not yet measured
+(the blind re-grade). A +0.05 rule on 24 queries is a coarse instrument; the
+fast configurations' +0.02 is within what a re-grade could move. The
+decision is "not proven worth the latency here", not "reranking does not
+work".

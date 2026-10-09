@@ -154,6 +154,19 @@ raise the metric?
   0.84 to 0.93, so MRR could no longer tell them apart. The change, and why,
   is recorded (`docs/experiments.md`, 2026-10-09).
 
+**Decisive result** (24 human-verified queries, `docs/experiments.md`
+2026-10-09):
+
+- Nothing passed. Hybrid (whole) stays the default at nDCG@10 0.671, p95
+  220 ms. The two configurations that gained enough (head of the posting
+  +0.056, alpha 0.3 +0.050) cost about 3 s at p95; the fast TinyBERT ones
+  gained only +0.021 to +0.026.
+- The provisional winner (TinyBERT, max_length 256: +0.129 MRR on LLM
+  grades) gained +0.030 MRR and +0.021 nDCG@10 on human grades. Two provisional findings reversed: blending at alpha 0.3 helped,
+  and the head of the posting beat the best section.
+- Under the original MRR rule the verdict is the same, so the metric change
+  did not decide it.
+
 **Likely follow-ups.** Bi-encoder vs cross-encoder. Why does a bigger pool
 make it worse? What is pre-registration and why bother? Is 23 queries enough
 to trust +0.05?
