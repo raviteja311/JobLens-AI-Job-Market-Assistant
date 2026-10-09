@@ -11,8 +11,8 @@ a large k flattens that, so a posting both retrievers rank moderately well
 overtakes one that only a single retriever ranks first.
 
 Hybrid (whole) only. The section strategy's vector arm is truncated by the
-HNSW post-filter at the default ef_search (docs/interview-notes.md), which
-would confound a k sweep.
+HNSW post-filter at the default ef_search (docs/experiments.md, 2026-10-08),
+which would confound a k sweep.
 """
 
 from __future__ import annotations
