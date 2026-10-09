@@ -215,6 +215,12 @@ def test_only_cited_postings_are_listed_as_sources():
     [
         (429, "slow down", "Rate limited"),
         (503, "ollama backend unreachable: [WinError 10061]", "Start the Ollama app"),
+        (
+            503,
+            'ollama backend returned HTTP 500: {"error":"llama-server process has '
+            'terminated: exit status 0xc0000409"}',
+            "The model crashed while answering",
+        ),
         (503, "anthropic backend failing: 529", "anthropic backend failing"),
     ],
 )

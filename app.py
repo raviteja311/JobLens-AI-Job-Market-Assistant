@@ -145,6 +145,20 @@ def show_limited(response: httpx.Response, fallback: str) -> bool:
                 icon=":material/power_off:",
             )
             st.caption(detail)
+        elif response.status_code == 503 and detail.startswith(
+            "ollama backend returned HTTP 5"
+        ):
+            # Ollama is up but its model process died, usually because the
+            # model does not fit in memory (llama3.1 on a 4 GB GPU did). The
+            # raw text is a Windows crash code, which tells nobody what to do.
+            st.warning(
+                "The model crashed while answering. This usually means it does "
+                "not fit in this machine's memory. Set a smaller model in `.env` "
+                "(for example `LLM_MODEL=llama3.2:3b`), restart the API, and "
+                "ask again. If it keeps happening, restart Ollama.",
+                icon=":material/memory:",
+            )
+            st.caption(detail)
         else:
             st.warning(detail, icon=":material/warning:")
         return True
