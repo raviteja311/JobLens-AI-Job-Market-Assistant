@@ -24,7 +24,12 @@ from joblens.cleaning import strip_noise
 from joblens.eval import golden, label
 from joblens.search.embeddings import get_embedder
 
-MAX_CHARS = 1400
+# The whole description by default. A grader needs the requirements and the
+# years of experience, which sit past the company boilerplate at the top; the
+# old 1,400-character cut (the median posting is about 5,200) hid them while
+# the docstring promised the full text. --max-chars brings a cut back for a
+# quick skim, never for grading.
+DEFAULT_MAX_CHARS = 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -32,6 +37,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("ids", nargs="*")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--depth", type=int, default=10)
+    parser.add_argument(
+        "--max-chars",
+        type=int,
+        default=DEFAULT_MAX_CHARS,
+        help="cut each description to this many characters; 0 shows all of it",
+    )
     parser.add_argument(
         "--unjudged", action="store_true", help="skip candidates already graded"
     )
@@ -74,7 +85,9 @@ def main(argv: list[str] | None = None) -> int:
                     f" | found by: {', '.join(c.found_by)}\n"
                 )
                 body = strip_noise(row.get("description") or "")
-                out.write(body[:MAX_CHARS] + ("..." if len(body) > MAX_CHARS else ""))
+                if args.max_chars and len(body) > args.max_chars:
+                    body = body[: args.max_chars] + "..."
+                out.write(body)
                 out.write("\n")
     return 0
 

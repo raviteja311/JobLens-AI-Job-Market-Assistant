@@ -1,0 +1,4 @@
+# Shell scripts run under bash, which cannot read CRLF line endings. With
+# core.autocrlf on, a Windows checkout would otherwise turn every line of
+# deploy/azure/deploy.sh into a $'\r': command not found error.
+*.sh text eol=lf

@@ -57,8 +57,13 @@ REGRESSION_TOLERANCE = 0.05
 # (`generation.is_refusal`: a must-refuse answer is right when it cites
 # nothing) over questions the corpus cannot answer, and a system that
 # invents answers to those is broken in the way that matters most.
+#
+# recall@10 has no floor. On the human golden set a query has about 28
+# relevant postings, so the best possible recall@10 is 0.42 and any fixed
+# floor measures the size of the relevant sets, not search. It is still
+# gated against regressions (docs/experiments.md, 2026-10-09).
 FLOORS = {
-    "retrieval": {"ndcg@10": 0.45, "recall@10": 0.55},
+    "retrieval": {"ndcg@10": 0.45},
     "chat": {"refusal_accuracy": 0.75},
 }
 

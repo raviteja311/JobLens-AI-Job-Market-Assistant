@@ -103,32 +103,6 @@ def cmd_skills(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_train_salary(args: argparse.Namespace) -> int:
-    from joblens.ml import dataset, salary_model
-
-    frame = salary_model.training_frame(dataset.load_postings())
-    report = salary_model.compare_models(frame, folds=args.folds)
-    print(report.as_table())
-    if args.importance:
-        print()
-        print(
-            f"permutation importance, {report.best.name}, "
-            f"held-out rows of every fold:"
-        )
-        table = salary_model.column_importance(
-            frame, report.best.name, folds=report.best.folds
-        )
-        for row in table.itertuples():
-            print(
-                f"  {row.column:<12} {row.mae_increase_usd:>+10,.0f} USD MAE"
-                f"  (sd {row.std_usd:,.0f})"
-            )
-    if args.save:
-        path = salary_model.fit_and_save(frame, report.best.name)
-        log.info("saved %s model to %s", report.best.name, path)
-    return 0
-
-
 def cmd_cluster(args: argparse.Namespace) -> int:
     from joblens.ml import clustering, dataset
 
@@ -408,7 +382,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--source",
         action="append",
         choices=sorted(sources.REGISTRY),
-        help="repeatable. Defaults to every registered source.",
+        help="repeatable. Defaults to greenhouse, lever and ashby.",
     )
     ingest.add_argument("--limit", type=int, default=200)
     ingest.set_defaults(func=cmd_ingest)
@@ -423,16 +397,6 @@ def build_parser() -> argparse.ArgumentParser:
     skills_cmd.add_argument("--source", choices=sorted(sources.REGISTRY))
     skills_cmd.add_argument("--top", type=int, default=25)
     skills_cmd.set_defaults(func=cmd_skills)
-
-    train = sub.add_parser("train-salary", help="compare salary regression models")
-    train.add_argument("--folds", type=int, default=5)
-    train.add_argument("--save", action="store_true", help="persist the best model")
-    train.add_argument(
-        "--importance",
-        action="store_true",
-        help="permutation importance per input column for the best model",
-    )
-    train.set_defaults(func=cmd_train_salary)
 
     cluster = sub.add_parser("cluster", help="cluster postings and label the clusters")
     cluster.add_argument(

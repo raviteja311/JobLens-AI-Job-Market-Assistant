@@ -17,8 +17,9 @@ create table if not exists raw_postings(
 );
 
 
--- One row per (source, posting) per fetch. We keep the history rather than
--- overwriting, so we can see when a posting's text changed.
+-- One row per (source, posting) each time its payload changes (see 004).
+-- We keep the history rather than overwriting, so we can see when a
+-- posting's text changed.
 
 create index if not exists raw_postings_source_idx on raw_postings(source, source_id);
 create index if not exists raw_postings_run_idx on raw_postings(run_id);

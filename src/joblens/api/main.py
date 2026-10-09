@@ -191,8 +191,10 @@ def rate_limit(request: Request) -> None:
 
 @app.get("/health")
 def health() -> dict:
-    """Liveness plus the three facts the runbook asks for first: how much
-    data, whether last night's ingest ran, and which LLM is configured."""
+    """Liveness plus the facts the runbook asks for first: how much data,
+    whether last night's ingest ran, which LLM is configured, and the
+    pgvector version (vector_search needs 0.8 or newer for iterative index
+    scans, and a hosted database may ship an older one)."""
     with db.connect() as conn:
         postings = conn.execute("select count(*) as n from postings").fetchone()["n"]
         chunks = conn.execute("select count(*) as n from posting_chunks").fetchone()[
@@ -205,12 +207,16 @@ def health() -> dict:
              order by started_at desc
              limit 1
             """).fetchone()
+        pgvector = conn.execute(
+            "select extversion from pg_extension where extname = 'vector'"
+        ).fetchone()
     settings = get_settings()
     return {
         "status": "ok",
         "version": app.version,
         "postings": postings,
         "chunks": chunks,
+        "pgvector": pgvector["extversion"] if pgvector else None,
         "embedder": _state["embedder"].name if "embedder" in _state else None,
         "llm_backend": settings.llm_backend,
         "llm_enabled": settings.llm_enabled,

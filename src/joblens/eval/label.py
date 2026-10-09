@@ -21,10 +21,18 @@ from joblens.eval.golden import GoldenQuery
 from joblens.search import retrieval
 from joblens.search.embeddings import Embedder
 
+# Every configuration the eval scores contributes its top `depth`. Hybrid
+# whole contributes three times that: it is the default search, and the
+# reranker reorders exactly its top 3 x limit, so pooling that deep means
+# every reranked top ten is judged too. Without hybrid in the pool, 31% of the
+# default search's top ten had never been judged, and every reranker run was
+# scored partly on unjudged postings (docs/experiments.md, 2026-10-08).
 POOL_MODES = (
-    {"mode": "keyword", "strategy": "whole"},
-    {"mode": "vector", "strategy": "whole"},
-    {"mode": "vector", "strategy": "section"},
+    {"mode": "keyword", "strategy": "whole", "depth_multiplier": 1},
+    {"mode": "vector", "strategy": "whole", "depth_multiplier": 1},
+    {"mode": "vector", "strategy": "section", "depth_multiplier": 1},
+    {"mode": "hybrid", "strategy": "whole", "depth_multiplier": 3},
+    {"mode": "hybrid", "strategy": "section", "depth_multiplier": 1},
 )
 
 
@@ -47,7 +55,8 @@ def pool(
     embedder: Embedder | None = None,
     depth: int = 10,
 ) -> list[Candidate]:
-    """Top `depth` from every retriever, merged and de-duplicated."""
+    """Top `depth` from every retriever (3 x depth from hybrid whole),
+    merged and de-duplicated."""
     seen: dict[int, Candidate] = {}
     for spec in POOL_MODES:
         hits = retrieval.search(
@@ -56,7 +65,7 @@ def pool(
             mode=spec["mode"],
             embedder=embedder,
             strategy=spec["strategy"],
-            limit=depth,
+            limit=depth * spec["depth_multiplier"],
         )
         for hit in hits:
             label = f"{spec['mode']}/{spec['strategy']}"
@@ -88,7 +97,7 @@ def pool(
 
 
 def apply_judgements(
-    query: GoldenQuery, graded: dict[str, int], verified: bool = True
+    query: GoldenQuery, graded: dict[str, int], *, verified: bool
 ) -> GoldenQuery:
     """Merge new grades into a query, keeping the zeros.
 

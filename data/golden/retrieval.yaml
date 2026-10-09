@@ -5,1884 +5,1275 @@ grades:
   2: exactly what was asked
 queries:
 - id: q01
-  query: remote machine learning engineer for someone with two years experience
-  note: the query this whole project exists to answer | judged by Claude Fable 5.1 on 2026-09-26
-    from the full posting text of every candidate any retriever surfaced in its top 10; not
-    human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest judged by
-    Claude Opus 5.5 from the same pool dump; not human-verified
+  query: fresher data analyst job in Hyderabad
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49158703: 0
-    hackernews:49159028: 0
-    hackernews:49159942: 0
-    hackernews:49160256: 0
-    hackernews:49162914: 1
-    hackernews:49164461: 0
-    hackernews:49166165: 1
-    hackernews:49168019: 0
-    hackernews:49169371: 0
-    hackernews:49524327: 0
-    hackernews:49525116: 0
-    hackernews:49525135: 0
-    hackernews:49525468: 0
-    hackernews:49528364: 0
-    hackernews:49530424: 0
-    hackernews:49534032: 1
-    hackernews:49537584: 0
-    hackernews:49538758: 1
-    hackernews:49595476: 1
-    hackernews:49662536: 0
-    remoteok:1099821: 1
-    remoteok:1135903: 0
-    remoteok:1136670: 0
-    remoteok:1136796: 0
-    remoteok:1136841: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137378: 0
-    remoteok:1137380: 0
+    ashby:gainsight:01b57870-b94d-4854-83b4-f0aaa7e7a95a: 0
+    ashby:gradera:0635c034-c61f-459c-a3dc-4ef3ae8a7cb3: 0
+    ashby:gradera:16c3e36f-f20a-479f-aac4-a063d930e321: 1
+    greenhouse:capco:7865935: 0
+    greenhouse:capco:7966453: 0
+    greenhouse:capco:8143638: 0
+    greenhouse:coherehealth:7663856003: 0
+    greenhouse:coherehealth:7693376003: 0
+    greenhouse:coherehealth:7741414003: 0
+    greenhouse:coherehealth:7741530003: 0
+    greenhouse:coherehealth:7983023003: 0
+    greenhouse:databricks:8604577002: 0
+    greenhouse:doordashindia:6281695: 0
+    greenhouse:earnin:8167777: 0
+    greenhouse:neuraflash:6151412004: 0
+    greenhouse:okta:7780488: 0
+    greenhouse:purestorage:8212868: 0
+    greenhouse:sigmoid:8620634002: 0
+    greenhouse:smartsheet:7794964: 0
+    greenhouse:starrez:5181890008: 0
+    greenhouse:starrez:5181891008: 0
+    greenhouse:tegnaindia:5177908007: 0
+    greenhouse:truveta:6206255004: 0
+    greenhouse:truveta:6207309004: 0
+    greenhouse:truveta:6210395004: 0
+    greenhouse:wpp:8781276002: 0
+    lever:beghouconsulting:c617f838-8297-44a3-aadb-db9b19d8fe43: 0
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 0
+    lever:brillio-2:8cc1d9ff-c189-41f0-a24d-ec98be70b9ee: 0
+    lever:brillio-2:92060784-3feb-4998-8850-6f9aa2dd7263: 0
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 0
+    lever:brillio-2:b80221e6-4c41-4025-8a5d-10a1304582d7: 0
+    lever:brillio-2:ca5ca664-d24b-4454-89aa-8203a40f6773: 0
+    lever:brillio-2:f4c3ce9c-f87f-4dc8-aa2e-492d915146a7: 0
+    lever:dnb:ae709554-e52e-4d12-b5ba-eae6fa94c481: 0
+    lever:dnb:d28ad755-5686-4219-9ba9-52bf37b1b506: 0
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 0
+    lever:portcast:e66df487-0622-480f-8506-532b3db5db28: 1
+    lever:portcast:f18cc64e-c34a-416c-b213-62a39906260e: 2
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 0
+    lever:shyftlabs:60b192de-bdc7-4ae0-b2ca-a7327939ce1d: 0
 - id: q02
-  query: LLM engineer building RAG systems
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: junior machine learning engineer Bengaluru
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49159942: 1
-    hackernews:49163907: 1
-    hackernews:49169371: 0
-    hackernews:49523666: 0
-    hackernews:49523985: 2
-    hackernews:49524822: 1
-    hackernews:49525651: 0
-    hackernews:49528234: 1
-    hackernews:49530424: 0
-    hackernews:49534270: 0
-    hackernews:49538639: 0
-    hackernews:49543579: 0
-    hackernews:49546958: 0
-    hackernews:49553901: 1
-    hackernews:49555479: 0
-    remoteok:1135997: 0
-    remoteok:1136001: 0
-    remoteok:1136094: 0
-    remoteok:1136097: 0
-    remoteok:1136670: 0
-    remoteok:1136795: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1136878: 0
-    remoteok:1137408: 0
+    ashby:ema:8268af44-d5d8-4a29-9638-3ea30f35f3a9: 0
+    ashby:ema:88d004d9-50a9-41ee-a618-03855001a9be: 0
+    ashby:meraki-labs:93ff65d2-f0cd-4fd1-b76f-b2e350f2d6c8: 1
+    ashby:poshmark:461a37db-d133-4947-a17d-8afd2092a6fc: 0
+    ashby:poshmark:b13d536d-bb05-4173-a17d-6ed55a2991c7: 0
+    ashby:skyflow:2a996c6c-f3c0-44a9-8aac-14cc77b33fc4: 0
+    greenhouse:coinbase:7739592: 0
+    greenhouse:conga:5068674007: 0
+    greenhouse:conga:5195218007: 0
+    greenhouse:conga:5195220007: 0
+    greenhouse:databricks:7845325002: 0
+    greenhouse:glance:8054886: 0
+    greenhouse:glance:8054888: 0
+    greenhouse:glance:8207128: 0
+    greenhouse:gleanwork:4012745005: 0
+    greenhouse:netradyne:4739224005: 0
+    greenhouse:point72:8487494002: 0
+    greenhouse:pubmatic:5121514008: 0
+    greenhouse:pubmatic:5157318008: 0
+    greenhouse:sigmoid:4985961002: 1
+    greenhouse:sigmoid:8675405002: 0
+    greenhouse:smartsheet:8025513: 0
+    greenhouse:techgrovebybanyansoftware:5175887007: 0
+    greenhouse:wpp:8395792002: 0
+    greenhouse:zetaglobal:5796298004: 0
+    lever:brillio-2:10aa7b0a-40cc-4f67-98dd-4d86d817281c: 1
+    lever:brillio-2:277003a1-1f15-4b25-9a69-6ed8bb5c7d61: 0
+    lever:brillio-2:31dd294c-1656-440e-b271-11443ace78cd: 0
+    lever:brillio-2:8463adae-9020-420e-80ef-1cf8ea03580d: 0
+    lever:brillio-2:8d7b925f-c1f5-4112-bb74-e4d4d9201ee9: 1
+    lever:brillio-2:8dc75ccf-ce5b-474e-b806-9c5082c85f9c: 0
+    lever:brillio-2:92060784-3feb-4998-8850-6f9aa2dd7263: 0
+    lever:brillio-2:de7adbf1-0421-4a9d-a5f5-d443cdd29263: 0
+    lever:extremenetworks:0ddd04b5-582d-4078-9213-9a2a549e266b: 0
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 0
+    lever:levelai:55ba7aee-57ff-440c-91a4-58bcafcd10a8: 0
+    lever:levelai:cc04ab77-6ee3-4078-9cfd-110cda0b1438: 0
+    lever:portcast:d206930c-1ecd-41fe-b603-b28ad98a5ea4: 0
+    lever:resilinc:03fce20a-3042-4ead-9d3e-3ba214ea16a2: 0
 - id: q03
-  query: pgvector
-  note: rare token, keyword search should win outright | judged by Claude Fable 5.1 on 2026-09-26
-    from the full posting text of every candidate any retriever surfaced in its top 10; not
-    human-verified
-  verified: true
-  judgements:
-    hackernews:49157265: 0
-    hackernews:49158689: 0
-    hackernews:49160170: 0
-    hackernews:49163658: 0
-    hackernews:49163678: 0
-    hackernews:49165353: 0
-    hackernews:49523830: 0
-    hackernews:49524691: 0
-    hackernews:49530381: 0
-    hackernews:49530464: 0
-    hackernews:49530894: 0
-    hackernews:49531002: 0
-    hackernews:49533498: 0
+  query: data engineer jobs in Pune
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q04
-  query: jobs that need PyTorch rather than TensorFlow
-  note: negation, which retrieval does not handle and the eval should show | judged by Claude
-    Fable 5.1 on 2026-09-26 from the full posting text of every candidate any retriever surfaced
-    in its top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26
-    re-ingest judged by Claude Opus 5.5 from the same pool dump; not human-verified | grade-2
-    judgements reviewed by the project owner on 2026-09-26 against the full posting text;
-    all 232 kept
-  verified: true
-  judgements:
-    hackernews:49164461: 0
-    hackernews:49165031: 2
-    hackernews:49165353: 0
-    hackernews:49166151: 0
-    hackernews:49523288: 0
-    hackernews:49523703: 0
-    hackernews:49524327: 2
-    hackernews:49527283: 1
-    hackernews:49528364: 0
-    hackernews:49532957: 0
-    hackernews:49541874: 2
-    hackernews:49554223: 0
-    remoteok:1099821: 2
-    remoteok:1136097: 0
-    remoteok:1136168: 0
-    remoteok:1136210: 0
-    remoteok:1136592: 0
-    remoteok:1136949: 0
-    remoteok:1137136: 0
-    remoteok:1137139: 0
-    remoteok:1137279: 0
-    remoteok:1137378: 0
-    remoteok:1137380: 0
-    remoteok:1137391: 0
-    remoteok:1137406: 0
+  query: data scientist role in Chennai
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q05
-  query: entry level data science role no PhD required
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
+  query: analytics manager Gurgaon
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49157827: 1
-    hackernews:49159028: 0
-    hackernews:49160256: 0
-    hackernews:49162501: 0
-    hackernews:49523175: 0
-    hackernews:49523956: 1
-    hackernews:49525116: 0
-    hackernews:49525141: 1
-    hackernews:49534359: 1
-    hackernews:49539823: 1
-    hackernews:49541874: 0
-    hackernews:49542805: 1
-    remoteok:1099822: 0
-    remoteok:1135903: 0
-    remoteok:1136097: 0
-    remoteok:1136217: 1
-    remoteok:1136222: 1
-    remoteok:1137156: 0
-    remoteok:1137391: 0
-    remoteok:1137396: 0
+    greenhouse:6sense:8238331: 0
+    greenhouse:addepar1:8709088002: 0
+    greenhouse:cclfg:4224770009: 0
+    greenhouse:coherehealth:7693376003: 0
+    greenhouse:coherehealth:7989877003: 0
+    greenhouse:databricks:8604577002: 0
+    greenhouse:devrev:6182480004: 0
+    greenhouse:emergentlabsinc:4373373009: 0
+    greenhouse:formaaiinc:4575837005: 0
+    greenhouse:gravitonresearchcapital:4004918002: 0
+    greenhouse:gravitonresearchcapital:4004919002: 0
+    greenhouse:gravitonresearchcapital:8547628002: 1
+    greenhouse:mongodb:8224590: 2
+    greenhouse:okta:7728553: 0
+    greenhouse:okta:8141274: 0
+    greenhouse:okta:8154385: 0
+    greenhouse:pubmatic:5419108008: 0
+    greenhouse:purestorage:8170778: 0
+    greenhouse:purestorage:8170823: 0
+    greenhouse:redwoodsoftware:4265599009: 0
+    greenhouse:sigmoid:8583355002: 0
+    greenhouse:sigmoid:8620634002: 0
+    greenhouse:skillzinc:8131924: 0
+    greenhouse:spauldingridge:6207776004: 0
+    greenhouse:spauldingridge:6207783004: 0
+    greenhouse:stripe:7923653: 0
+    greenhouse:towerresearchcapital:7102180: 1
+    greenhouse:truveta:6207309004: 0
+    greenhouse:zenoti:7729933003: 0
+    greenhouse:zetaglobal:6118712004: 0
+    lever:beghouconsulting:a298a607-ea65-411f-9214-e2fd4d57193a: 0
+    lever:cyara:742ea734-d8c7-464f-8198-d50aba694005: 0
+    lever:paytm:36be80ec-3701-4d0f-8048-7571e3bd3a56: 1
+    lever:paytm:8c4d24b4-62d4-466d-9daa-b3c7804c5a67: 0
+    lever:pocketfm:2436065b-281d-4347-8366-9a60b99dc5a5: 0
 - id: q06
-  query: founding engineer at a seed stage startup
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156711: 0
-    hackernews:49158552: 0
-    hackernews:49159942: 0
-    hackernews:49162950: 2
-    hackernews:49169371: 0
-    hackernews:49171913: 2
-    hackernews:49522929: 0
-    hackernews:49523950: 0
-    hackernews:49524822: 0
-    hackernews:49525270: 2
-    hackernews:49525367: 2
-    hackernews:49525463: 2
-    hackernews:49526894: 1
-    hackernews:49529054: 1
-    hackernews:49530424: 0
-    hackernews:49532259: 1
-    hackernews:49544301: 1
-    hackernews:49595476: 0
-    hackernews:49711313: 2
-    remoteok:1136670: 0
+  query: AI engineer Noida
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q07
-  query: platform engineering with Kubernetes and Terraform
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156711: 2
-    hackernews:49156737: 2
-    hackernews:49159942: 0
-    hackernews:49161868: 2
-    hackernews:49168356: 1
-    hackernews:49522929: 2
-    hackernews:49524822: 0
-    hackernews:49527115: 1
-    hackernews:49527209: 1
-    hackernews:49529957: 2
-    hackernews:49530424: 0
-    hackernews:49530867: 1
-    hackernews:49532122: 0
-    hackernews:49539168: 2
-    hackernews:49543579: 1
-    hackernews:49555567: 1
-    hackernews:49573833: 1
-    hackernews:49608356: 2
-    remoteok:1136188: 1
-    remoteok:1136670: 0
-    remoteok:1136796: 0
+  query: business intelligence developer
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q08
-  query: backend engineer Rust
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
+  query: MLOps engineer India
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156711: 0
-    hackernews:49158689: 0
-    hackernews:49158982: 2
-    hackernews:49159942: 0
-    hackernews:49165359: 2
-    hackernews:49166080: 1
-    hackernews:49169371: 0
-    hackernews:49522929: 0
-    hackernews:49523123: 2
-    hackernews:49523422: 2
-    hackernews:49524822: 0
-    hackernews:49525399: 0
-    hackernews:49530020: 0
-    hackernews:49530424: 0
-    hackernews:49530430: 1
-    hackernews:49530894: 0
-    hackernews:49533651: 2
-    hackernews:49534764: 0
-    hackernews:49546958: 2
-    hackernews:49615973: 1
-    remoteok:1136670: 0
+    ashby:gen-digital:16e0405f-e284-4c25-9997-bfa82f6ee874: 0
+    ashby:meraki-labs:93ff65d2-f0cd-4fd1-b76f-b2e350f2d6c8: 2
+    ashby:openai:bf036b23-cd23-46d0-a02f-4b1483f4698a: 1
+    ashby:sarvam:e7f783e8-6378-4158-97d5-48a397a91698: 2
+    ashby:tekion:3daf1c55-8409-4a24-970a-a3e26e879bd7: 1
+    greenhouse:alphasense:8729924002: 1
+    greenhouse:blenheimchalcotindia:7699027: 1
+    greenhouse:conga:5068674007: 0
+    greenhouse:crunchyroll:7990093: 2
+    greenhouse:databricks:7845325002: 1
+    greenhouse:databricks:8585164002: 1
+    greenhouse:databricks:8593505002: 1
+    greenhouse:digitalocean98:7987090: 1
+    greenhouse:digitalocean98:7987346: 1
+    greenhouse:earnin:7895708: 1
+    greenhouse:glance:8054886: 0
+    greenhouse:glance:8054888: 1
+    greenhouse:netradyne:4739224005: 2
+    greenhouse:netskope:8063744: 0
+    greenhouse:pubmatic:5419108008: 2
+    greenhouse:purestorage:8034920: 2
+    greenhouse:smartsheet:7686237: 2
+    greenhouse:smartsheet:8025513: 2
+    greenhouse:techgrovebybanyansoftware:5175887007: 1
+    greenhouse:techgrovebybanyansoftware:5175902007: 1
+    greenhouse:wpp:8395792002: 1
+    lever:brillio-2:40cf0a15-6e54-4a8b-bcf9-5214856136bb: 2
+    lever:brillio-2:8dc75ccf-ce5b-474e-b806-9c5082c85f9c: 2
+    lever:brillio-2:b186da86-5523-4bcd-b3fb-e6ce16325883: 2
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 0
+    lever:meesho:a1cc7ad9-a233-4ba6-b53b-e56116f6ac27: 2
+    lever:neuron7:787cf4d2-1ee7-4376-8d63-995f1275df4f: 1
+    lever:neuron7:ab69b2e7-0c54-41e8-80d6-7bf13f9321a5: 1
+    lever:portcast:3fbd2b9a-c12b-4578-a628-5929fa2da2bf: 1
+    lever:safe:d27c2846-c34b-461a-bcce-b8889014102e: 1
+    lever:zimperium:5b35759a-d445-4fcb-b255-d719330af055: 0
 - id: q09
-  query: roles in San Francisco that are onsite
-  note: location plus modality | judged by Claude Fable 5.1 on 2026-09-26 from the full posting
-    text of every candidate any retriever surfaced in its top 10; not human-verified | grade-2
-    judgements reviewed by the project owner on 2026-09-26 against the full posting text;
-    all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156730: 2
-    hackernews:49156845: 0
-    hackernews:49159312: 0
-    hackernews:49159996: 2
-    hackernews:49160057: 0
-    hackernews:49162833: 2
-    hackernews:49163520: 2
-    hackernews:49163678: 2
-    hackernews:49166975: 2
-    hackernews:49168047: 2
-    hackernews:49524060: 2
-    hackernews:49524252: 2
-    hackernews:49527354: 1
-    hackernews:49528822: 2
-    hackernews:49531002: 0
-    hackernews:49532154: 2
-    hackernews:49546647: 0
-    hackernews:49547792: 0
+  query: applied scientist LLM Bangalore
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q10
-  query: computer vision engineer
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156711: 0
-    hackernews:49157959: 1
-    hackernews:49159942: 0
-    hackernews:49162501: 1
-    hackernews:49164461: 0
-    hackernews:49169371: 0
-    hackernews:49522929: 0
-    hackernews:49524691: 2
-    hackernews:49524822: 0
-    hackernews:49524880: 0
-    hackernews:49525116: 0
-    hackernews:49525183: 0
-    hackernews:49526361: 0
-    hackernews:49527113: 0
-    hackernews:49527181: 0
-    hackernews:49528132: 0
-    hackernews:49528637: 2
-    hackernews:49529454: 0
-    hackernews:49530424: 0
-    hackernews:49532154: 1
-    hackernews:49552294: 0
-    remoteok:1099821: 0
-    remoteok:1099822: 0
-    remoteok:1135767: 0
-    remoteok:1136670: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1137139: 0
-    remoteok:1137309: 0
+  query: data analyst internship
+  note: role | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q11
-  query: data engineer building pipelines with Airflow and dbt
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
-  verified: true
-  judgements:
-    hackernews:49156737: 0
-    hackernews:49157080: 0
-    hackernews:49159028: 0
-    hackernews:49160256: 1
-    hackernews:49163520: 1
-    hackernews:49164668: 0
-    hackernews:49164894: 0
-    hackernews:49165031: 0
-    hackernews:49523408: 1
-    hackernews:49524502: 0
-    hackernews:49525116: 1
-    hackernews:49528044: 0
-    hackernews:49530424: 0
-    hackernews:49539823: 1
-    hackernews:49542805: 1
-    hackernews:49549234: 0
-    hackernews:49613305: 0
-    remoteok:1099822: 1
-    remoteok:1136222: 0
-    remoteok:1136670: 0
-    remoteok:1136795: 0
-    remoteok:1136796: 0
+  query: SQL and Power BI analyst role
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q12
-  query: someone who can own the whole stack at a small company
-  note: vague phrasing, no keyword overlap, vector should win | judged by Claude Fable 5.1
-    on 2026-09-26 from the full posting text of every candidate any retriever surfaced in
-    its top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest
-    judged by Claude Opus 5.5 from the same pool dump; not human-verified | grade-2 judgements
-    reviewed by the project owner on 2026-09-26 against the full posting text; all 232 kept
+  query: Tableau dashboard developer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156711: 1
-    hackernews:49157647: 1
-    hackernews:49159115: 1
-    hackernews:49160915: 1
-    hackernews:49160993: 2
-    hackernews:49162401: 2
-    hackernews:49163907: 2
-    hackernews:49164303: 2
-    hackernews:49166080: 2
-    hackernews:49522903: 2
-    hackernews:49522912: 2
-    hackernews:49523956: 0
-    hackernews:49524520: 1
-    hackernews:49525418: 0
-    hackernews:49526742: 1
-    hackernews:49530381: 1
-    hackernews:49534032: 2
-    hackernews:49534647: 2
-    hackernews:49535156: 1
-    hackernews:49550510: 2
-    hackernews:49595476: 0
-    hackernews:49661611: 2
-    hackernews:49662536: 1
-    remoteok:1137062: 1
-    remoteok:1137378: 0
-    remoteok:1137380: 0
+    ashby:atlys:0bd520e7-ac9b-4bcc-806a-39615a893da5: 1
+    greenhouse:capco:8152748: 1
+    greenhouse:coherehealth:7663856003: 1
+    greenhouse:coherehealth:7693133003: 1
+    greenhouse:connectwise:4716534005: 0
+    greenhouse:gitlab:8827370002: 1
+    greenhouse:glance:8054886: 0
+    greenhouse:glance:8054888: 0
+    greenhouse:netskope:8063744: 0
+    greenhouse:neuraflash:6218552004: 0
+    greenhouse:okta:7728553: 2
+    greenhouse:okta:7731263: 1
+    greenhouse:okta:8141274: 2
+    greenhouse:okta:8154385: 2
+    greenhouse:onetrust:8192394: 0
+    greenhouse:purestorage:8129789: 2
+    greenhouse:purestorage:8170778: 1
+    greenhouse:purestorage:8255397: 1
+    greenhouse:sigmoid:8360420002: 2
+    greenhouse:sigmoid:8675405002: 0
+    greenhouse:sigmoid:8675459002: 1
+    greenhouse:smartsheet:7985024: 2
+    greenhouse:wpp:8589507002: 0
+    greenhouse:wpp:8658161002: 1
+    greenhouse:zetaglobal:6118712004: 1
+    greenhouse:zoominfo:8632787002: 2
+    lever:brillio-2:b366bbf2-4161-4d91-9f92-7cd1b421f078: 1
+    lever:brillio-2:ec18f1c5-2128-4ad7-b303-2ee773fddaf8: 1
+    lever:neuron7:671d27a6-bab2-416b-b068-4fba58e6b216: 1
+    lever:pditechnologies:98eeda02-b020-4266-b48d-2733ab3994aa: 0
+    lever:shyftlabs:60b192de-bdc7-4ae0-b2ca-a7327939ce1d: 2
+    lever:shyftlabs:caa715c3-56f5-497b-83dc-6e38a318b040: 0
+    lever:thinkahead:fa8521eb-285a-41d3-acfe-a0e46a3e5d4e: 0
+    lever:zeta:500c585f-65ba-4f6a-b515-7d73680038c3: 0
 - id: q13
-  query: fine-tuning open source models
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+  query: Spark and Databricks data engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49157080: 0
-    hackernews:49157674: 0
-    hackernews:49164213: 1
-    hackernews:49164297: 0
-    hackernews:49165353: 1
-    hackernews:49167059: 0
-    hackernews:49167647: 0
-    hackernews:49171202: 0
-    hackernews:49523666: 0
-    hackernews:49523797: 0
-    hackernews:49523950: 0
-    hackernews:49524327: 0
-    hackernews:49524920: 0
-    hackernews:49525412: 1
-    hackernews:49530116: 0
-    hackernews:49537584: 1
-    hackernews:49542221: 1
-    hackernews:49547973: 0
-    hackernews:49550471: 0
-    hackernews:49595476: 0
-    hackernews:49627985: 0
-    remoteok:1137405: 0
+    ashby:gen-digital:16e0405f-e284-4c25-9997-bfa82f6ee874: 2
+    ashby:gradera:0635c034-c61f-459c-a3dc-4ef3ae8a7cb3: 2
+    ashby:riveron:1fb09196-0d4e-4b0c-92ba-52f2c1be55f2: 2
+    greenhouse:capco:8018268: 2
+    greenhouse:capco:8102646: 2
+    greenhouse:coherehealth:7741530003: 2
+    greenhouse:databricks:7601572002: 1
+    greenhouse:databricks:7601580002: 2
+    greenhouse:databricks:7647369002: 2
+    greenhouse:databricks:7652016002: 2
+    greenhouse:databricks:7897431002: 2
+    greenhouse:databricks:8290810002: 2
+    greenhouse:databricks:8604577002: 2
+    greenhouse:databricks:8604579002: 2
+    greenhouse:databricks:8604598002: 2
+    greenhouse:devrev:6147010004: 2
+    greenhouse:glance:8054886: 1
+    greenhouse:glance:8054888: 1
+    greenhouse:konovo:5249666008: 2
+    greenhouse:openfx:5419316008: 1
+    greenhouse:pubmatic:5419108008: 1
+    greenhouse:purestorage:8212868: 0
+    greenhouse:starrez:5181890008: 0
+    greenhouse:wpp:8578643002: 1
+    greenhouse:wpp:8781276002: 2
+    greenhouse:zetaglobal:6184166004: 2
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 2
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 2
+    lever:brillio-2:ca5ca664-d24b-4454-89aa-8203a40f6773: 2
+    lever:brillio-2:f4c3ce9c-f87f-4dc8-aa2e-492d915146a7: 2
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 0
+    lever:resilinc:98e013c3-84ff-4596-8712-6401c0fb3d55: 1
+    lever:shyftlabs:b41d8515-254c-4ba1-bfdb-e96725051085: 1
+    lever:shyftlabs:caa715c3-56f5-497b-83dc-6e38a318b040: 2
 - id: q14
-  query: MLOps and model deployment
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: Airflow dbt Snowflake data pipelines
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49158131: 1
-    hackernews:49163107: 0
-    hackernews:49163337: 1
-    hackernews:49165353: 1
-    hackernews:49524327: 2
-    hackernews:49524502: 1
-    hackernews:49524822: 1
-    hackernews:49527115: 0
-    hackernews:49527209: 0
-    hackernews:49528405: 1
-    hackernews:49530020: 0
-    hackernews:49531126: 0
-    hackernews:49537584: 1
-    hackernews:49542221: 1
-    hackernews:49573833: 0
-    hackernews:49595476: 2
-    hackernews:49608356: 1
-    remoteok:1136857: 0
-    remoteok:1137408: 0
+    ashby:astronomer:3d6c9dca-eabb-47c5-a446-ad2cd6bda467: 1
+    ashby:gradera:0635c034-c61f-459c-a3dc-4ef3ae8a7cb3: 2
+    ashby:riveron:0621864a-e6f3-4310-b7cb-ca26584b58af: 2
+    ashby:riveron:1fb09196-0d4e-4b0c-92ba-52f2c1be55f2: 2
+    greenhouse:capco:8143638: 0
+    greenhouse:coherehealth:7741530003: 1
+    greenhouse:glance:8054886: 1
+    greenhouse:glance:8054888: 1
+    greenhouse:konradgroup:6607599003: 2
+    greenhouse:konradgroup:6607609003: 1
+    greenhouse:okta:7572029: 2
+    greenhouse:openfx:5419316008: 1
+    greenhouse:purestorage:8212868: 0
+    greenhouse:starrez:5181890008: 0
+    greenhouse:starrez:5181891008: 2
+    greenhouse:wpp:8484909002: 1
+    greenhouse:wpp:8781276002: 2
+    lever:beghouconsulting:34c6591d-c48b-4046-b903-3d1b74c3126d: 2
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 0
+    lever:brillio-2:45c66f65-4e65-4393-a31e-19632415dcc1: 2
+    lever:brillio-2:74b72ad5-8232-4530-a543-eaa8a26818a5: 1
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 2
+    lever:brillio-2:ca5ca664-d24b-4454-89aa-8203a40f6773: 2
+    lever:brillio-2:cfae6eed-c2dd-43db-a89c-2957cb56e5c9: 1
+    lever:brillio-2:ec5351fd-fb8e-4d9c-886d-0ce3cbd14477: 2
+    lever:brillio-2:eff4c10b-f38f-432f-adfb-de8abf3c75f0: 2
+    lever:brillio-2:f4c3ce9c-f87f-4dc8-aa2e-492d915146a7: 1
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 1
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 1
+    lever:shyftlabs:caa715c3-56f5-497b-83dc-6e38a318b040: 2
 - id: q15
-  query: python developer with AWS experience
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: LLM RAG engineer with LangChain
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156737: 1
-    hackernews:49160256: 2
-    hackernews:49164303: 2
-    hackernews:49166151: 1
-    hackernews:49168019: 1
-    hackernews:49168356: 0
-    hackernews:49523703: 2
-    hackernews:49523797: 0
-    hackernews:49525483: 0
-    hackernews:49527115: 0
-    hackernews:49532122: 0
-    hackernews:49532957: 1
-    hackernews:49532978: 1
-    hackernews:49615973: 2
-    remoteok:1135745: 0
-    remoteok:1136188: 0
-    remoteok:1136796: 0
-    remoteok:1136841: 0
-    remoteok:1137373: 0
-    remoteok:1137378: 0
-    remoteok:1137405: 0
-    remoteok:1137411: 0
+    ashby:atlys:4dee0fca-240c-4b6e-80cd-347cb111ae27: 1
+    ashby:bolna:131e206f-3fd9-4905-9f4c-c3fdc4c32cc9: 1
+    ashby:gen-digital:16e0405f-e284-4c25-9997-bfa82f6ee874: 1
+    ashby:meraki-labs:57817c37-f0d4-4332-84d0-14b1d2cf2792: 2
+    ashby:meraki-labs:93ff65d2-f0cd-4fd1-b76f-b2e350f2d6c8: 2
+    ashby:meraki-labs:958edd0a-edca-4da9-b65e-2aac4c6564fe: 2
+    ashby:sarvam:e7f783e8-6378-4158-97d5-48a397a91698: 1
+    ashby:sarvam:e9fb1269-fc4b-4879-aa35-0b75a8c83611: 1
+    ashby:signoz:d8fd6b52-8499-4dad-9903-f231e39c996d: 1
+    ashby:tekion:ad70c744-f380-487d-bf42-f4cc3525a49a: 2
+    greenhouse:6sense:5636812: 2
+    greenhouse:conga:5068674007: 1
+    greenhouse:devrev:6139491004: 2
+    greenhouse:digitalocean98:7986414: 1
+    greenhouse:earnin:7895708: 2
+    greenhouse:glance:8054886: 1
+    greenhouse:glance:8054888: 1
+    greenhouse:konovo:5430560008: 1
+    greenhouse:netskope:8063744: 1
+    greenhouse:openfx:5419316008: 1
+    greenhouse:project44:8014962: 2
+    greenhouse:pubmatic:5250558008: 2
+    greenhouse:pubmatic:5369682008: 2
+    greenhouse:pubmatic:5419108008: 1
+    greenhouse:sonicwall:8195326: 2
+    greenhouse:techgrovebybanyansoftware:5175887007: 2
+    greenhouse:techgrovebybanyansoftware:5175902007: 1
+    greenhouse:techgrovebybanyansoftware:5238542007: 2
+    greenhouse:truefoundry:5031589008: 2
+    greenhouse:wpp:8395792002: 2
+    lever:100ms:4c9f19c7-4432-4394-ba93-167319c68adc: 2
+    lever:balbix:2d534aac-e6fb-423b-ad8b-a14e032f8b87: 2
+    lever:brillio-2:04883aa8-c6d4-4fd0-8862-5c371f8991b1: 2
+    lever:brillio-2:40cf0a15-6e54-4a8b-bcf9-5214856136bb: 2
+    lever:brillio-2:b186da86-5523-4bcd-b3fb-e6ce16325883: 2
+    lever:dnb:b7ac7f69-9a1f-4703-b2fc-aa60460aae2d: 2
+    lever:drivetrain:c677fe8d-8f9d-483e-b523-62c77e1a0fb7: 1
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 1
+    lever:meesho:a1cc7ad9-a233-4ba6-b53b-e56116f6ac27: 1
+    lever:neuron7:ab69b2e7-0c54-41e8-80d6-7bf13f9321a5: 2
+    lever:portcast:d206930c-1ecd-41fe-b603-b28ad98a5ea4: 2
+    lever:safe:d27c2846-c34b-461a-bcce-b8889014102e: 1
 - id: q16
-  query: forward deployed engineer working directly with customers
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156689: 0
-    hackernews:49159942: 1
-    hackernews:49163337: 2
-    hackernews:49163576: 0
-    hackernews:49524822: 2
-    hackernews:49524979: 0
-    hackernews:49525544: 0
-    hackernews:49528405: 2
-    hackernews:49530020: 2
-    hackernews:49531126: 2
-    hackernews:49538758: 0
-    hackernews:49543632: 2
-    hackernews:49608356: 2
-    remoteok:1136066: 0
-    remoteok:1136670: 0
-    remoteok:1136937: 0
-    remoteok:1136987: 1
-    remoteok:1137139: 0
-    remoteok:1137406: 0
-    remoteok:1137408: 1
+  query: PyTorch deep learning engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q17
-  query: jobs paying over 200k
-  note: retrieval cannot answer this; it belongs in /trends and the eval should show retrieval
-    failing honestly | judged by Claude Fable 5.1 on 2026-09-26 from the full posting text
-    of every candidate any retriever surfaced in its top 10; not human-verified | top-up of
-    105 new candidates after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same
-    pool dump; not human-verified
-  verified: true
-  judgements:
-    hackernews:49157265: 0
-    hackernews:49157827: 0
-    hackernews:49159281: 0
-    hackernews:49159784: 0
-    hackernews:49162914: 0
-    hackernews:49163907: 0
-    hackernews:49166151: 0
-    hackernews:49523956: 0
-    hackernews:49524501: 0
-    hackernews:49525141: 0
-    hackernews:49530381: 0
-    hackernews:49532957: 0
-    hackernews:49601673: 0
-    hackernews:49649994: 0
-    remoteok:1135783: 0
-    remoteok:1136097: 0
-    remoteok:1136168: 0
-    remoteok:1136210: 0
-    remoteok:1136592: 0
-    remoteok:1137136: 0
-    remoteok:1137309: 0
-    remoteok:1137378: 0
-    remoteok:1137399: 0
-    remoteok:1137405: 0
-    remoteok:1137406: 0
-    remoteok:1137431: 0
+  query: Kafka streaming data engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q18
-  query: TypeScript and React frontend work
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49158886: 0
-    hackernews:49164303: 1
-    hackernews:49166080: 1
-    hackernews:49169841: 2
-    hackernews:49522989: 1
-    hackernews:49523558: 0
-    hackernews:49523830: 0
-    hackernews:49530116: 2
-    hackernews:49530424: 1
-    hackernews:49543579: 2
-    hackernews:49543632: 0
-    hackernews:49552564: 2
-    hackernews:49552714: 1
-    hackernews:49554223: 1
-    hackernews:49598051: 0
-    remoteok:1136066: 0
-    remoteok:1136670: 0
-    remoteok:1136795: 0
-    remoteok:1136937: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137378: 0
-    remoteok:1137391: 0
-    remoteok:1137405: 0
-    remoteok:1137410: 1
-    remoteok:1137420: 1
+  query: computer vision engineer
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q19
-  query: research scientist publishing papers
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49163308: 1
-    hackernews:49165353: 2
-    hackernews:49167647: 1
-    hackernews:49170963: 0
-    hackernews:49522949: 2
-    hackernews:49523175: 0
-    hackernews:49525183: 0
-    hackernews:49526311: 1
-    hackernews:49527388: 1
-    hackernews:49529518: 0
-    hackernews:49532070: 0
-    hackernews:49532259: 1
-    hackernews:49533854: 1
-    hackernews:49537584: 2
-    hackernews:49559854: 1
-    hackernews:49627985: 1
-    hackernews:49662536: 1
-    remoteok:1136216: 0
-    remoteok:1136798: 0
-    remoteok:1137314: 0
+  query: NLP engineer for text or speech
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q20
-  query: developer relations or technical writing
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: python developer for data pipelines
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156702: 0
-    hackernews:49159002: 2
-    hackernews:49159115: 0
-    hackernews:49161851: 2
-    hackernews:49162817: 0
-    hackernews:49165622: 0
-    hackernews:49523835: 0
-    hackernews:49524979: 0
-    hackernews:49525270: 0
-    hackernews:49526361: 0
-    hackernews:49527193: 0
-    hackernews:49527388: 0
-    hackernews:49528044: 0
-    hackernews:49530116: 0
-    hackernews:49530424: 0
-    hackernews:49532122: 0
-    hackernews:49535156: 0
-    hackernews:49613305: 1
-    remoteok:1136592: 0
-    remoteok:1136670: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1137136: 1
-    remoteok:1137388: 0
-    remoteok:1137405: 0
-    remoteok:1137421: 0
+    ashby:apexx:648a95af-983f-486a-b773-775484ca7beb: 2
+    ashby:gradera:0635c034-c61f-459c-a3dc-4ef3ae8a7cb3: 2
+    ashby:riveron:1fb09196-0d4e-4b0c-92ba-52f2c1be55f2: 2
+    greenhouse:capco:8102646: 2
+    greenhouse:capco:8143638: 0
+    greenhouse:capco:8152748: 1
+    greenhouse:capco:8188097: 2
+    greenhouse:coherehealth:7741530003: 2
+    greenhouse:databricks:7647369002: 2
+    greenhouse:databricks:7652016002: 2
+    greenhouse:devrev:6147010004: 1
+    greenhouse:ethernovia:5228895007: 2
+    greenhouse:glance:8054886: 1
+    greenhouse:glance:8054888: 1
+    greenhouse:gravitonresearchcapital:8147013002: 1
+    greenhouse:okta:7572029: 1
+    greenhouse:purestorage:8212868: 1
+    greenhouse:schrdinger:7820024003: 1
+    greenhouse:starrez:5181890008: 1
+    greenhouse:towerresearchcapital:6629676: 1
+    greenhouse:wpp:8484909002: 2
+    greenhouse:wpp:8781276002: 1
+    lever:appzen:060250ef-ee0c-418c-925e-679ed58669ca: 2
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 1
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 2
+    lever:brillio-2:ca5ca664-d24b-4454-89aa-8203a40f6773: 2
+    lever:brillio-2:cfae6eed-c2dd-43db-a89c-2957cb56e5c9: 2
+    lever:brillio-2:f4c3ce9c-f87f-4dc8-aa2e-492d915146a7: 2
+    lever:endpointclinical:f16ac3ae-eb44-4b4d-ae87-047ced76f362: 1
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 1
+    lever:pditechnologies:98eeda02-b020-4266-b48d-2733ab3994aa: 2
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 1
+    lever:shyftlabs:b41d8515-254c-4ba1-bfdb-e96725051085: 1
+    lever:shyftlabs:c3c22ed9-adf7-4afb-b561-d29808c13c87: 2
+    lever:shyftlabs:caa715c3-56f5-497b-83dc-6e38a318b040: 1
 - id: q21
-  query: security engineer
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49157095: 0
-    hackernews:49157646: 0
-    hackernews:49159942: 0
-    hackernews:49167547: 2
-    hackernews:49169371: 1
-    hackernews:49523166: 0
-    hackernews:49523175: 0
-    hackernews:49525399: 2
-    hackernews:49525748: 2
-    hackernews:49527113: 1
-    hackernews:49527181: 2
-    hackernews:49528002: 1
-    hackernews:49528686: 2
-    hackernews:49530424: 0
-    hackernews:49531126: 0
-    hackernews:49539823: 2
-    remoteok:1136210: 1
-    remoteok:1136670: 0
-    remoteok:1136796: 0
+  query: fine-tuning LLMs and vector databases
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q22
-  query: internship or new grad position
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: forecasting and time series data scientist
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156845: 0
-    hackernews:49157647: 0
-    hackernews:49157827: 0
-    hackernews:49159064: 0
-    hackernews:49159784: 0
-    hackernews:49160057: 0
-    hackernews:49163160: 2
-    hackernews:49164730: 0
-    hackernews:49523558: 2
-    hackernews:49524060: 1
-    hackernews:49524501: 0
-    hackernews:49525141: 0
-    hackernews:49525497: 2
-    hackernews:49526154: 0
-    hackernews:49527354: 0
-    hackernews:49530424: 0
-    hackernews:49530909: 2
-    hackernews:49533419: 2
-    remoteok:1135681: 0
-    remoteok:1135783: 0
-    remoteok:1136096: 0
-    remoteok:1136168: 0
-    remoteok:1136937: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137391: 1
+    ashby:gradera:16c3e36f-f20a-479f-aac4-a063d930e321: 2
+    greenhouse:blueconic:8634098002: 0
+    greenhouse:capco:8143638: 1
+    greenhouse:clearviewhealthcarepartners:5037799008: 1
+    greenhouse:coherehealth:7693376003: 1
+    greenhouse:databricks:8604577002: 1
+    greenhouse:devrev:6182480004: 1
+    greenhouse:druva:8298455002: 1
+    greenhouse:fourkites:8146530: 2
+    greenhouse:glance:8054886: 1
+    greenhouse:glance:8054888: 1
+    greenhouse:gravitonresearchcapital:8456543002: 1
+    greenhouse:openfx:5419316008: 0
+    greenhouse:purestorage:8212868: 1
+    greenhouse:purestorage:8255397: 1
+    greenhouse:sigmoid:4685999002: 0
+    greenhouse:smartsheet:7794964: 1
+    greenhouse:starrez:5181890008: 1
+    greenhouse:tegnaindia:5177908007: 2
+    lever:balbix:53fe6300-3e7a-417b-a14a-e579567dca99: 1
+    lever:brillio-2:1d2ab0dd-9cf0-41d0-b2c3-dad339829747: 1
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 1
+    lever:brillio-2:265bed8f-1d77-462c-b7ab-b82c4b129bd0: 1
+    lever:brillio-2:277003a1-1f15-4b25-9a69-6ed8bb5c7d61: 2
+    lever:brillio-2:31dd294c-1656-440e-b271-11443ace78cd: 1
+    lever:brillio-2:3fc25ab3-7c02-4082-9bed-35f97d4fb0a1: 2
+    lever:brillio-2:53ecdd3c-367a-4fa3-8a51-94d2f10658ee: 1
+    lever:brillio-2:8463adae-9020-420e-80ef-1cf8ea03580d: 1
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 0
+    lever:brillio-2:de7adbf1-0421-4a9d-a5f5-d443cdd29263: 2
+    lever:brillio-2:e4a4be2d-48cb-4d7e-b912-79d0ac8076a5: 1
+    lever:meesho:64821526-2485-4a76-9198-610ee3938bb1: 1
+    lever:neuron7:671d27a6-bab2-416b-b068-4fba58e6b216: 2
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 2
+    lever:portcast:e66df487-0622-480f-8506-532b3db5db28: 1
+    lever:portcast:f18cc64e-c34a-416c-b213-62a39906260e: 1
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 0
 - id: q23
-  query: fully remote anywhere in the world
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49158703: 0
-    hackernews:49159686: 1
-    hackernews:49160086: 2
-    hackernews:49162776: 0
-    hackernews:49162914: 0
-    hackernews:49163678: 0
-    hackernews:49166165: 1
-    hackernews:49167837: 2
-    hackernews:49168356: 1
-    hackernews:49169157: 0
-    hackernews:49172196: 2
-    hackernews:49523978: 0
-    hackernews:49525135: 1
-    hackernews:49527115: 1
-    hackernews:49527344: 1
-    hackernews:49538758: 1
-    hackernews:49546936: 0
-    hackernews:49547973: 1
-    hackernews:49615435: 2
-    hackernews:49662536: 1
-    remoteok:1137136: 1
-    remoteok:1137138: 1
-    remoteok:1137139: 1
-    remoteok:1137378: 2
-    remoteok:1137417: 0
+  query: product analyst with A/B testing and experimentation
+  note: skill | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q24
-  query: Go and distributed systems
-  note: short token that stems badly, a known weak spot | judged by Claude Fable 5.1 on 2026-09-26
-    from the full posting text of every candidate any retriever surfaced in its top 10; not
-    human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest judged by
-    Claude Opus 5.5 from the same pool dump; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
+  query: 0-1 years experience data scientist
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49163458: 1
-    hackernews:49164668: 2
-    hackernews:49166092: 1
-    hackernews:49169157: 0
-    hackernews:49523123: 1
-    hackernews:49523422: 1
-    hackernews:49523712: 1
-    hackernews:49530116: 1
-    hackernews:49531109: 0
-    hackernews:49532898: 2
-    hackernews:49539168: 0
-    hackernews:49549234: 0
-    remoteok:1135634: 1
-    remoteok:1136188: 1
-    remoteok:1136670: 0
-    remoteok:1136795: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1136841: 0
-    remoteok:1137072: 0
-    remoteok:1137400: 2
-    remoteok:1137408: 0
-    remoteok:1137409: 0
+    ashby:gen-digital:67797b7c-5369-4666-b3bc-e20c9b1155db: 0
+    ashby:gradera:16c3e36f-f20a-479f-aac4-a063d930e321: 0
+    ashby:riveron:1fb09196-0d4e-4b0c-92ba-52f2c1be55f2: 0
+    greenhouse:blueconic:8634098002: 0
+    greenhouse:capco:8143638: 0
+    greenhouse:coherehealth:7989877003: 0
+    greenhouse:definitivehcindia:6133947004: 0
+    greenhouse:devrev:6147010004: 0
+    greenhouse:glance:8054886: 0
+    greenhouse:glance:8054888: 0
+    greenhouse:gleanwork:4739975005: 0
+    greenhouse:konradgroup:6607599003: 0
+    greenhouse:konradgroup:6607609003: 0
+    greenhouse:okta:7780488: 0
+    greenhouse:purestorage:8212868: 0
+    greenhouse:sigmoid:4685999002: 0
+    greenhouse:sigmoid:4985961002: 0
+    greenhouse:sigmoid:5083674002: 0
+    greenhouse:starrez:5181890008: 0
+    greenhouse:stripe:7923653: 0
+    greenhouse:tegnaindia:5177908007: 0
+    greenhouse:truveta:6207309004: 0
+    greenhouse:wpp:8781276002: 0
+    greenhouse:zoominfo:8632787002: 0
+    lever:beghouconsulting:cc60a19e-460d-4b6d-a73a-0a3c39fbf5ad: 0
+    lever:brillio-2:1d2ab0dd-9cf0-41d0-b2c3-dad339829747: 0
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 0
+    lever:brillio-2:265bed8f-1d77-462c-b7ab-b82c4b129bd0: 0
+    lever:brillio-2:277003a1-1f15-4b25-9a69-6ed8bb5c7d61: 0
+    lever:brillio-2:5685d0b6-0b57-4c73-9ea7-fee9944f8581: 0
+    lever:brillio-2:8cc1d9ff-c189-41f0-a24d-ec98be70b9ee: 0
+    lever:brillio-2:92060784-3feb-4998-8850-6f9aa2dd7263: 0
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 0
+    lever:brillio-2:ca5ca664-d24b-4454-89aa-8203a40f6773: 0
+    lever:endpointclinical:f16ac3ae-eb44-4b4d-ae87-047ced76f362: 0
+    lever:neuron7:671d27a6-bab2-416b-b068-4fba58e6b216: 0
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 0
+    lever:pditechnologies:248acada-78c7-4ec2-b802-5e66135a92bc: 0
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 0
+    lever:reply:131fd9f3-607e-4723-95f3-caade43b92aa: 0
+    lever:resilinc:98e013c3-84ff-4596-8712-6401c0fb3d55: 0
+    lever:thinkahead:34c87239-1673-490a-ae90-eee5053dfb04: 0
 - id: q25
-  query: startup working on developer tools
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49159028: 0
-    hackernews:49159942: 0
-    hackernews:49160993: 0
-    hackernews:49168047: 2
-    hackernews:49523510: 0
-    hackernews:49525270: 0
-    hackernews:49525399: 2
-    hackernews:49527646: 0
-    hackernews:49528686: 0
-    hackernews:49532122: 0
-    hackernews:49533482: 0
-    hackernews:49601673: 0
-    remoteok:1136066: 0
-    remoteok:1136188: 1
-    remoteok:1136447: 0
-    remoteok:1136795: 0
-    remoteok:1136796: 0
-    remoteok:1136937: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137378: 0
-    remoteok:1137380: 0
-    remoteok:1137391: 0
-    remoteok:1137405: 0
+  query: entry level AI engineer for 2026 graduates
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q26
-  query: Postgres database performance work
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156737: 2
-    hackernews:49157080: 1
-    hackernews:49157647: 1
-    hackernews:49163131: 0
-    hackernews:49163658: 1
-    hackernews:49164668: 1
-    hackernews:49531109: 0
-    hackernews:49532978: 1
-    hackernews:49533482: 1
-    remoteok:1135765: 0
-    remoteok:1135903: 0
-    remoteok:1136066: 0
-    remoteok:1136097: 0
-    remoteok:1136217: 0
-    remoteok:1136222: 0
-    remoteok:1136592: 0
-    remoteok:1136670: 0
-    remoteok:1136937: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137378: 0
-    remoteok:1137391: 0
-    remoteok:1137405: 0
+  query: 2-4 years experience data engineer Bangalore
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q27
-  query: AI agents and tool use
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: senior data scientist 5+ years
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49169017: 2
-    hackernews:49522930: 1
-    hackernews:49524167: 2
-    hackernews:49525603: 2
-    hackernews:49528364: 1
-    hackernews:49528837: 2
-    hackernews:49538459: 2
-    hackernews:49540773: 1
-    hackernews:49541388: 1
-    hackernews:49552714: 2
-    hackernews:49650855: 2
-    remoteok:1136066: 0
-    remoteok:1137114: 2
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137314: 0
-    remoteok:1137399: 2
+    ashby:gradera:16c3e36f-f20a-479f-aac4-a063d930e321: 2
+    greenhouse:capco:8143638: 1
+    greenhouse:coherehealth:7693376003: 1
+    greenhouse:coherehealth:7741530003: 1
+    greenhouse:coherehealth:7983023003: 2
+    greenhouse:coherehealth:7989877003: 1
+    greenhouse:definitivehcindia:6133947004: 2
+    greenhouse:earnin:8167777: 1
+    greenhouse:gleanwork:4739975005: 1
+    greenhouse:konradgroup:6607599003: 1
+    greenhouse:okta:7572029: 1
+    greenhouse:okta:7780488: 1
+    greenhouse:point72:8864085002: 1
+    greenhouse:purestorage:8170778: 1
+    greenhouse:purestorage:8212868: 0
+    greenhouse:sigmoid:4685999002: 2
+    greenhouse:starrez:5181890008: 0
+    greenhouse:tegnaindia:5177908007: 1
+    greenhouse:truveta:6207309004: 1
+    greenhouse:truveta:6210395004: 1
+    greenhouse:wpp:8781276002: 1
+    greenhouse:zoominfo:8632787002: 1
+    lever:beghouconsulting:cc60a19e-460d-4b6d-a73a-0a3c39fbf5ad: 2
+    lever:brillio-2:02dc2b72-660b-4ef0-8bdd-5a0128444a80: 2
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 1
+    lever:brillio-2:5685d0b6-0b57-4c73-9ea7-fee9944f8581: 2
+    lever:brillio-2:8cc1d9ff-c189-41f0-a24d-ec98be70b9ee: 1
+    lever:brillio-2:92060784-3feb-4998-8850-6f9aa2dd7263: 2
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 1
+    lever:brillio-2:ca5ca664-d24b-4454-89aa-8203a40f6773: 1
+    lever:brillio-2:eff4c10b-f38f-432f-adfb-de8abf3c75f0: 1
+    lever:brillio-2:f4c3ce9c-f87f-4dc8-aa2e-492d915146a7: 1
+    lever:meesho:64821526-2485-4a76-9198-610ee3938bb1: 2
+    lever:neuron7:671d27a6-bab2-416b-b068-4fba58e6b216: 1
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 1
+    lever:pditechnologies:248acada-78c7-4ec2-b802-5e66135a92bc: 1
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 1
+    lever:resilinc:98e013c3-84ff-4596-8712-6401c0fb3d55: 1
+    lever:weekdayworks:2c78f486-32f8-4d20-a54a-09389cb1ff09: 1
 - id: q28
-  query: engineering manager leading a small team
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: lead data engineer managing a team
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49157178: 2
-    hackernews:49158727: 0
-    hackernews:49159942: 0
-    hackernews:49169371: 0
-    hackernews:49525544: 2
-    hackernews:49525831: 0
-    hackernews:49528686: 0
-    hackernews:49546647: 0
-    hackernews:49567458: 1
-    remoteok:1135908: 0
-    remoteok:1136097: 0
-    remoteok:1136447: 0
-    remoteok:1136670: 2
-    remoteok:1136796: 0
-    remoteok:1136841: 0
-    remoteok:1136949: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137279: 0
-    remoteok:1137380: 2
-    remoteok:1137396: 0
+    ashby:gen-digital:16e0405f-e284-4c25-9997-bfa82f6ee874: 2
+    ashby:gen-digital:6eceab6a-65fc-4e6c-97e6-f4bcd4e16812: 2
+    ashby:gen-digital:cc9b30aa-95b7-48d9-be1a-fc0ab34f3921: 2
+    ashby:riveron:1fb09196-0d4e-4b0c-92ba-52f2c1be55f2: 2
+    ashby:tekion:004771c0-90cc-45c0-bee1-cbd9adfd1453: 2
+    greenhouse:capco:8143638: 1
+    greenhouse:coherehealth:7693376003: 1
+    greenhouse:coherehealth:7741530003: 2
+    greenhouse:conga:5068674007: 2
+    greenhouse:devrev:6147010004: 2
+    greenhouse:devrev:6182480004: 2
+    greenhouse:glance:8054886: 2
+    greenhouse:glance:8054888: 2
+    greenhouse:hackerrank:7601341: 2
+    greenhouse:insurityindia:4436148009: 1
+    greenhouse:insurityindia:4436151009: 1
+    greenhouse:insurityindia:4436169009: 1
+    greenhouse:insurityindia:4436171009: 1
+    greenhouse:insurityindia:4436175009: 1
+    greenhouse:insurityindia:4436177009: 1
+    greenhouse:insurityindia:4436180009: 1
+    greenhouse:insurityindia:4436182009: 1
+    greenhouse:okta:7572029: 2
+    greenhouse:openfx:5419316008: 2
+    greenhouse:pubmatic:5419108008: 1
+    greenhouse:purestorage:8170778: 1
+    greenhouse:purestorage:8170823: 1
+    greenhouse:purestorage:8212868: 1
+    greenhouse:starrez:5181890008: 1
+    greenhouse:stripe:7923653: 1
+    greenhouse:truveta:6207309004: 1
+    greenhouse:wpp:8395792002: 1
+    greenhouse:wpp:8484909002: 1
+    lever:brillio-2:06f3848e-d618-43fb-bb3c-1c5a10d556c4: 1
+    lever:brillio-2:0816d222-40e4-4bde-a6a1-f8be20545ff9: 2
+    lever:brillio-2:0b1741e6-44d9-4b8b-ac70-f5bff98a1f24: 1
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 1
+    lever:brillio-2:5685d0b6-0b57-4c73-9ea7-fee9944f8581: 1
+    lever:brillio-2:74b72ad5-8232-4530-a543-eaa8a26818a5: 2
+    lever:hevodata:d8c6feac-e13c-4582-b9e0-550fde88aab4: 2
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 1
+    lever:pattern:fdad3ba4-9e5e-453c-b65a-6fcff7da75bb: 2
+    lever:pditechnologies:248acada-78c7-4ec2-b802-5e66135a92bc: 2
+    lever:portcast:3fbd2b9a-c12b-4578-a628-5929fa2da2bf: 2
+    lever:zeta:32ea9654-98a8-445b-98ef-e6ada520d35a: 1
 - id: q29
-  query: fintech or payments company
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49162509: 2
-    hackernews:49162833: 0
-    hackernews:49166000: 0
-    hackernews:49523604: 2
-    hackernews:49523956: 2
-    hackernews:49525418: 1
-    hackernews:49525483: 2
-    hackernews:49528002: 1
-    hackernews:49541874: 2
-    hackernews:49552294: 0
-    remoteok:1135903: 0
-    remoteok:1135997: 0
-    remoteok:1136188: 0
-    remoteok:1136210: 2
-    remoteok:1136217: 0
-    remoteok:1136568: 2
-    remoteok:1136797: 2
-    remoteok:1136844: 0
-    remoteok:1136950: 1
-    remoteok:1137139: 0
-    remoteok:1137307: 0
-    remoteok:1137388: 2
-    remoteok:1137391: 1
-    remoteok:1137405: 0
-    remoteok:1137414: 1
+  query: principal or staff machine learning engineer
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q30
-  query: healthcare or biotech machine learning
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: head of data or director of analytics
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156724: 2
-    hackernews:49157095: 0
-    hackernews:49162990: 1
-    hackernews:49164461: 0
-    hackernews:49167647: 2
-    hackernews:49170014: 1
-    hackernews:49523228: 2
-    hackernews:49524327: 0
-    hackernews:49525147: 1
-    hackernews:49525714: 1
-    hackernews:49530558: 2
-    hackernews:49542805: 2
-    hackernews:49627985: 2
-    remoteok:1099821: 0
-    remoteok:1135789: 0
-    remoteok:1136168: 0
-    remoteok:1136796: 0
-    remoteok:1136937: 1
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137407: 0
+    ashby:gradera:16c3e36f-f20a-479f-aac4-a063d930e321: 1
+    greenhouse:addepar1:8709088002: 1
+    greenhouse:capco:8143638: 0
+    greenhouse:coherehealth:7693376003: 1
+    greenhouse:coherehealth:7989877003: 1
+    greenhouse:databricks:8604577002: 1
+    greenhouse:devrev:6182480004: 0
+    greenhouse:emergentlabsinc:4373373009: 2
+    greenhouse:gleanwork:4739975005: 1
+    greenhouse:mongodb:8224590: 0
+    greenhouse:okta:7728553: 1
+    greenhouse:okta:8141274: 1
+    greenhouse:okta:8154385: 1
+    greenhouse:purestorage:8170778: 1
+    greenhouse:purestorage:8170823: 1
+    greenhouse:purestorage:8212868: 0
+    greenhouse:purestorage:8255397: 1
+    greenhouse:sigmoid:8620634002: 1
+    greenhouse:smartsheet:7794964: 1
+    greenhouse:spauldingridge:6207776004: 1
+    greenhouse:starrez:5181890008: 0
+    greenhouse:starrez:5181891008: 1
+    greenhouse:truveta:6207309004: 1
+    greenhouse:zoominfo:8632787002: 1
+    lever:brillio-2:0816d222-40e4-4bde-a6a1-f8be20545ff9: 1
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 0
+    lever:dnb:ae709554-e52e-4d12-b5ba-eae6fa94c481: 1
+    lever:hevodata:d8ea771e-fe9b-4c14-b184-4bed18296928: 1
+    lever:neuron7:671d27a6-bab2-416b-b068-4fba58e6b216: 0
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 0
+    lever:pocketfm:2436065b-281d-4347-8366-9a60b99dc5a5: 0
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 0
+    lever:shyftlabs:60b192de-bdc7-4ae0-b2ca-a7327939ce1d: 1
 - id: q31
-  query: data annotation and labelling work
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49165353: 0
-    hackernews:49167647: 0
-    hackernews:49169577: 2
-    hackernews:49525600: 0
-    hackernews:49530464: 0
-    hackernews:49534359: 0
-    hackernews:49537584: 0
-    hackernews:49542805: 0
-    hackernews:49627985: 0
-    remoteok:1135903: 1
-    remoteok:1136217: 0
-    remoteok:1136222: 0
-    remoteok:1136795: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137375: 0
-    remoteok:1137378: 0
-    remoteok:1137391: 0
-    remoteok:1137396: 0
-    remoteok:1137428: 2
+  query: associate consultant analytics for freshers
+  note: level | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q32
-  query: roles in London or the UK
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: remote data engineering job India
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting
+    text
   verified: true
   judgements:
-    hackernews:49159686: 0
-    hackernews:49160915: 1
-    hackernews:49162565: 2
-    hackernews:49170963: 2
-    hackernews:49523558: 0
-    hackernews:49525135: 0
-    hackernews:49527344: 0
-    hackernews:49528405: 2
-    hackernews:49533498: 0
-    hackernews:49538758: 2
-    hackernews:49541388: 2
-    hackernews:49547792: 0
-    hackernews:49567458: 0
-    hackernews:49626445: 2
-    remoteok:1135745: 0
-    remoteok:1135901: 0
-    remoteok:1135908: 0
-    remoteok:1136066: 2
-    remoteok:1136097: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137378: 1
-    remoteok:1137391: 1
+    ashby:riveron:1fb09196-0d4e-4b0c-92ba-52f2c1be55f2: 2
+    greenhouse:capco:8143638: 0
+    greenhouse:coherehealth:7741530003: 1
+    greenhouse:coupang:7938018: 1
+    greenhouse:devrev:6147010004: 0
+    greenhouse:doordashindia:6281695: 1
+    greenhouse:earnin:8167777: 1
+    greenhouse:glance:8054886: 0
+    greenhouse:glance:8054888: 0
+    greenhouse:openfx:5419316008: 0
+    greenhouse:purestorage:8212868: 1
+    greenhouse:sigmoid:5083674002: 1
+    greenhouse:starrez:5181890008: 0
+    greenhouse:starrez:5181891008: 1
+    greenhouse:tegnaindia:5177908007: 1
+    greenhouse:truveta:6206255004: 1
+    greenhouse:truveta:6207309004: 1
+    greenhouse:wpp:8781276002: 1
+    lever:balbix:437f6ad1-4983-414b-86b6-91dd6e3e93a7: 1
+    lever:balbix:53fe6300-3e7a-417b-a14a-e579567dca99: 1
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 0
+    lever:brillio-2:4eab5886-5daf-42f2-bdfb-e0fb8dcc8b8c: 1
+    lever:brillio-2:8cc1d9ff-c189-41f0-a24d-ec98be70b9ee: 1
+    lever:brillio-2:aea4d164-85a0-4ead-9778-8bbeecaa2f2e: 1
+    lever:brillio-2:ca5ca664-d24b-4454-89aa-8203a40f6773: 1
+    lever:brillio-2:ec5351fd-fb8e-4d9c-886d-0ce3cbd14477: 1
+    lever:brillio-2:f4c3ce9c-f87f-4dc8-aa2e-492d915146a7: 1
+    lever:drivetrain:c677fe8d-8f9d-483e-b523-62c77e1a0fb7: 2
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 2
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 0
+    lever:pditechnologies:248acada-78c7-4ec2-b802-5e66135a92bc: 1
+    lever:pditechnologies:98eeda02-b020-4266-b48d-2733ab3994aa: 1
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 0
+    lever:resilinc:98e013c3-84ff-4596-8712-6401c0fb3d55: 2
+    lever:thinkahead:34c87239-1673-490a-ae90-eee5053dfb04: 2
+    lever:weekdayworks:2c78f486-32f8-4d20-a54a-09389cb1ff09: 2
 - id: q33
-  query: contract or freelance rather than full time
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156716: 0
-    hackernews:49156845: 0
-    hackernews:49157674: 0
-    hackernews:49157827: 0
-    hackernews:49157888: 0
-    hackernews:49160993: 0
-    hackernews:49162696: 2
-    hackernews:49162914: 0
-    hackernews:49165622: 2
-    hackernews:49523018: 0
-    hackernews:49523950: 0
-    hackernews:49524781: 0
-    hackernews:49525141: 0
-    hackernews:49525348: 0
-    hackernews:49525483: 0
-    hackernews:49533482: 0
-    hackernews:49543040: 0
-    hackernews:49553487: 0
-    hackernews:49661611: 2
-    hackernews:49662536: 1
-    remoteok:1135901: 2
-    remoteok:1136066: 0
-    remoteok:1136213: 2
-    remoteok:1136844: 0
-    remoteok:1137209: 0
-    remoteok:1137378: 0
+  query: work from home data analyst
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q34
-  query: open source maintainer role
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+  query: hybrid ML engineer role Bengaluru
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting
+    text
   verified: true
   judgements:
-    hackernews:49156711: 0
-    hackernews:49160915: 0
-    hackernews:49160993: 0
-    hackernews:49163458: 0
-    hackernews:49164297: 0
-    hackernews:49166092: 0
-    hackernews:49523510: 0
-    hackernews:49523558: 0
-    hackernews:49524080: 1
-    hackernews:49530116: 1
-    hackernews:49541388: 1
-    hackernews:49543040: 0
-    hackernews:49547792: 0
-    hackernews:49549234: 1
-    hackernews:49613305: 1
-    hackernews:49615973: 0
-    remoteok:1135783: 0
-    remoteok:1136097: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137378: 0
-    remoteok:1137386: 0
-    remoteok:1137391: 0
-    remoteok:1137405: 0
-    remoteok:1137411: 0
+    ashby:ema:8268af44-d5d8-4a29-9638-3ea30f35f3a9: 2
+    ashby:meraki-labs:958edd0a-edca-4da9-b65e-2aac4c6564fe: 2
+    ashby:openai:bf036b23-cd23-46d0-a02f-4b1483f4698a: 2
+    ashby:riveron:411a5c6f-04c9-4e42-8514-fe37299bff0a: 2
+    ashby:sarvam:e7f783e8-6378-4158-97d5-48a397a91698: 0
+    ashby:sarvam:e9fb1269-fc4b-4879-aa35-0b75a8c83611: 2
+    ashby:skyflow:2a996c6c-f3c0-44a9-8aac-14cc77b33fc4: 1
+    ashby:tekion:ad70c744-f380-487d-bf42-f4cc3525a49a: 2
+    greenhouse:capco:8152797: 2
+    greenhouse:conga:5068674007: 2
+    greenhouse:conga:5195218007: 2
+    greenhouse:conga:5195220007: 2
+    greenhouse:coupang:7938018: 1
+    greenhouse:databricks:7845325002: 2
+    greenhouse:databricks:8585164002: 2
+    greenhouse:databricks:8593505002: 2
+    greenhouse:digitalocean98:7987346: 2
+    greenhouse:earnin:8167777: 1
+    greenhouse:glance:8054886: 1
+    greenhouse:glance:8054888: 1
+    greenhouse:gleanwork:4012745005: 2
+    greenhouse:netskope:8063744: 1
+    greenhouse:project44:8014962: 2
+    greenhouse:pubmatic:5419108008: 1
+    greenhouse:sigmoid:8675405002: 1
+    greenhouse:smartsheet:7686222: 2
+    greenhouse:smartsheet:7686237: 2
+    greenhouse:smartsheet:8203811: 2
+    greenhouse:smartsheet:8232492: 2
+    greenhouse:techgrovebybanyansoftware:5175887007: 2
+    greenhouse:truecaller:8059333: 2
+    greenhouse:wpp:8395792002: 0
+    greenhouse:zetaglobal:5796298004: 2
+    lever:brillio-2:8dc75ccf-ce5b-474e-b806-9c5082c85f9c: 2
+    lever:brillio-2:b186da86-5523-4bcd-b3fb-e6ce16325883: 2
+    lever:extremenetworks:43e16c34-aae2-4f15-920c-ed7448faa32a: 1
+    lever:extremenetworks:b80e59e0-7e38-45ab-8c92-3a8389b2c144: 2
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 1
+    lever:meesho:a1cc7ad9-a233-4ba6-b53b-e56116f6ac27: 2
+    lever:neuron7:44a1b3c3-3c34-4265-af3f-d071e48dc932: 1
+    lever:neuron7:ab69b2e7-0c54-41e8-80d6-7bf13f9321a5: 2
+    lever:portcast:3fbd2b9a-c12b-4578-a628-5929fa2da2bf: 1
+    lever:safe:d27c2846-c34b-461a-bcce-b8889014102e: 2
 - id: q35
-  query: Ruby on Rails
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: remote LLM engineer India
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting
+    text
   verified: true
   judgements:
-    hackernews:49157647: 2
-    hackernews:49159686: 2
-    hackernews:49163658: 0
-    hackernews:49165651: 0
-    hackernews:49523604: 0
-    hackernews:49523768: 1
-    hackernews:49527344: 2
-    hackernews:49529015: 0
-    hackernews:49529763: 0
-    hackernews:49529957: 1
-    hackernews:49531646: 2
-    hackernews:49533482: 0
-    hackernews:49547792: 0
-    hackernews:49615973: 0
-    remoteok:1136094: 0
-    remoteok:1136210: 0
-    remoteok:1137388: 0
-    remoteok:1137405: 0
-    remoteok:1137421: 0
+    ashby:bolna:131e206f-3fd9-4905-9f4c-c3fdc4c32cc9: 1
+    ashby:meraki-labs:93ff65d2-f0cd-4fd1-b76f-b2e350f2d6c8: 1
+    ashby:sarvam:e7f783e8-6378-4158-97d5-48a397a91698: 1
+    ashby:sarvam:e9fb1269-fc4b-4879-aa35-0b75a8c83611: 1
+    ashby:sarvam:fcb15601-6440-41f7-aa79-b9992057a4b2: 1
+    ashby:signoz:d8fd6b52-8499-4dad-9903-f231e39c996d: 2
+    greenhouse:alphasense:8729924002: 1
+    greenhouse:anthropic:5390746008: 1
+    greenhouse:anthropic:5424310008: 1
+    greenhouse:anthropic:5443882008: 1
+    greenhouse:conga:5068674007: 1
+    greenhouse:devrev:6139491004: 1
+    greenhouse:digitalocean98:7986414: 2
+    greenhouse:digitalocean98:7987090: 1
+    greenhouse:digitalocean98:7987346: 1
+    greenhouse:earnin:7895708: 2
+    greenhouse:globalhealthcareexchangeinc:4694489005: 2
+    greenhouse:netskope:8063744: 1
+    greenhouse:observeai:5432596008: 1
+    greenhouse:point72:8487494002: 1
+    greenhouse:pubmatic:5419108008: 1
+    greenhouse:techgrovebybanyansoftware:5175887007: 1
+    greenhouse:techgrovebybanyansoftware:5175902007: 1
+    greenhouse:techgrovebybanyansoftware:5238542007: 1
+    greenhouse:truecaller:8059333: 1
+    greenhouse:wpp:8395792002: 1
+    lever:100ms:4c9f19c7-4432-4394-ba93-167319c68adc: 2
+    lever:brillio-2:b186da86-5523-4bcd-b3fb-e6ce16325883: 1
+    lever:extremenetworks:43e16c34-aae2-4f15-920c-ed7448faa32a: 1
+    lever:extremenetworks:b80e59e0-7e38-45ab-8c92-3a8389b2c144: 1
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 1
+    lever:meesho:a1cc7ad9-a233-4ba6-b53b-e56116f6ac27: 1
+    lever:neuron7:ab69b2e7-0c54-41e8-80d6-7bf13f9321a5: 1
+    lever:portcast:d206930c-1ecd-41fe-b603-b28ad98a5ea4: 1
+    lever:resilinc:98e013c3-84ff-4596-8712-6401c0fb3d55: 1
+    lever:safe:d27c2846-c34b-461a-bcce-b8889014102e: 1
+    lever:thinkahead:e0710e7d-2179-4c4b-84ab-6096162e5378: 1
+    lever:zimperium:5b35759a-d445-4fcb-b255-d719330af055: 1
 - id: q36
-  query: infrastructure and site reliability engineering
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156711: 2
-    hackernews:49159942: 1
-    hackernews:49160915: 2
-    hackernews:49161868: 2
-    hackernews:49162833: 2
-    hackernews:49165916: 2
-    hackernews:49169371: 2
-    hackernews:49522929: 2
-    hackernews:49523712: 2
-    hackernews:49524822: 0
-    hackernews:49525544: 0
-    hackernews:49530424: 0
-    hackernews:49534270: 0
-    hackernews:49534764: 2
-    hackernews:49550471: 0
-    hackernews:49562582: 2
-    hackernews:49608356: 2
-    hackernews:49613305: 0
-    hackernews:49615973: 1
-    remoteok:1136447: 2
-    remoteok:1136670: 0
-    remoteok:1136798: 1
-    remoteok:1137380: 1
+  query: onsite data scientist Mumbai
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q37
-  query: NLP and text processing
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
-  verified: true
-  judgements:
-    hackernews:49157080: 0
-    hackernews:49164303: 1
-    hackernews:49167647: 0
-    hackernews:49169371: 0
-    hackernews:49169577: 0
-    hackernews:49523770: 1
-    hackernews:49524835: 0
-    hackernews:49525600: 1
-    hackernews:49532154: 1
-    hackernews:49534359: 0
-    hackernews:49542805: 1
-    hackernews:49627985: 0
-    hackernews:49661611: 1
-    remoteok:1135675: 0
-    remoteok:1136566: 0
-    remoteok:1136670: 0
-    remoteok:1136687: 0
-    remoteok:1137072: 0
-    remoteok:1137136: 0
-    remoteok:1137155: 0
-    remoteok:1137386: 0
-    remoteok:1137388: 0
-    remoteok:1137391: 0
-    remoteok:1137405: 0
-    remoteok:1137412: 0
-    remoteok:1137420: 0
-    remoteok:1137421: 0
+  query: remote analytics job with US shift
+  note: work mode | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q38
-  query: product engineer who talks to users
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49157129: 0
-    hackernews:49159942: 0
-    hackernews:49163576: 0
-    hackernews:49163946: 1
-    hackernews:49164382: 0
-    hackernews:49522903: 2
-    hackernews:49523985: 1
-    hackernews:49524731: 0
-    hackernews:49524979: 2
-    hackernews:49528044: 1
-    hackernews:49528234: 1
-    hackernews:49528686: 0
-    hackernews:49530424: 0
-    hackernews:49531416: 2
-    hackernews:49550510: 1
-    hackernews:49570095: 1
-    remoteok:1136670: 0
-    remoteok:1136841: 0
-    remoteok:1137388: 0
-    remoteok:1137396: 0
-    remoteok:1137410: 0
-    remoteok:1137420: 1
-    remoteok:1137421: 0
+  query: fintech analytics job
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q39
-  query: climate or energy technology
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156845: 0
-    hackernews:49163358: 2
-    hackernews:49163576: 0
-    hackernews:49165394: 2
-    hackernews:49168356: 0
-    hackernews:49170963: 0
-    hackernews:49522949: 0
-    hackernews:49523288: 2
-    hackernews:49523558: 0
-    hackernews:49526311: 2
-    hackernews:49527115: 0
-    hackernews:49527388: 0
-    hackernews:49528935: 0
-    hackernews:49529957: 0
-    hackernews:49534764: 2
-    hackernews:49546958: 2
-    hackernews:49564474: 2
-    remoteok:1135681: 0
-    remoteok:1135997: 1
-    remoteok:1136001: 0
-    remoteok:1136797: 0
-    remoteok:1137194: 1
-    remoteok:1137391: 0
-    remoteok:1137405: 0
+  query: AI startup NLP role
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q40
-  query: recommendation systems and ranking
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified
-  verified: true
-  judgements:
-    hackernews:49159028: 0
-    hackernews:49165359: 0
-    hackernews:49522903: 1
-    hackernews:49523018: 0
-    hackernews:49523422: 0
-    hackernews:49524520: 0
-    hackernews:49524580: 0
-    hackernews:49530256: 0
-    hackernews:49532070: 0
-    hackernews:49532259: 0
-    hackernews:49534359: 0
-    hackernews:49543579: 0
-    remoteok:1136216: 0
-    remoteok:1136795: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1136841: 0
-    remoteok:1136950: 0
-    remoteok:1137072: 0
-    remoteok:1137279: 0
-    remoteok:1137405: 0
-    remoteok:1137408: 0
+  query: payments fraud detection data scientist
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q41
-  query: work with embeddings and vector search
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+  query: healthcare data analyst
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting
+    text
   verified: true
   judgements:
-    hackernews:49160170: 0
-    hackernews:49163907: 1
-    hackernews:49523558: 0
-    hackernews:49524327: 0
-    hackernews:49524691: 0
-    hackernews:49525600: 0
-    hackernews:49530464: 0
-    hackernews:49532154: 0
-    hackernews:49532259: 0
-    hackernews:49534032: 1
-    hackernews:49534359: 0
-    hackernews:49537584: 0
-    remoteok:1136066: 0
-    remoteok:1136094: 0
-    remoteok:1136592: 0
-    remoteok:1136795: 0
-    remoteok:1136937: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137309: 0
-    remoteok:1137378: 0
-    remoteok:1137391: 0
-    remoteok:1137405: 0
-    remoteok:1137412: 0
-    remoteok:1137428: 0
-    remoteok:1137431: 0
+    greenhouse:capco:8143638: 1
+    greenhouse:clearviewhealthcarepartners:5037799008: 2
+    greenhouse:coherehealth:7013656003: 1
+    greenhouse:coherehealth:7693376003: 2
+    greenhouse:coherehealth:7741414003: 1
+    greenhouse:coherehealth:7984191003: 1
+    greenhouse:coherehealth:7989877003: 1
+    greenhouse:definitivehcindia:6133947004: 1
+    greenhouse:konovo:5249666008: 0
+    greenhouse:okta:7572029: 0
+    greenhouse:okta:7780488: 1
+    greenhouse:openfx:5419316008: 0
+    greenhouse:purestorage:8212868: 1
+    greenhouse:smartsheet:7794964: 1
+    greenhouse:starrez:5181890008: 1
+    greenhouse:starrez:5181891008: 0
+    greenhouse:truveta:6119397004: 0
+    greenhouse:truveta:6207309004: 1
+    greenhouse:truveta:6210395004: 2
+    greenhouse:zoominfo:8632787002: 0
+    lever:beghouconsulting:07f3833f-0432-4cfe-94af-7abb36492992: 0
+    lever:beghouconsulting:0ea9cdca-8906-4851-85b0-e3690f044ef9: 1
+    lever:beghouconsulting:23358bd7-337f-4b23-8129-391952ef0592: 0
+    lever:beghouconsulting:893fd7a0-4e77-43cd-9fcc-c08567c3cddb: 2
+    lever:beghouconsulting:a298a607-ea65-411f-9214-e2fd4d57193a: 0
+    lever:beghouconsulting:a9d8ae58-6222-4ddc-be9e-e155a3a89a17: 1
+    lever:beghouconsulting:c617f838-8297-44a3-aadb-db9b19d8fe43: 0
+    lever:beghouconsulting:d6168a90-c5da-431f-8463-909663809f03: 1
+    lever:brillio-2:0816d222-40e4-4bde-a6a1-f8be20545ff9: 1
+    lever:brillio-2:242c6a24-1116-4524-ae0d-bbaef31d5577: 1
+    lever:neuron7:671d27a6-bab2-416b-b068-4fba58e6b216: 1
+    lever:pattern:79e94ec1-2c24-47ad-9e99-c0fe57050c9f: 1
+    lever:portcast:e66df487-0622-480f-8506-532b3db5db28: 1
+    lever:portcast:f18cc64e-c34a-416c-b213-62a39906260e: 1
+    lever:protolabs:3a20c442-e5b9-4cf1-beef-fd357419abba: 1
 - id: q42
-  query: senior staff or principal level
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: insurance analytics role
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting
+    text
   verified: true
   judgements:
-    hackernews:49156711: 1
-    hackernews:49156845: 2
-    hackernews:49158727: 1
-    hackernews:49163927: 2
-    hackernews:49167647: 1
-    hackernews:49522929: 1
-    hackernews:49523835: 2
-    hackernews:49524167: 1
-    hackernews:49524978: 1
-    hackernews:49525544: 1
-    hackernews:49527283: 1
-    hackernews:49528336: 1
-    hackernews:49530424: 1
-    hackernews:49530430: 2
-    hackernews:49543579: 1
-    hackernews:49554223: 1
-    hackernews:49564474: 1
-    hackernews:49627985: 1
-    remoteok:1135697: 0
-    remoteok:1136097: 0
-    remoteok:1136795: 1
-    remoteok:1136949: 0
-    remoteok:1137156: 1
-    remoteok:1137378: 0
-    remoteok:1137391: 0
-    remoteok:1137411: 1
+    greenhouse:addepar1:8709088002: 0
+    greenhouse:bluevineindia:7822920003: 1
+    greenhouse:cclfg:4224770009: 0
+    greenhouse:celonis:7886054003: 0
+    greenhouse:celonis:7986348003: 0
+    greenhouse:clearviewhealthcarepartners:5037799008: 1
+    greenhouse:coherehealth:7693376003: 2
+    greenhouse:coherehealth:7984191003: 1
+    greenhouse:coherehealth:7989877003: 2
+    greenhouse:emergentlabsinc:4088471009: 1
+    greenhouse:emergentlabsinc:4373373009: 1
+    greenhouse:insurityindia:4300524009: 1
+    greenhouse:insurityindia:4436148009: 2
+    greenhouse:insurityindia:4436151009: 2
+    greenhouse:insurityindia:4436169009: 2
+    greenhouse:insurityindia:4436171009: 2
+    greenhouse:insurityindia:4436175009: 2
+    greenhouse:insurityindia:4436177009: 2
+    greenhouse:insurityindia:4436180009: 2
+    greenhouse:insurityindia:4436182009: 2
+    greenhouse:insurityindia:4436191009: 1
+    greenhouse:insurityindia:4436197009: 1
+    greenhouse:insurityindia:4436201009: 1
+    greenhouse:insurityindia:4436204009: 1
+    greenhouse:insurityindia:4436206009: 1
+    greenhouse:insurityindia:4436208009: 1
+    greenhouse:insurityindia:4436210009: 1
+    greenhouse:insurityindia:4436212009: 1
+    greenhouse:insurityindia:4436214009: 1
+    greenhouse:insurityindia:4436216009: 1
+    greenhouse:insurityindia:4436218009: 1
+    greenhouse:insurityindia:4436221009: 1
+    greenhouse:okta:8141274: 1
+    greenhouse:okta:8154385: 1
+    greenhouse:purestorage:8170778: 0
+    greenhouse:sigmoid:8583355002: 2
+    greenhouse:starrez:5181890008: 0
+    greenhouse:twilio:8104438: 0
+    greenhouse:zetaglobal:6118712004: 0
+    greenhouse:zocdoc:8170587: 1
+    lever:paytm:ab166330-5876-488e-b90c-749df6e871b1: 0
 - id: q43
-  query: mobile app development iOS or Android
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49157437: 0
-    hackernews:49159028: 0
-    hackernews:49159064: 2
-    hackernews:49163576: 2
-    hackernews:49523558: 0
-    hackernews:49523675: 2
-    hackernews:49523797: 0
-    hackernews:49525053: 2
-    hackernews:49525483: 0
-    hackernews:49527118: 2
-    hackernews:49528637: 2
-    hackernews:49530424: 2
-    hackernews:49531439: 1
-    hackernews:49532122: 0
-    hackernews:49533482: 1
-    hackernews:49537373: 0
-    remoteok:1136188: 0
-    remoteok:1137373: 0
-    remoteok:1137405: 0
+  query: e-commerce recommendation systems engineer
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q44
-  query: company that mentions equity in the offer
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156730: 0
-    hackernews:49159281: 2
-    hackernews:49162608: 2
-    hackernews:49162833: 2
-    hackernews:49163060: 2
-    hackernews:49523289: 0
-    hackernews:49523956: 2
-    hackernews:49525418: 2
-    hackernews:49525483: 2
-    hackernews:49527452: 2
-    hackernews:49529454: 2
-    hackernews:49595476: 2
-    hackernews:49649994: 2
-    remoteok:1135783: 0
-    remoteok:1135903: 0
-    remoteok:1136097: 0
-    remoteok:1136168: 0
-    remoteok:1136188: 0
-    remoteok:1136217: 0
-    remoteok:1136796: 0
-    remoteok:1136797: 0
-    remoteok:1137307: 0
-    remoteok:1137414: 0
+  query: supply chain analytics
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q45
-  query: evaluation and testing of AI systems
-  note: the thing Phase 5 is about, and rare in the corpus | judged by Claude Fable 5.1 on
-    2026-09-26 from the full posting text of every candidate any retriever surfaced in its
-    top 10; not human-verified | top-up of 105 new candidates after the 2026-09-26 re-ingest
-    judged by Claude Opus 5.5 from the same pool dump; not human-verified | grade-2 judgements
-    reviewed by the project owner on 2026-09-26 against the full posting text; all 232 kept
+  query: marketing analytics and customer churn
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting
+    text
   verified: true
   judgements:
-    hackernews:49163301: 0
-    hackernews:49163907: 1
-    hackernews:49164213: 2
-    hackernews:49165031: 0
-    hackernews:49165622: 1
-    hackernews:49525423: 0
-    hackernews:49525600: 1
-    hackernews:49525603: 1
-    hackernews:49532154: 2
-    hackernews:49538459: 1
-    hackernews:49540773: 0
-    hackernews:49552714: 1
-    remoteok:1136796: 0
-    remoteok:1136798: 1
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137224: 0
-    remoteok:1137309: 2
-    remoteok:1137314: 0
-    remoteok:1137388: 0
-    remoteok:1137398: 1
-    remoteok:1137408: 0
-    remoteok:1137421: 0
+    greenhouse:6sense:8238331: 1
+    greenhouse:airbnb:8225785: 0
+    greenhouse:blueconic:8634098002: 2
+    greenhouse:capco:8258377: 0
+    greenhouse:coherehealth:7693376003: 0
+    greenhouse:coupang:8143295: 1
+    greenhouse:emergentlabsinc:4088471009: 1
+    greenhouse:emergentlabsinc:4373373009: 1
+    greenhouse:energyexemplarllc:5437802008: 1
+    greenhouse:formaaiinc:4058465005: 0
+    greenhouse:formaaiinc:4575837005: 0
+    greenhouse:gitlab:8827370002: 1
+    greenhouse:okta:8141274: 1
+    greenhouse:okta:8154385: 1
+    greenhouse:redwoodsoftware:4265599009: 2
+    greenhouse:sigmoid:8583355002: 1
+    greenhouse:sigmoid:8620634002: 0
+    greenhouse:skillzinc:8131924: 1
+    greenhouse:twilio:8104438: 2
+    greenhouse:zetaglobal:6008972004: 2
+    greenhouse:zetaglobal:6118712004: 2
+    greenhouse:zetaglobal:6162295004: 1
+    lever:beghouconsulting:15ef687b-441b-4c13-b338-e23dd65b60b4: 0
+    lever:beghouconsulting:a298a607-ea65-411f-9214-e2fd4d57193a: 0
+    lever:brillio-2:53ecdd3c-367a-4fa3-8a51-94d2f10658ee: 1
+    lever:cyara:742ea734-d8c7-464f-8198-d50aba694005: 1
+    lever:dnb:ae709554-e52e-4d12-b5ba-eae6fa94c481: 0
+    lever:meesho:97ce9e5a-a8bb-446d-a8db-9078603b106f: 1
+    lever:neuron7:3f9e3741-4544-4061-a21a-69ea0a3e68be: 1
+    lever:neuron7:ab69b2e7-0c54-41e8-80d6-7bf13f9321a5: 0
+    lever:paytm:4c41d1d2-ed6b-4726-95b8-beb76999ee26: 1
+    lever:paytm:8c4d24b4-62d4-466d-9daa-b3c7804c5a67: 1
+    lever:paytm:ab166330-5876-488e-b90c-749df6e871b1: 2
+    lever:pocketfm:2436065b-281d-4347-8366-9a60b99dc5a5: 0
 - id: q46
-  query: analytics engineer building dashboards
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
-  verified: true
-  judgements:
-    hackernews:49156689: 1
-    hackernews:49156711: 0
-    hackernews:49159942: 0
-    hackernews:49160915: 0
-    hackernews:49162501: 0
-    hackernews:49163520: 1
-    hackernews:49164668: 0
-    hackernews:49165651: 1
-    hackernews:49166092: 0
-    hackernews:49169371: 0
-    hackernews:49522912: 1
-    hackernews:49522929: 0
-    hackernews:49523768: 0
-    hackernews:49523985: 0
-    hackernews:49524822: 0
-    hackernews:49525116: 1
-    hackernews:49529454: 0
-    hackernews:49529957: 0
-    hackernews:49530424: 0
-    hackernews:49543579: 0
-    hackernews:49615973: 0
-    remoteok:1136222: 1
-    remoteok:1136670: 0
-    remoteok:1136796: 0
-    remoteok:1137405: 0
-    remoteok:1137417: 0
+  query: pharma analytics consulting associate
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q47
-  query: hardware or embedded systems
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156689: 0
-    hackernews:49163678: 0
-    hackernews:49163907: 0
-    hackernews:49164894: 2
-    hackernews:49166082: 2
-    hackernews:49168356: 0
-    hackernews:49170090: 2
-    hackernews:49523422: 0
-    hackernews:49526154: 1
-    hackernews:49527115: 0
-    hackernews:49529957: 0
-    hackernews:49530256: 0
-    hackernews:49532154: 1
-    hackernews:49543579: 1
-    hackernews:49555479: 1
-    hackernews:49667711: 2
-    remoteok:1136795: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1136841: 0
-    remoteok:1137072: 0
-    remoteok:1137408: 1
+  query: quant researcher at a trading firm
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely
+  verified: false
+  judgements: {}
 - id: q48
-  query: role that involves both research and shipping product
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+  query: AI for cybersecurity
+  note: company type | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile;
+    edit freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting
+    text
   verified: true
   judgements:
-    hackernews:49160915: 0
-    hackernews:49163946: 0
-    hackernews:49524979: 0
-    hackernews:49528044: 0
-    hackernews:49528405: 0
-    hackernews:49537373: 0
-    hackernews:49547792: 0
-    hackernews:49550510: 0
-    hackernews:49595476: 1
-    remoteok:1136094: 0
-    remoteok:1136097: 0
-    remoteok:1136216: 0
-    remoteok:1136670: 0
-    remoteok:1136687: 0
-    remoteok:1136841: 0
-    remoteok:1136937: 0
-    remoteok:1136950: 0
-    remoteok:1137139: 0
-    remoteok:1137302: 0
-    remoteok:1137388: 0
-    remoteok:1137396: 0
-    remoteok:1137407: 0
-    remoteok:1137421: 0
+    ashby:hackerone:c061590a-f169-4741-a0ae-a3f9b310cc09: 1
+    greenhouse:6sense:5636812: 2
+    greenhouse:abnormalsecurity:7995761003: 1
+    greenhouse:alphasense:8634067002: 1
+    greenhouse:appviewx:6022033004: 2
+    greenhouse:glance:8203695: 1
+    greenhouse:gleanwork:4705011005: 1
+    greenhouse:gleanwork:4705017005: 1
+    greenhouse:konovo:5430560008: 0
+    greenhouse:onetrust:8192392: 1
+    greenhouse:pubmatic:4994052008: 2
+    greenhouse:pubmatic:5154663008: 2
+    greenhouse:saucelabs:7096532: 1
+    greenhouse:sonicwall:8068949: 2
+    greenhouse:sonicwall:8195326: 1
+    greenhouse:techgrovebybanyansoftware:5175887007: 1
+    lever:brillio-2:fbeb1776-9c39-4225-a211-b4e0e307b140: 0
+    lever:extremenetworks:0100b069-56f7-4aec-96b8-c34cae660a5d: 1
+    lever:extremenetworks:2a0c7b1c-12f2-44ef-b032-d4dbb36f6440: 1
+    lever:extremenetworks:43e16c34-aae2-4f15-920c-ed7448faa32a: 1
+    lever:extremenetworks:51eeeff5-d3b7-43e7-9db3-415abd11afa0: 1
+    lever:extremenetworks:807e6d86-089e-48ac-a4d5-98434dc36315: 1
+    lever:extremenetworks:80ead132-7f43-44da-adfb-d23af7cdb667: 1
+    lever:extremenetworks:a1dc29d0-872a-414b-b142-b7093e467a98: 1
+    lever:extremenetworks:fd9cb742-57e8-4787-aecc-ebd17f244684: 1
+    lever:klearnow:5dd78efa-5894-4786-9b15-544ffca7c979: 0
+    lever:levelai:98f0df69-79f8-4072-b676-19d9eec4df74: 0
+    lever:meesho:f2de8c5f-1636-428d-aaea-af1400142975: 2
+    lever:safe:47ce9d2d-a8de-44d9-aa96-241987c67211: 2
+    lever:safe:d27c2846-c34b-461a-bcce-b8889014102e: 1
+    lever:safe:fb78afcd-5711-44d4-8533-56a6349dd528: 2
+    lever:saviynt:5e6c1380-3bd7-49bb-bb6b-7514b89925ba: 1
+    lever:thinkahead:a26ab4b0-87c1-4088-85c8-6ccb078684c4: 1
+    lever:thinkahead:c29327b3-d2ee-45a9-89a7-3ae7ae54804a: 1
 - id: q49
-  query: no whiteboard interviews
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified
+  query: python role without DSA rounds
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49165394: 0
-    hackernews:49166975: 0
-    hackernews:49171072: 0
-    hackernews:49525141: 0
-    hackernews:49525603: 0
-    hackernews:49525748: 0
-    hackernews:49527193: 1
-    hackernews:49532154: 0
-    hackernews:49534032: 0
-    hackernews:49570095: 0
-    remoteok:1136168: 0
-    remoteok:1136670: 0
-    remoteok:1136687: 0
-    remoteok:1136857: 0
-    remoteok:1137378: 0
-    remoteok:1137386: 0
-    remoteok:1137388: 0
-    remoteok:1137391: 0
-    remoteok:1137405: 0
-    remoteok:1137406: 0
-    remoteok:1137410: 0
-    remoteok:1137412: 0
-    remoteok:1137420: 0
-    remoteok:1137421: 0
+    ashby:astronomer:3d6c9dca-eabb-47c5-a446-ad2cd6bda467: 1
+    ashby:plane:00beeb42-56c0-48ce-9082-9fba93836b54: 1
+    greenhouse:6sense:5636812: 1
+    greenhouse:capco:8102646: 1
+    greenhouse:capco:8152748: 1
+    greenhouse:capco:8194558: 1
+    greenhouse:connectwise:4716534005: 1
+    greenhouse:connectwise:4732123005: 1
+    greenhouse:databricks:8604598002: 1
+    greenhouse:definitivehcindia:6133947004: 1
+    greenhouse:ethernovia:5154051007: 1
+    greenhouse:ethernovia:5228895007: 1
+    greenhouse:gitlab:8781299002: 1
+    greenhouse:gravitonresearchcapital:8147013002: 2
+    greenhouse:highradius:7490263003: 2
+    greenhouse:nasuni:5412999008: 1
+    greenhouse:point72:8239406002: 1
+    greenhouse:pubmatic:5419120008: 1
+    greenhouse:schrdinger:7820024003: 2
+    greenhouse:sigmoid:4685999002: 1
+    greenhouse:sonicwall:8099370: 1
+    greenhouse:towerresearchcapital:6629676: 1
+    greenhouse:zenoti:8004516003: 1
+    greenhouse:zscaler:5128594007: 1
+    greenhouse:zscaler:5228175007: 1
+    lever:brillio-2:74b72ad5-8232-4530-a543-eaa8a26818a5: 1
+    lever:brillio-2:f31eadea-931b-47e0-913c-dcd0706af3c1: 1
+    lever:endpointclinical:f16ac3ae-eb44-4b4d-ae87-047ced76f362: 1
+    lever:extremenetworks:4458281f-9c51-4ea2-9f54-09ccd883b4f9: 1
+    lever:neuron7:3c8a38fe-00bf-43cd-9622-1b9e4824775f: 1
+    lever:neuron7:44a1b3c3-3c34-4265-af3f-d071e48dc932: 1
+    lever:zimperium:62345dc6-5179-4e47-8736-0fb3530f4211: 1
 - id: q50
-  query: small team under twenty people
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: MLOps but not cloud-heavy
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49157178: 0
-    hackernews:49158050: 1
-    hackernews:49159942: 2
-    hackernews:49169017: 0
-    hackernews:49522903: 0
-    hackernews:49522912: 2
-    hackernews:49524520: 1
-    hackernews:49525831: 0
-    hackernews:49530116: 0
-    hackernews:49532898: 1
-    hackernews:49554223: 0
-    remoteok:1136066: 1
-    remoteok:1136670: 0
-    remoteok:1136796: 0
-    remoteok:1136841: 0
-    remoteok:1136949: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137279: 0
-    remoteok:1137378: 0
-    remoteok:1137380: 0
-    remoteok:1137405: 0
-    remoteok:1137412: 0
-    remoteok:1137414: 1
-    remoteok:1137421: 0
+    ashby:cerebras:ba24de32-d882-4e27-b398-90e6356297c5: 2
+    ashby:sarvam:e7f783e8-6378-4158-97d5-48a397a91698: 2
+    ashby:snowflake:ff8fe152-e6c9-46d1-bdc7-ea414ea9d436: 1
+    ashby:tekion:3daf1c55-8409-4a24-970a-a3e26e879bd7: 1
+    greenhouse:addepar1:8516188002: 1
+    greenhouse:capco:8015336: 2
+    greenhouse:couchbaseinc:4696687006: 1
+    greenhouse:crunchyroll:7990093: 2
+    greenhouse:databricks:7601580002: 0
+    greenhouse:easyship:4597234006: 1
+    greenhouse:inmobi:8019835: 0
+    greenhouse:nasuni:5412999008: 0
+    greenhouse:netradyne:4739224005: 2
+    greenhouse:netskope:8063744: 0
+    greenhouse:okta:8255904: 0
+    greenhouse:purestorage:8034920: 2
+    greenhouse:rubrik:7849713: 0
+    greenhouse:rubrik:8232109: 0
+    greenhouse:singlestore:7573638: 2
+    greenhouse:smartsheet:7686237: 2
+    greenhouse:smartsheet:8232492: 2
+    greenhouse:techgrovebybanyansoftware:5175902007: 0
+    greenhouse:wpp:8781276002: 0
+    lever:acceldata:0c47e882-83ff-471e-ba75-5543796aa34a: 0
+    lever:brillio-2:3537f097-0870-434a-90a5-f81742e6ed00: 0
+    lever:brillio-2:5a19bb4c-3cb8-4295-8252-5975cd7424da: 2
+    lever:brillio-2:cfae6eed-c2dd-43db-a89c-2957cb56e5c9: 1
+    lever:brillio-2:d6bce3ce-09d9-49fc-9b49-0c87e5b82f76: 0
+    lever:extremenetworks:0100b069-56f7-4aec-96b8-c34cae660a5d: 0
+    lever:extremenetworks:e9c06b98-d7e5-4273-a092-45ca693b3ba5: 0
+    lever:safe:fb78afcd-5711-44d4-8533-56a6349dd528: 2
+    lever:saviynt:5e6c1380-3bd7-49bb-bb6b-7514b89925ba: 0
+    lever:thinkahead:34c87239-1673-490a-ae90-eee5053dfb04: 0
+    lever:thinkahead:9bb45260-8225-4175-972e-a15c3213bf30: 1
+    lever:thinkahead:fa8521eb-285a-41d3-acfe-a0e46a3e5d4e: 0
+    lever:zeta:500c585f-65ba-4f6a-b515-7d73680038c3: 0
 - id: q51
-  query: developer tools for AI engineers
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156689: 0
-    hackernews:49157646: 0
-    hackernews:49163160: 0
-    hackernews:49164303: 0
-    hackernews:49165622: 0
-    hackernews:49167647: 0
-    hackernews:49168019: 0
-    hackernews:49169017: 1
-    hackernews:49523985: 0
-    hackernews:49524822: 0
-    hackernews:49524920: 0
-    hackernews:49524943: 0
-    hackernews:49527283: 0
-    hackernews:49528364: 0
-    hackernews:49528686: 0
-    hackernews:49530424: 0
-    hackernews:49532122: 0
-    hackernews:49541388: 2
-    hackernews:49552714: 0
-    hackernews:49627985: 0
-    remoteok:1136670: 0
-    remoteok:1136796: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137380: 1
+  query: data analyst wanting to move into machine learning
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q52
-  query: Java or Scala backend
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: machine learning role that is not just building dashboards
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156737: 0
-    hackernews:49159028: 0
-    hackernews:49165651: 0
-    hackernews:49166080: 0
-    hackernews:49166092: 0
-    hackernews:49168047: 0
-    hackernews:49523408: 0
-    hackernews:49523422: 0
-    hackernews:49523703: 0
-    hackernews:49523978: 2
-    hackernews:49525483: 2
-    hackernews:49527588: 0
-    hackernews:49528364: 0
-    hackernews:49530116: 0
-    hackernews:49530424: 0
-    hackernews:49531417: 0
-    hackernews:49541107: 0
-    hackernews:49541874: 1
-    hackernews:49554223: 0
-    hackernews:49615973: 0
-    remoteok:1136188: 2
+    ashby:ema:88d004d9-50a9-41ee-a618-03855001a9be: 1
+    ashby:poshmark:461a37db-d133-4947-a17d-8afd2092a6fc: 2
+    ashby:poshmark:b13d536d-bb05-4173-a17d-6ed55a2991c7: 1
+    ashby:skyflow:2a996c6c-f3c0-44a9-8aac-14cc77b33fc4: 2
+    greenhouse:coherehealth:7693289003: 1
+    greenhouse:coherehealth:7741414003: 2
+    greenhouse:conga:5195218007: 1
+    greenhouse:conga:5195220007: 2
+    greenhouse:easyship:4695422006: 1
+    greenhouse:glance:8054886: 1
+    greenhouse:gleanwork:4012745005: 2
+    greenhouse:gravitonresearchcapital:8456543002: 1
+    greenhouse:hackerrank:7907962: 2
+    greenhouse:inmobi:7795140: 1
+    greenhouse:netradyne:4739224005: 2
+    greenhouse:project44:8014962: 1
+    greenhouse:pubmatic:5121514008: 1
+    greenhouse:pubmatic:5157318008: 1
+    greenhouse:purestorage:8170778: 1
+    greenhouse:redwoodsoftware:4265599009: 1
+    greenhouse:sigmoid:4985961002: 2
+    greenhouse:sigmoid:5083674002: 1
+    greenhouse:sigmoid:8675405002: 1
+    greenhouse:smartsheet:8025513: 1
+    greenhouse:zetaglobal:5796298004: 1
+    lever:extremenetworks:0ddd04b5-582d-4078-9213-9a2a549e266b: 2
+    lever:jumpcloud:60f9796e-9f63-416e-8c7b-8e16cd2ee3dc: 2
+    lever:jumpcloud:ebf3b99a-a193-4ac8-83c3-d901af4a3de2: 1
+    lever:meesho:3d5bf582-493f-4298-b7de-e42a7d58a358: 2
+    lever:neuron7:b11b31fe-bdca-44fc-8bb5-5c4e907d8f89: 2
+    lever:portcast:d206930c-1ecd-41fe-b603-b28ad98a5ea4: 1
+    lever:resilinc:03fce20a-3042-4ead-9d3e-3ba214ea16a2: 1
 - id: q53
-  query: technical support or solutions engineer
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
+  query: GenAI role at a product company not a service company
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely | graded by Jetti Raviteja on 2026-10-09 from summaries of the full posting text
   verified: true
   judgements:
-    hackernews:49156689: 0
-    hackernews:49156711: 0
-    hackernews:49159942: 2
-    hackernews:49161851: 0
-    hackernews:49165394: 0
-    hackernews:49166082: 0
-    hackernews:49169371: 0
-    hackernews:49522929: 0
-    hackernews:49523985: 0
-    hackernews:49524880: 0
-    hackernews:49525116: 0
-    hackernews:49525468: 0
-    hackernews:49528044: 0
-    hackernews:49530256: 0
-    hackernews:49530424: 0
-    remoteok:1136066: 1
-    remoteok:1136670: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1136937: 1
-    remoteok:1136987: 2
-    remoteok:1137302: 1
-    remoteok:1137408: 1
-    remoteok:1137411: 0
+    ashby:articul8:fab35c76-2048-4540-a7ab-118b9b56e434: 2
+    ashby:gainsight:01b57870-b94d-4854-83b4-f0aaa7e7a95a: 1
+    ashby:gen-digital:67797b7c-5369-4666-b3bc-e20c9b1155db: 1
+    ashby:gen-digital:6eceab6a-65fc-4e6c-97e6-f4bcd4e16812: 2
+    ashby:gen-digital:8893d820-33cb-4c10-9a18-def7fdbe2fbf: 2
+    ashby:gen-digital:cc9b30aa-95b7-48d9-be1a-fc0ab34f3921: 2
+    ashby:gen-digital:e1bfbce4-e71b-4fd0-84a6-ee016a42648b: 1
+    ashby:sarvam:f462051e-ec76-45cf-96c5-e0192dd4dcc6: 1
+    greenhouse:capco:8258299: 0
+    greenhouse:databricks:7845325002: 1
+    greenhouse:devrev:6182480004: 1
+    greenhouse:gitlab:8781299002: 2
+    greenhouse:konovo:5430560008: 1
+    greenhouse:nasuni:5412999008: 1
+    greenhouse:newrelic:5407544008: 1
+    greenhouse:onetrust:8192392: 1
+    greenhouse:onetrust:8192394: 1
+    greenhouse:point72:8487494002: 2
+    greenhouse:purestorage:8170823: 2
+    greenhouse:purestorage:8212868: 2
+    greenhouse:techgrovebybanyansoftware:5175887007: 1
+    greenhouse:zenoti:7729933003: 1
+    greenhouse:zetaglobal:6210607004: 2
+    lever:100ms:03b1718b-a597-46f5-8178-d555f259b6bd: 1
+    lever:cyara:3c2bab10-1522-41bf-810e-75958a3b4ebe: 2
+    lever:dnb:ae709554-e52e-4d12-b5ba-eae6fa94c481: 1
+    lever:neuron7:334c2ee0-2d8a-4c35-a65b-31b7f1c74fc4: 2
+    lever:neuron7:3f9e3741-4544-4061-a21a-69ea0a3e68be: 1
+    lever:paytm:e5145511-6cbd-4168-a5ad-24bc925487db: 1
+    lever:resilinc:03fce20a-3042-4ead-9d3e-3ba214ea16a2: 2
+    lever:thinkahead:10d11950-8fab-425b-a8ce-ac903e598514: 1
+    lever:thinkahead:9132fb45-a58e-46e3-aec1-3f850bb7f9f6: 1
+    lever:thinkahead:e0710e7d-2179-4c4b-84ab-6096162e5378: 1
+    lever:veeva:3a9647c6-9124-4eb1-8659-988cdac7beb2: 1
+    lever:veeva:c8eaad10-bf7c-4069-af94-fec8fe9ed86c: 1
 - id: q54
-  query: robotics
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49159686: 1
-    hackernews:49162501: 1
-    hackernews:49163358: 2
-    hackernews:49163678: 1
-    hackernews:49167691: 2
-    hackernews:49525651: 2
-    hackernews:49526154: 2
-    hackernews:49527344: 1
-    hackernews:49528413: 2
-    hackernews:49530909: 2
-    hackernews:49533419: 2
-    hackernews:49611044: 2
-    hackernews:49667711: 2
+  query: data engineer with Azure not AWS
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q55
-  query: hybrid two days a week in the office
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156819: 0
-    hackernews:49156845: 0
-    hackernews:49157827: 2
-    hackernews:49158886: 1
-    hackernews:49159784: 1
-    hackernews:49524341: 1
-    hackernews:49524501: 1
-    hackernews:49525141: 2
-    hackernews:49525750: 2
-    hackernews:49527646: 1
-    hackernews:49529454: 1
-    hackernews:49541874: 1
-    hackernews:49553487: 1
-    remoteok:1135788: 0
-    remoteok:1136066: 0
-    remoteok:1136094: 0
-    remoteok:1136096: 0
-    remoteok:1136878: 0
-    remoteok:1136937: 0
-    remoteok:1136948: 0
-    remoteok:1137378: 0
-    remoteok:1137386: 0
-    remoteok:1137391: 0
-    remoteok:1137412: 0
+  query: research role publishing AI papers
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q56
-  query: growth or marketing role at a tech company
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49161851: 2
-    hackernews:49166000: 2
-    hackernews:49524979: 0
-    hackernews:49547792: 0
-    hackernews:49567458: 0
-    hackernews:49595476: 2
-    hackernews:49613305: 2
-    remoteok:1135681: 1
-    remoteok:1135997: 0
-    remoteok:1136094: 2
-    remoteok:1136097: 0
-    remoteok:1136216: 1
-    remoteok:1136221: 0
-    remoteok:1136797: 0
-    remoteok:1136949: 1
-    remoteok:1136950: 2
-    remoteok:1137302: 0
-    remoteok:1137378: 0
-    remoteok:1137381: 2
-    remoteok:1137388: 0
-    remoteok:1137391: 0
-    remoteok:1137396: 0
-    remoteok:1137406: 0
-    remoteok:1137414: 2
-    remoteok:1137421: 0
+  query: statistics and SQL for business decisions
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q57
-  query: designer who can code
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49156702: 0
-    hackernews:49157129: 0
-    hackernews:49159312: 0
-    hackernews:49159942: 2
-    hackernews:49160915: 1
-    hackernews:49523985: 0
-    hackernews:49524252: 1
-    hackernews:49525270: 1
-    hackernews:49526361: 0
-    hackernews:49526742: 0
-    hackernews:49527388: 0
-    hackernews:49543579: 2
-    hackernews:49553901: 1
-    hackernews:49598051: 0
-    remoteok:1135767: 0
-    remoteok:1136192: 0
-    remoteok:1136213: 0
-    remoteok:1136796: 0
-    remoteok:1136841: 1
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137156: 0
-    remoteok:1137405: 1
+  query: customer facing forward deployed AI engineer
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}
 - id: q58
-  query: quantitative or trading systems
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49157674: 2
-    hackernews:49162509: 0
-    hackernews:49163308: 2
-    hackernews:49166000: 0
-    hackernews:49523018: 2
-    hackernews:49523422: 0
-    hackernews:49523950: 2
-    hackernews:49524520: 0
-    hackernews:49526311: 2
-    hackernews:49559854: 2
-    hackernews:49571280: 2
-    remoteok:1136216: 0
-    remoteok:1136217: 0
-    remoteok:1136670: 0
-    remoteok:1136795: 0
-    remoteok:1136796: 0
-    remoteok:1136798: 0
-    remoteok:1136841: 0
-    remoteok:1137072: 0
-    remoteok:1137307: 1
-    remoteok:1137388: 1
-    remoteok:1137408: 0
-    remoteok:1137421: 1
-- id: q59
-  query: LangChain or LlamaIndex
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | grade-2 judgements reviewed
-    by the project owner on 2026-09-26 against the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49157646: 2
-    hackernews:49160993: 0
-    hackernews:49162509: 0
-    hackernews:49165024: 0
-    hackernews:49165916: 0
-    hackernews:49169157: 0
-    hackernews:49523978: 0
-    hackernews:49523985: 2
-    hackernews:49524835: 0
-    hackernews:49525412: 0
-    hackernews:49525483: 0
-    hackernews:49530116: 0
-    hackernews:49534032: 2
-    hackernews:49547973: 0
-    hackernews:49552714: 2
-    hackernews:49711313: 0
-    remoteok:1135634: 0
-    remoteok:1137279: 0
-    remoteok:1137307: 0
-- id: q60
-  query: company building their own foundation models
-  note: judged by Claude Fable 5.1 on 2026-09-26 from the full posting text of every candidate
-    any retriever surfaced in its top 10; not human-verified | top-up of 105 new candidates
-    after the 2026-09-26 re-ingest judged by Claude Opus 5.5 from the same pool dump; not
-    human-verified | grade-2 judgements reviewed by the project owner on 2026-09-26 against
-    the full posting text; all 232 kept
-  verified: true
-  judgements:
-    hackernews:49160993: 0
-    hackernews:49165353: 2
-    hackernews:49167691: 0
-    hackernews:49522903: 0
-    hackernews:49525270: 0
-    hackernews:49525463: 0
-    hackernews:49525651: 0
-    hackernews:49528399: 0
-    hackernews:49534270: 0
-    hackernews:49537584: 2
-    hackernews:49542221: 2
-    hackernews:49595476: 1
-    remoteok:1135681: 0
-    remoteok:1136097: 0
-    remoteok:1136192: 0
-    remoteok:1136670: 0
-    remoteok:1136841: 0
-    remoteok:1136878: 0
-    remoteok:1136937: 0
-    remoteok:1137136: 0
-    remoteok:1137138: 0
-    remoteok:1137139: 0
-    remoteok:1137378: 0
-    remoteok:1137380: 0
-    remoteok:1137388: 0
-    remoteok:1137405: 0
-    remoteok:1137421: 0
+  query: AI agents engineer
+  note: hard | query drafted by Claude Opus 5.5 on 2026-10-08 from the corpus profile; edit
+    freely
+  verified: false
+  judgements: {}

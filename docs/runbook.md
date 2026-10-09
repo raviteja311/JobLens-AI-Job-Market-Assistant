@@ -69,7 +69,6 @@ Alerts are provisioned from `monitoring/grafana/provisioning/alerting/rules.yml`
 | `connection refused` or `could not translate host name` | `DATABASE_URL` secret is wrong, or the hosted database is paused | Check the secret in repo settings. Neon and Supabase free tiers suspend idle databases; the first connection wakes them and can time out. Re-run the workflow. |
 | HTTP 429 or 403 from one source | Rate limited or blocked | Nothing to fix tonight. The other sources ran. If it persists for three days, lower `--limit` for that source or check whether the board changed its terms. |
 | `KeyError` or `ValidationError` inside `to_posting` | A source changed its payload shape | The raw payload is already in `raw_postings`. Fix the parser, add a fixture from the real payload to `tests/fixtures/`, then `python -m joblens transform --source <name>` to re-parse without re-fetching. |
-| Adzuna skipped | `ADZUNA_APP_ID` or `ADZUNA_APP_KEY` missing | Expected when the secrets are not set. Not a failure. |
 | Run is green but `inserted` is 0 for every source for days | The boards have nothing new, or the dedup is eating everything | Compare `fetched` to `inserted`. Fetched > 0 with inserted 0 for a week is the second case; check `content_hash` collisions with `select content_hash, count(*) from postings group by 1 having count(*) > 1`. |
 
 **Recovery.** Re-run the workflow by hand:
@@ -80,7 +79,8 @@ gh workflow run ingest -f limit=200
 
 The pipeline is idempotent on `(source, source_id)`. Running it twice inserts
 nothing twice. A day of missed postings is lost for good only for boards that
-do not keep history; Hacker News threads and Adzuna do.
+do not keep history; Hacker News threads do. Greenhouse, Lever and Ashby list
+only open jobs, so a job that closed before the next run is never seen.
 
 **Close the loop.** Close the `ingest-failure` issue once a green run has
 landed, and note the cause in `docs/devlog.md` if it was new.
@@ -208,7 +208,7 @@ Phase 5 floors were set on llama3.1 and an API model will move every number.
 | Connections accepted, queries hang | Lock held by a long transaction, usually an interrupted ingest or a test run | Find it with the `pg_stat_activity` query and `select pg_terminate_backend(<pid>)`. The pipeline commits per source, so nothing is lost. |
 | Slow only under load | The API opens one connection per request with no pool | Known limitation, written down in the README. At this size it is fine. If it stops being fine, `psycopg_pool` is the change. |
 | Slow after a big ingest | Planner statistics are stale | `analyze postings; analyze posting_chunks;` |
-| Disk full | `raw_postings` keeps every fetch forever | It is the bronze layer and is meant to. Free tier limits are the constraint; `delete from raw_postings where fetched_at < now() - interval '90 days'` is safe because `postings` is what the app reads. Confirm before running it. |
+| Disk full | `raw_postings` keeps every changed version forever | It is the bronze layer and is meant to; unchanged jobs are not stored again (migration 004), but a first load of the Greenhouse, Lever and Ashby boards alone is about 160MB. Free tier limits are the constraint; `delete from raw_postings where fetched_at < now() - interval '90 days'` is safe because `postings` is what the app reads, and a still-open job whose only copy was deleted is stored again on the next ingest. Confirm before running it. |
 
 **Do not** point `DATABASE_URL` at production and run `pytest`. The test
 suite truncates the database it is given. This is the single most dangerous

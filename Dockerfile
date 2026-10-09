@@ -110,9 +110,12 @@ COPY --chown=joblens:joblens migrations ./migrations
 COPY --chown=joblens:joblens prompts ./prompts
 COPY --chown=joblens:joblens app.py ./
 COPY --chown=joblens:joblens src ./src
+COPY --chown=joblens:joblens data/companies_in.yaml ./data/companies_in.yaml
 
-# joblens is installed into the venv, but db.migrate() and prompts.load()
-# resolve their files relative to the source tree, so the tree is here too.
+# joblens is installed into the venv, but db.migrate(), prompts.load() and
+# the board sources' company list resolve their files relative to the source
+# tree, so the tree is here too. The same image serves the API and runs the
+# daily ingest job.
 ENV PYTHONPATH=/app/src
 
 USER joblens

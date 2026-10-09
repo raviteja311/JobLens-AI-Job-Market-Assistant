@@ -33,20 +33,30 @@ class Chunk:
     content: str
 
 
-def _header(title: str, company: str) -> str:
+def _header(title: str, company: str, location: str | None = None) -> str:
     # Not `f"{title} at {company}".strip(" at")`: str.strip takes a set of
     # characters, so that turns "Data Analyst at " into "Data Analys".
     title = (title or "").strip()
     company = (company or "").strip()
-    return f"{title} at {company}" if company else title
+    header = f"{title} at {company}" if company else title
+    # The location is in the header because most postings never repeat it in
+    # the description (65 of 93 Pune postings do not), so without it a
+    # vector has no idea where the job is and "data engineer in Pune" is
+    # matched on the role alone.
+    location = (location or "").strip()
+    return f"{header}, {location}" if location else header
 
 
 def chunk_whole(
-    posting_id: int, title: str, company: str, description: str
+    posting_id: int,
+    title: str,
+    company: str,
+    description: str,
+    location: str | None = None,
 ) -> list[Chunk]:
     """One vector for the whole posting. The baseline."""
     body = strip_noise(description)
-    content = f"{_header(title, company)}. {body}".strip()
+    content = f"{_header(title, company, location)}. {body}".strip()
     return [Chunk(posting_id, "whole", 0, content[: MAX_CHARS * 2])]
 
 
@@ -62,16 +72,20 @@ _PARAGRAPH = re.compile(r"\n+")
 
 
 def chunk_sections(
-    posting_id: int, title: str, company: str, description: str
+    posting_id: int,
+    title: str,
+    company: str,
+    description: str,
+    location: str | None = None,
 ) -> list[Chunk]:
     """Split on paragraphs, then pack into chunks under the model's window.
 
-    Every chunk is prefixed with the title and company. Without that a chunk
+    Every chunk is prefixed with the title, company and location. Without that a chunk
     saying "5 years of Python" retrieves for any query mentioning Python and
     the caller has no idea which job it came from; the prefix costs a few
     tokens and makes each chunk independently meaningful.
     """
-    header = _header(title, company)
+    header = _header(title, company, location)
     paragraphs = [strip_noise(p) for p in _PARAGRAPH.split(description or "")]
     paragraphs = [p for p in paragraphs if p]
     if not paragraphs:
@@ -113,9 +127,16 @@ def chunk_sections(
 STRATEGIES = {"whole": chunk_whole, "section": chunk_sections}
 
 
-def chunk(strategy: str, posting_id: int, title: str, company: str, description: str):
+def chunk(
+    strategy: str,
+    posting_id: int,
+    title: str,
+    company: str,
+    description: str,
+    location: str | None = None,
+):
     try:
-        return STRATEGIES[strategy](posting_id, title, company, description)
+        return STRATEGIES[strategy](posting_id, title, company, description, location)
     except KeyError:
         known = ", ".join(sorted(STRATEGIES))
         raise ValueError(

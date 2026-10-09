@@ -43,44 +43,10 @@ def test_remote_share_is_a_fraction(corpus):
     assert trends.remote_share(pd.DataFrame()) == 0.0
 
 
-def test_salary_by_skill_only_reports_well_supported_skills(corpus):
-    table = trends.salary_by_skill(corpus, min_postings=5)
-    assert (table["postings"] >= 5).all()
-    assert (table["median_usd"] > 0).all()
-    assert table["median_usd"].is_monotonic_decreasing
-
-
-def test_salary_by_skill_ranks_the_better_paid_family_higher(corpus):
-    table = trends.salary_by_skill(corpus, min_postings=3, top_n=100).set_index("skill")
-    # The synthetic LLM roles pay more than the analyst roles, and the skills
-    # that only appear in each should come out in that order.
-    assert table.loc["rag", "median_usd"] > table.loc["tableau", "median_usd"]
-
-
 def test_summary_counts_its_own_denominators(corpus):
     result = trends.summary(corpus, days=365)
     assert result["postings"] == len(corpus)
-    assert result["with_salary"] < result["postings"]
-    assert result["salary_coverage"] == round(
-        result["with_salary"] / result["postings"], 3
-    )
-    assert result["median_salary_usd"] > 0
     assert len(result["top_skills"]) == 15
-
-
-def test_priced_postings_need_a_currency_and_plausible_bounds():
-    frame = pd.DataFrame(
-        {
-            # A believable posting, one with no currency, and "100-200k"
-            # misread as 100 to 200,000, whose midpoint alone looks fine.
-            "salary_min_year": [120_000, 120_000, 100],
-            "salary_max_year": [150_000, 150_000, 200_000],
-            "salary_currency": ["USD", None, "USD"],
-        }
-    )
-    priced = trends._priced(frame)
-    assert priced.index.tolist() == [0]
-    assert priced["salary_usd"].tolist() == [135_000]
 
 
 def test_summary_of_an_empty_corpus_does_not_explode():

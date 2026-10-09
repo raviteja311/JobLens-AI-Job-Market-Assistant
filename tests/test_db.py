@@ -103,6 +103,28 @@ def test_raw_rows_round_trip(conn):
     assert stored["position"] == "ML Engineer"
 
 
+def test_raw_rows_store_changes_only(conn):
+    run_id = db.start_run(conn, "remoteok")
+    payload = {"id": "42", "position": "ML Engineer", "company": "Acme"}
+    item = RawItem(source="remoteok", source_id="42", payload=payload)
+    assert db.insert_raw(conn, [item], run_id) == 1
+    # The same payload again, even with its keys in another order.
+    reordered = RawItem(
+        source="remoteok", source_id="42", payload=dict(reversed(payload.items()))
+    )
+    assert db.insert_raw(conn, [reordered], run_id) == 0
+    # A real change is stored, and so is the same id from another source.
+    changed = RawItem(
+        source="remoteok", source_id="42", payload={**payload, "position": "Lead"}
+    )
+    other_source = RawItem(source="lever", source_id="42", payload=payload)
+    assert db.insert_raw(conn, [changed, other_source], run_id) == 2
+    # Going back to the old text is a change from the latest copy.
+    assert db.insert_raw(conn, [item], run_id) == 1
+    count = conn.execute("select count(*) as n from raw_postings").fetchone()["n"]
+    assert count == 4
+
+
 def test_run_log_records_success(conn):
     run_id = db.start_run(conn, "remoteok")
     db.finish_run(conn, run_id, status="ok", fetched=10, inserted=8, updated=2)
@@ -115,7 +137,7 @@ def test_run_log_records_success(conn):
 
 
 def test_run_log_records_failure(conn):
-    run_id = db.start_run(conn, "adzuna")
+    run_id = db.start_run(conn, "greenhouse")
     db.finish_run(conn, run_id, status="failed", error="429 from upstream")
     row = conn.execute(
         "select status, error from ingestion_runs where run_id = %s", (run_id,)
@@ -167,3 +189,31 @@ def test_load_embeddings_aligns_rows_and_drops_the_unembedded(conn):
     for row, posting_id in enumerate(subset["id"]):
         expected = 0.25 if posting_id == ids[0] else 0.5
         assert vectors[row, 0] == pytest.approx(expected)
+
+
+def test_keyword_search_finds_a_city_named_only_in_the_location(conn):
+    # Migration 005: before it, a city was searchable only if the description
+    # repeated it, and most postings do not.
+    from joblens.search import retrieval
+
+    in_pune = Posting.build(
+        source="remoteok",
+        source_id="pune",
+        title="Data Engineer",
+        company="Acme",
+        url="https://example.com/pune",
+        location="Pune, Maharashtra, India",
+        description_html="<p>Build pipelines.</p>",
+    )
+    elsewhere = Posting.build(
+        source="remoteok",
+        source_id="chennai",
+        title="Data Engineer",
+        company="Acme",
+        url="https://example.com/chennai",
+        location="Chennai, India",
+        description_html="<p>Build pipelines.</p>",
+    )
+    db.upsert_postings(conn, [in_pune, elsewhere])
+    hits = retrieval.keyword_search(conn, "pune", limit=5)
+    assert [h.location for h in hits] == ["Pune, Maharashtra, India"]

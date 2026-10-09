@@ -22,6 +22,8 @@ log = logging.getLogger(__name__)
 class RunResult:
     source: str
     fetched: int = 0
+    # Fetched jobs that were new or changed, so written to bronze.
+    stored: int = 0
     inserted: int = 0
     updated: int = 0
     skipped: int = 0
@@ -32,7 +34,7 @@ class RunResult:
         if self.failed:
             return f"{self.source}: failed ({self.error})"
         return (
-            f"{self.source}: fetched {self.fetched}, "
+            f"{self.source}: fetched {self.fetched}, stored {self.stored}, "
             f"new {self.inserted}, refreshed {self.updated}, skipped {self.skipped}"
         )
 
@@ -66,8 +68,12 @@ def ingest_source(source_name: str, limit: int = 200) -> RunResult:
         run_id = db.start_run(conn, source_name)
         try:
             items = module.fetch(limit)
-            result.fetched = db.insert_raw(conn, items, run_id)
-            rows = db.fetch_raw(conn, run_id=run_id)
+            result.fetched = len(items)
+            result.stored = db.insert_raw(conn, items, run_id)
+            # Transform everything fetched, not only what bronze stored. An
+            # unchanged job is skipped by insert_raw but is still open, and
+            # the upsert is what moves its last_seen_at forward.
+            rows = [item.model_dump() for item in items]
             postings, result.skipped = _to_postings(module, rows)
             result.inserted, result.updated = db.upsert_postings(conn, postings)
             db.finish_run(

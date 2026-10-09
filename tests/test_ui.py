@@ -44,9 +44,6 @@ TREND_SUMMARY = {
     "postings": 3,
     "sources": {"hackernews": 3},
     "remote_share": 0.5,
-    "with_salary": 1,
-    "salary_coverage": 0.3,
-    "median_salary_usd": 150000,
     "top_skills": [{"skill": "python", "postings": 3, "share": 1.0}],
     "top_regions": [{"region": "unknown", "postings": 2, "remote_share": 0.5}],
 }
@@ -174,12 +171,7 @@ def test_rate_limit_and_backend_down_are_warnings(status, detail, expected):
 
 def test_trends_reports_regions_honestly():
     at, _ = _run(TRENDS)
-    assert [m.label for m in at.metric] == [
-        "Postings",
-        "Remote",
-        "State a salary",
-        "Median salary",
-    ]
+    assert [m.label for m in at.metric] == ["Postings", "Remote"]
     regions = at.dataframe[0].value
     assert regions["region"].tolist() == ["not stated"]
     assert regions["remote_share"].tolist() == [50.0]

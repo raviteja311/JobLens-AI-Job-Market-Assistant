@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from joblens.search import places
 from joblens.search.embeddings import Embedder, get_embedder
 
 # The constant from the original RRF paper. It damps the contribution of the
@@ -78,12 +79,20 @@ _OR_QUERY = """
 """
 
 
+# ts_rank_cd's normalization flags. 0 is none: a long posting that repeats
+# "data", "engineer" and "analyst" outranks a short exact match, which put the
+# same few long postings first for unrelated queries. 1 divides by
+# 1 + log(document length). Measured in docs/experiments.md (2026-10-08).
+TS_RANK_NORMALIZATION = 0
+
+
 def keyword_search(conn, query: str, limit: int = 20) -> list[SearchHit]:
     """Postgres full-text search over the stored tsvector."""
     rows = conn.execute(
         f"""
         with q as (select {_OR_QUERY} as query)
-        {_SELECT}, ts_rank_cd(p.search_vector, q.query) as score,
+        {_SELECT},
+               ts_rank_cd(p.search_vector, q.query, {TS_RANK_NORMALIZATION}) as score,
                ts_headline('english', p.description, q.query,
                            'MaxWords=30, MinWords=10, MaxFragments=1') as snippet
           from postings p, q
@@ -112,12 +121,38 @@ def vector_search(
     section strategy one posting can occupy several of the top slots. The
     posting's score is its best chunk: a role that matches the query in one
     section is a match, and averaging would punish long postings.
+
+    The HNSW index covers every strategy and model at once, because pgvector
+    cannot index a subset, so the planner filters on strategy after the index
+    scan. A plain HNSW scan stops after about hnsw.ef_search (40) candidates,
+    and the filter then drops some of them: asking for 30 section postings
+    came back short on 38 of 58 golden queries, and asking for 50 returned
+    about 26. Iterative index scans (pgvector 0.8) keep scanning until the
+    filtered LIMIT is met. relaxed_order lets the index hand rows back slightly
+    out of order, which the outer query re-sorts by similarity anyway:
+    measured at 0.99 overlap with an exact scan for about 6 ms
+    (docs/experiments.md, 2026-10-08). For the whole strategy the planner
+    skips the index and sorts the 697 rows exactly, and this setting is moot.
     """
     embedder = embedder or get_embedder()
     vector = embedder.encode([query])[0]
     literal = "[" + ",".join(f"{v:.6f}" for v in vector) + "]"
 
-    rows = conn.execute(
+    # SET LOCAL, inside a transaction of its own, so the setting is scoped to
+    # this search even on a connection that runs in autocommit.
+    with conn.transaction():
+        conn.execute(ITERATIVE_SCAN)
+        rows = _nearest(conn, literal, strategy, embedder.name, limit, chunk_multiplier)
+    return [
+        _hit(row, float(row["score"]), "vector", i + 1) for i, row in enumerate(rows)
+    ]
+
+
+ITERATIVE_SCAN = "set local hnsw.iterative_scan = relaxed_order"
+
+
+def _nearest(conn, literal, strategy, model, limit, chunk_multiplier) -> list[dict]:
+    return conn.execute(
         f"""
         with nearest as (
             select posting_id, content,
@@ -137,11 +172,8 @@ def vector_search(
          order by score desc
          limit %s
         """,
-        (literal, strategy, embedder.name, literal, limit * chunk_multiplier, limit),
+        (literal, strategy, model, literal, limit * chunk_multiplier, limit),
     ).fetchall()
-    return [
-        _hit(row, float(row["score"]), "vector", i + 1) for i, row in enumerate(rows)
-    ]
 
 
 def reciprocal_rank_fusion(
@@ -189,15 +221,45 @@ def hybrid_search(
     strategy: str = "whole",
     limit: int = 20,
     candidates: int = 50,
+    rrf_k: int = RRF_K,
+    city_boost: bool | None = None,
 ) -> list[SearchHit]:
-    """Both retrievers, fused. The default for /search."""
+    """Both retrievers, fused. The default for /search.
+
+    When the query names an Indian city, the postings located there among
+    the fused top CITY_BOOST_WINDOW * limit are added as a third ranked list,
+    so each gets one more 1 / (k + rank) vote. It is a boost, not a filter:
+    remote and other-city postings still rank, below equally good ones in
+    the named city. The window keeps a weak role match from riding the city
+    vote: boosting any in-city candidate put Chennai data engineers and data
+    stewards above data scientists for "data scientist role in Chennai". See
+    places.py for why neither retriever honours a city on its own, and
+    docs/experiments.md (2026-10-08) for the measurements.
+    """
     runs = {
         "keyword": keyword_search(conn, query, limit=candidates),
         "vector": vector_search(
             conn, query, embedder=embedder, strategy=strategy, limit=candidates
         ),
     }
-    return reciprocal_rank_fusion(runs, limit=limit)
+    city = places.query_city(query) if _boost(city_boost) else None
+    if city is not None:
+        fused = reciprocal_rank_fusion(runs, limit=CITY_BOOST_WINDOW * limit, k=rrf_k)
+        local = [hit for hit in fused if places.in_city(hit.location, city)]
+        if local:
+            runs["city"] = local
+    return reciprocal_rank_fusion(runs, limit=limit, k=rrf_k)
+
+
+# Whether hybrid search adds the city vote when a call does not say, and how
+# far down the fused list an in-city posting may be and still get it, as a
+# multiple of the page size (30 for the API's default of 10).
+CITY_BOOST = True
+CITY_BOOST_WINDOW = 3
+
+
+def _boost(value: bool | None) -> bool:
+    return CITY_BOOST if value is None else value
 
 
 def search(
@@ -208,17 +270,27 @@ def search(
     strategy: str = "whole",
     limit: int = 20,
     rerank: bool = False,
+    rerank_config=None,
+    rrf_k: int = RRF_K,
 ) -> list[SearchHit]:
-    """One entry point, so the eval harness scores exactly what /search serves."""
+    """One entry point, so the eval harness scores exactly what /search serves.
+
+    `rerank_config` (a rerank.RerankConfig) is for the Phase 3 experiments;
+    None means the shipped defaults.
+    """
+    if rerank:
+        from joblens.search.rerank import DEFAULT, rerank_hits
+
+        rerank_config = rerank_config or DEFAULT
+        first_stage = rerank_config.pool(limit)
+    else:
+        first_stage = limit
+
     if mode == "keyword":
-        hits = keyword_search(conn, query, limit=limit if not rerank else limit * 3)
+        hits = keyword_search(conn, query, limit=first_stage)
     elif mode == "vector":
         hits = vector_search(
-            conn,
-            query,
-            embedder=embedder,
-            strategy=strategy,
-            limit=limit if not rerank else limit * 3,
+            conn, query, embedder=embedder, strategy=strategy, limit=first_stage
         )
     elif mode == "hybrid":
         hits = hybrid_search(
@@ -226,13 +298,12 @@ def search(
             query,
             embedder=embedder,
             strategy=strategy,
-            limit=limit if not rerank else limit * 3,
+            limit=first_stage,
+            rrf_k=rrf_k,
         )
     else:
         raise ValueError(f"unknown mode {mode!r}. known: keyword, vector, hybrid")
 
     if rerank:
-        from joblens.search.rerank import rerank_hits
-
-        hits = rerank_hits(query, hits, limit=limit)
+        hits = rerank_hits(query, hits, limit=limit, config=rerank_config, conn=conn)
     return hits[:limit]

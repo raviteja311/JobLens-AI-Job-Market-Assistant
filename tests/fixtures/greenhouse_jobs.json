@@ -1,0 +1,177 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/sigmoid/jobs/8742061002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "education": "education_required",
+      "internal_job_id": 6495883002,
+      "location": {
+        "name": "Atlanta , GA, USA"
+      },
+      "metadata": [
+        {
+          "id": 4234462002,
+          "name": "Employment Type",
+          "value": "Full-time",
+          "value_type": "single_select"
+        },
+        {
+          "id": 4293932002,
+          "name": "Hiring Manager",
+          "value": "Sankalan Prasad",
+          "value_type": "short_text"
+        },
+        {
+          "id": 4293933002,
+          "name": "Business Head",
+          "value": "Lokesh Anand",
+          "value_type": "short_text"
+        },
+        {
+          "id": 115799185002,
+          "name": "Department Category",
+          "value": "Business Operations",
+          "value_type": "single_select"
+        },
+        {
+          "id": 115799203002,
+          "name": "Min Work Experience",
+          "value": "15.0",
+          "value_type": "number"
+        },
+        {
+          "id": 115799204002,
+          "name": "Max Work Experience",
+          "value": "20.0",
+          "value_type": "number"
+        }
+      ],
+      "id": 8742061002,
+      "updated_at": "2026-08-24T06:21:15-04:00",
+      "requisition_id": "ACDA",
+      "title": "Accounts Director",
+      "company_name": "Sigmoid",
+      "first_published": "2026-08-24T06:21:15-04:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;div&gt;\n&lt;h2&gt;Accounts Director - Sigmoid Analytics&lt;/h2&gt;\n&lt;p&gt;&lt;strong&gt;Location:&lt;/strong&gt; Atlanta - 30% travel&lt;/p&gt;\n&lt;p&gt;Sigmoid unlocks business value for Fortune 1000 companies through expert data engineering, data science, and AI consulting.&lt;/p&gt;\n&lt;p&gt;We solve complex challenges for leaders in CPG, Retail, BFSI, and Life Sciences. With 10+ delivery centers in the USA, Canada, UK, Europe, and India, we deliver cutting-edge data modernization and generative AI solutions. Join us to shape the future of data-driven innovation!&lt;/p&gt;\n&lt;h2&gt;Why Sigmoid?&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li&gt;Inc. 500 Fastest-Growing Companies (4 years running)&lt;/li&gt;\n&lt;li&gt;Deloitte Technology Fast 500 (4 years running)&lt;/li&gt;\n&lt;li&gt;Top Employer: AIM’s 50 Best Firms for Data Scientists&lt;/li&gt;\n&lt;li&gt;Recently named British Data Awards Finalist &amp;amp; more accolades on the way!&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;Accelerate your career with a fast-growing, innovative company. Apply now and be part of our award winning team!&lt;/p&gt;\n&lt;h2&gt;Job Description&lt;/h2&gt;\n&lt;p&gt;We are looking for passionate individuals who can maintain and enhance existing client relationships by cross-selling and up-selling our services and creating new ones where possible.&lt;/p&gt;\n&lt;p&gt;The Accounts Director should be able to:&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Develop a good understanding of customer’s needs. Understand their industry, competitors, market pressures and incorporate this thinking into compelling propositions.&lt;/li&gt;\n&lt;li&gt;Communicate effectively and build good relationships with decision makers at every level, whereby they trust and value your opinions, seek advice on their business, technology and operations issues.&lt;/li&gt;\n&lt;li&gt;Open up new buyers and new avenues of revenue generation within the customer’s organization by mining new contacts and taking up discussions.&lt;/li&gt;\n&lt;li&gt;Conduct QBR, understand challenges, ensure CSAT and in partnership with delivery managers and technical teams ensure that there are no hiccups in the relationship.&lt;/li&gt;\n&lt;li&gt;Timely forecast revenue and resource requirement for the customer engagements to ensure seamless customer experience.&lt;/li&gt;\n&lt;li&gt;Spearhead pitches and new business development within your portfolio. Write proposals and manage deals to the point of contract agreement.&lt;/li&gt;\n&lt;li&gt;Maintain a close view of works in progress.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;Skills and Qualifications&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li&gt;Positive attitude, quick thinker, and able problem-solver who is also both flexible and resilient. The person should be able to operate independently in high pressure situations.&lt;/li&gt;\n&lt;li&gt;Prior successful sales/accounts management in enterprise software services, prior experience in Analytics &amp;amp; Big data would be an added advantage.&lt;/li&gt;\n&lt;li&gt;Solutions selling experience and delivery experience.&lt;/li&gt;\n&lt;li&gt;A history of consistent over-achievement.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;Education/Experience&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li&gt;Minimum Bachelor’s degree in a technical / business discipline.&lt;/li&gt;\n&lt;li&gt;15+ years of experience in B2B Sales and Account Management roles for enterprise customers.&lt;/li&gt;\n&lt;li&gt;Experience in technology, consultative selling.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/div&gt;&lt;div class=&quot;content-conclusion&quot;&gt;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;/p&gt;\n&lt;blockquote class=&quot;gmail_quote&quot;&gt;&lt;em&gt;By submitting your application, you consent to being contacted by our Talent Acquisition team via phone call, email, SMS, WhatsApp, or other communication channels regarding your application and relevant career opportunities.&lt;/em&gt;&lt;/blockquote&gt;\n&lt;p&gt;&lt;/p&gt;&lt;/div&gt;",
+      "departments": [
+        {
+          "id": 4025747002,
+          "name": "Account Management",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 4129048002,
+          "name": "Sigmoid (Onshore)",
+          "location": "Onshore",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": false,
+      "ai_opt_out_request_url": "http://app2.greenhouse.io/ai_opt_out_request/job_post/8742061002/ai_opt_out"
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/sigmoid/jobs/5083674002",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "education": "education_required",
+      "internal_job_id": 4776376002,
+      "location": {
+        "name": "Bengaluru, Karnataka, India"
+      },
+      "metadata": [
+        {
+          "id": 4234462002,
+          "name": "Employment Type",
+          "value": "Full-time",
+          "value_type": "single_select"
+        },
+        {
+          "id": 4293932002,
+          "name": "Hiring Manager",
+          "value": "Ashish Heda",
+          "value_type": "short_text"
+        },
+        {
+          "id": 4293933002,
+          "name": "Business Head",
+          "value": "Rahul Kumar Singh",
+          "value_type": "short_text"
+        },
+        {
+          "id": 115799185002,
+          "name": "Department Category",
+          "value": "Artificial Intelligence & Analytics",
+          "value_type": "single_select"
+        },
+        {
+          "id": 115799203002,
+          "name": "Min Work Experience",
+          "value": "4.0",
+          "value_type": "number"
+        },
+        {
+          "id": 115799204002,
+          "name": "Max Work Experience",
+          "value": "8.0",
+          "value_type": "number"
+        }
+      ],
+      "id": 5083674002,
+      "updated_at": "2026-09-16T07:32:18-04:00",
+      "requisition_id": "ALDS",
+      "title": "Associate Lead Data Scientist",
+      "company_name": "Sigmoid",
+      "first_published": "2021-11-10T09:06:00-05:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;p&gt;Sigmoid Analytics is a leading Data solutions company backed by Sequoia Capital. We oﬀer best in- end-to-end data value chain spanning across Data Science, Data Engineering and Data Ops. With data and technology at the core of our solutions, we are solving some of the toughest problems out there. Our culture is modelled around expertise and mutual respect with a team first mindset. You’ll work with teams that push the boundaries of what-is-possible and build solutions that energize and inspire.&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;Offices&lt;/strong&gt;: New York | Dallas | San Francisco | Lima | Bengaluru&lt;/p&gt;\n&lt;p&gt;The below role is for our Bengaluru office.&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;About the Role&lt;/strong&gt;:&lt;/p&gt;\n&lt;p&gt;You will work on a broad range of cutting-edge data science and machine learning problems across a variety of industries. You will be engaging with clients to understand their business context. If you are passionate to work on complex unstructured business problems that can be solved using data science and machine learning, we would like to talk to you.&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;Role: ALDS&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;Mandate&lt;/strong&gt;&lt;strong&gt; &lt;/strong&gt;&lt;strong&gt;Skills &amp;amp; Competencies:&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Experience in Programming (Python, R, SQL, NoSQL, Spark) with ML tools &amp;amp; Cloud Technology (AWS, Azure, GCP)&lt;/li&gt;\n&lt;li&gt;Experience in Python libraries such as NumPy, pandas, scikit-learn, tensor-flow, scapy, scrapy, BERT etc.&lt;/li&gt;\n&lt;li&gt;Good understanding in statistics, and ability to design statistical hypothesis testing to aid formal decision making.&lt;/li&gt;\n&lt;li&gt;Develops predictive models using Machine Learning algorithms (SVM, Random Forest, Neural Network, Decision Tree, Logistic Regression, K-mean Clustering, linear regression, PCA etc.)&lt;/li&gt;\n&lt;li&gt;Engaging with clients, understanding complex problem statements, and offering solutions in the domains of Retail, Pharma, Banking, Insurance, etc.&lt;/li&gt;\n&lt;li&gt;Contribute to internal product development initiatives related to data science.&lt;/li&gt;\n&lt;li&gt;Develop data science roadmap, and guide data scientist to meet their deliverables.&lt;/li&gt;\n&lt;li&gt;Handling end-to-end client AI &amp;amp; analytics programs. Your role will be a combination of hands-on contribution, technical team management, and client interaction.&lt;/li&gt;\n&lt;li&gt;Proven ability to discover solutions hidden in large datasets and to drive business results with their data-based insights&lt;/li&gt;\n&lt;li&gt;Drive excellent project management required to deliver complex projects, including effort/time estimation.&lt;/li&gt;\n&lt;li&gt;Be proactive, with full ownership of the engagement. Build scalable client engagement level processes for faster turnaround &amp;amp; higher accuracy&lt;/li&gt;\n&lt;li&gt;Define Technology/ Strategy and Roadmap for client accounts, and guides implementation of that strategy within projects&lt;/li&gt;\n&lt;li&gt;Run regular project reviews and audits to ensure that projects are being executed within the guardrails agreed by all stakeholders&lt;/li&gt;\n&lt;li&gt;Manage the team-members, to ensure that the project plan is being adhered to over the course of the project&lt;/li&gt;\n&lt;li&gt;Manage the client stakeholders, and their expectations, with a regular cadence of weekly meetings and status updates.&lt;/li&gt;\n&lt;li&gt;Build a trusted advisor relationship with the IT management at clients and internal accounts leadership.&lt;/li&gt;\n&lt;li&gt;Build business case for technological investments to be made for future needs and to remain competitive&lt;/li&gt;\n&lt;li&gt;Ensure that billing and utilization of team members is maximized throughout the year&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;strong&gt;Desired Skills:&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Experience designing data science solutions to business problems&lt;/li&gt;\n&lt;li&gt;Deep understanding of ML algorithms for common use cases in both structured and unstructured data ecosystems.&lt;/li&gt;\n&lt;li&gt;Comfortable with large scale data processing and distributed computing&lt;/li&gt;\n&lt;li&gt;Allocates workload among team members and by taking into consideration employee availability, skill set, and current workload when making assignments.&lt;/li&gt;\n&lt;li&gt;Providing required inputs to sales, and pre-sales activities&lt;/li&gt;\n&lt;li&gt;Excellent written and verbal communication skills&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;strong&gt;Desired Experience &amp;amp; Education:&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;4- 8 years of relevant Machine Learning experience.&lt;/li&gt;\n&lt;li&gt;Minimum Master’s Degree in Engineering, Computer Science, Mathematics, Computational Statistics, Operations Research, Machine Learning or related technical fields.&lt;/li&gt;\n&lt;/ul&gt;&lt;div class=&quot;content-conclusion&quot;&gt;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;/p&gt;\n&lt;blockquote class=&quot;gmail_quote&quot;&gt;&lt;em&gt;By submitting your application, you consent to being contacted by our Talent Acquisition team via phone call, email, SMS, WhatsApp, or other communication channels regarding your application and relevant career opportunities.&lt;/em&gt;&lt;/blockquote&gt;\n&lt;p&gt;&lt;/p&gt;&lt;/div&gt;",
+      "departments": [
+        {
+          "id": 4025741002,
+          "name": "Data Science",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 4013061002,
+          "name": "Sigmoid",
+          "location": "Bengaluru, Karnataka, India",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": false,
+      "ai_opt_out_request_url": "http://app2.greenhouse.io/ai_opt_out_request/job_post/5083674002/ai_opt_out"
+    }
+  ],
+  "meta": {
+    "total": 2
+  }
+}

@@ -61,16 +61,42 @@ def test_full_run_lands_clean_postings(clean_db, offline_remoteok):
 
 
 def test_second_run_updates_instead_of_duplicating(clean_db, offline_remoteok):
-    pipeline.ingest_source("remoteok", limit=50)
+    first = pipeline.ingest_source("remoteok", limit=50)
+    with db.connect() as conn:
+        seen_before = conn.execute(
+            "select max(last_seen_at) as t from postings"
+        ).fetchone()["t"]
     second = pipeline.ingest_source("remoteok", limit=50)
+    assert first.stored == 3
+    assert second.fetched == 3
+    assert second.stored == 0  # nothing changed upstream
     assert second.inserted == 0
     assert second.updated == 2
     with db.connect() as conn:
         silver = conn.execute("select count(*) as n from postings").fetchone()["n"]
         bronze = conn.execute("select count(*) as n from raw_postings").fetchone()["n"]
+        seen_after = conn.execute(
+            "select min(last_seen_at) as t from postings"
+        ).fetchone()["t"]
     assert silver == 2
-    # Bronze keeps both fetches. That is the point of bronze.
-    assert bronze == 6
+    # An identical copy is not stored twice; bronze records changes only.
+    assert bronze == 3
+    # But every job seen again is still marked as seen.
+    assert seen_after > seen_before
+
+
+def test_a_changed_job_is_stored_again(clean_db, monkeypatch):
+    payload = json.loads((FIXTURES / "remoteok.json").read_text())
+    monkeypatch.setattr(remoteok, "get_json", lambda *a, **k: payload)
+    pipeline.ingest_source("remoteok", limit=50)
+    edited = [dict(entry) for entry in payload]
+    edited[1]["position"] = "Senior Machine Learning Engineer"
+    monkeypatch.setattr(remoteok, "get_json", lambda *a, **k: edited)
+    second = pipeline.ingest_source("remoteok", limit=50)
+    assert second.stored == 1
+    with db.connect() as conn:
+        bronze = conn.execute("select count(*) as n from raw_postings").fetchone()["n"]
+    assert bronze == 4
 
 
 def test_run_is_recorded_in_the_log(clean_db, offline_remoteok):

@@ -1319,3 +1319,526 @@ CI comparison against it is also a measurement of corpus drift.
 **Decision.** All fixed with regression tests. The judge's faithfulness and
 completeness are no longer regression-gated, which is what the code comment
 had always claimed.
+
+---
+
+## 2026-10-08 - Reranker decision rule, fixed before any result
+
+**Pre-registration.** Written and committed before any reranker experiment
+was run on the Indian corpus (697 postings). Nobody has seen a reranker
+number on this corpus yet; the v1 numbers (global corpus) are context, not
+evidence.
+
+**Rule.** The cross-encoder reranker is on by default for `/search` only if
+its best configuration improves MRR over the hybrid baseline by **at least
++0.05 absolute** while keeping **p95 latency under 500 ms per query** on this
+laptop's CPU. Otherwise hybrid is the default and rerank stays opt-in
+(`?rerank=true`).
+
+- Baseline: hybrid (whole), no rerank, same queries, same run.
+- Latency: wall-clock per query over the judged queries, warm models,
+  p95 over all queries in the run. Measured on the 7.3 GB, 12-core laptop
+  with CPU-only torch.
+- Judgements: the human-verified golden queries. Runs scored against LLM
+  grades before the human grades exist are labelled provisional and cannot
+  trigger the rule.
+- Chosen by Jetti Raviteja. X = 0.05 because a smaller gain could flip with
+  a few relabels at about 25 judged queries; Y = 500 ms because a search above
+  that stops feeling interactive.
+
+**Experiments this rule will judge** (fix plan, Phase 3): candidate pool size
+(20, 30, 50), what text the cross-encoder reads (snippet, title plus the
+first ~400 tokens, best-matching section), score fusion with the first stage
+(alpha 0.3, 0.5, 0.7), and a cheaper model (TinyBERT-L-2) and/or
+`max_length=256`.
+
+---
+
+## 2026-10-08 - Reranker experiments, provisional (LLM-judged)
+
+**Status.** Provisional. Scored against LLM grades, so under the rule
+pre-registered above it cannot change the default. It is here to show which
+levers are worth the human-judged run, and to fix the candidate list for that
+run before any human grade exists.
+
+**Setup.** `scripts/rerank_experiments.py --judgements ...`. The 25-query
+human-grading subset (seed 20261008), judged by Claude Opus 5.5 from the full
+posting text under the final labelling guide; 23 queries have at least one
+relevant posting (q01 and q24 have none). Corpus: 697 postings. Hybrid
+(whole) first stage. Every reranked row changes one thing from the shipped
+reranker (MiniLM-L6, snippet text, pool of 30, pure reorder). Latency is one
+pass on the laptop CPU with warm models; p95 is nearest-rank over 23 queries,
+so it is the 22nd slowest query.
+
+**Result.**
+
+| configuration | recall@10 | MRR | nDCG@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| hybrid (whole), baseline | 0.374 | 0.596 | 0.412 | 189 | 306 |
+| rerank as shipped (snippet, pool 30) | 0.506 | 0.729 | 0.523 | 3094 | 3556 |
+| 3.2 document = head | 0.503 | 0.717 | 0.549 | 2828 | 3130 |
+| 3.2 document = best section | 0.586 | 0.763 | 0.592 | 1719 | 2028 |
+| 3.3 pool = 20 | 0.469 | 0.706 | 0.495 | 1847 | 2289 |
+| 3.3 pool = 50 | 0.465 | 0.678 | 0.469 | 3686 | 3997 |
+| 3.4 alpha = 0.3 | 0.476 | 0.733 | 0.519 | 3038 | 3467 |
+| 3.4 alpha = 0.5 | 0.449 | 0.684 | 0.485 | 3041 | 3470 |
+| 3.4 alpha = 0.7 | 0.394 | 0.646 | 0.432 | 3004 | 3496 |
+| 3.5 TinyBERT-L-2 | 0.500 | 0.728 | 0.511 | 412 | 557 |
+| 3.5 max_length = 256 | 0.478 | 0.692 | 0.500 | 1813 | 2053 |
+| 3.5 TinyBERT-L-2, max_length = 256 | 0.480 | 0.725 | 0.496 | 299 | 326 |
+
+What it suggests, all to be confirmed on human grades:
+
+- Reranking raised recall@10 here (0.374 to 0.506), the opposite of v1. The
+  likely reason is a weak first stage: keyword search keeps ranking the same
+  long postings first for unrelated queries (ts_rank_cd without length
+  normalisation), so the reranker has more to correct.
+- The text the cross-encoder reads matters most. The best-matching section
+  beat the snippet on every metric and was faster, plausibly because a
+  section (about 800 characters) is shorter than the snippet a whole-posting
+  chunk produces (about 1,800).
+- 30 is the best pool. 50 adds distractors faster than it adds relevant
+  postings.
+- Fusion with the first-stage score hurts, monotonically in alpha: the first
+  stage is not worth keeping a share of.
+- TinyBERT-L-2 matches MiniLM-L6 on MRR (0.728 vs 0.729) at about a seventh
+  of the latency. Only TinyBERT with max_length 256 passes the rule here:
+  +0.129 MRR at p95 326 ms.
+
+**Candidates declared for the human-judged run.** The table changes one thing
+at a time, so the obvious pairing of the best text with the cheap model was
+never run. Naming it after seeing these numbers is a choice informed by them;
+naming it now, before any human grade exists, keeps the human-judged run a
+test rather than a search. Added to `scripts/rerank_experiments.py`:
+
+- TinyBERT-L-2 reading the best section
+- TinyBERT-L-2 reading the best section, max_length 256
+
+Nothing else will be added before the human-judged run. That run applies the
+pre-registered rule to every configuration in the script as it stands at
+this commit.
+
+**Addendum, same day: the two declared combinations, run provisionally.**
+Same queries and LLM grades, in one pass with four reference rows so the
+latencies compare within a run.
+
+| configuration | recall@10 | MRR | nDCG@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| hybrid (whole), baseline | 0.374 | 0.596 | 0.412 | 177 | 203 |
+| rerank as shipped | 0.506 | 0.729 | 0.523 | 2947 | 3360 |
+| 3.2 best section (MiniLM-L6) | 0.586 | 0.763 | 0.592 | 1678 | 1970 |
+| 3.5 TinyBERT-L-2, max_length 256 | 0.480 | 0.725 | 0.496 | 304 | 321 |
+| combo TinyBERT-L-2, best section | 0.525 | 0.713 | 0.524 | 316 | 366 |
+| combo TinyBERT-L-2, best section, max_length 256 | 0.525 | 0.713 | 0.524 | 322 | 363 |
+
+- Both combinations pass the rule (+0.117 MRR, p95 about 365 ms). Against
+  TinyBERT with max_length 256 they trade a slightly worse top result (MRR
+  0.713 vs 0.725) for better recall and nDCG (0.525 vs 0.480, 0.524 vs
+  0.496). The full-size model gained on every metric from reading sections;
+  TinyBERT gains only below the first position.
+- The two combinations are identical: a best-matching section is already
+  shorter than 256 tokens, so the cap never bites.
+- Quality is reproducible: the four repeated rows scored exactly as in the
+  first run. Latency is not: the baseline's p95 moved from 306 ms to 203 ms
+  between runs. A p95 within about 100 ms of the 500 ms ceiling is not a
+  safe pass on one run.
+
+**Addendum to the rule: a tie-break.** Three configurations now pass, and
+the rule as pre-registered did not say which becomes the default when more
+than one does. Added on 2026-10-08, after these provisional numbers and
+before any human grade existed: **among passing configurations, the highest
+MRR wins, then the lowest p95.** MRR because it is the metric the rule is
+written in. Chosen by Jetti Raviteja. On the provisional numbers it would
+pick TinyBERT-L-2 with max_length 256; the human-judged run decides.
+`scripts/rerank_experiments.py` applies it and names the winner.
+
+---
+
+## 2026-10-08 - Salary dropped from the project
+
+**Decision.** Phase 4 of the fix plan (salary on INR data, as a model or as
+bands) is skipped, and the salary features are removed: the regression model
+(`ml/salary_model.py`), the `train-salary` command and `make train`, the
+salary-by-skill table, and the salary coverage and median in `/trends` and on
+the dashboard. Chosen by Jetti Raviteja.
+
+**Why.** None of the 697 Greenhouse, Lever and Ashby postings states pay, and
+the one source with structured INR salaries (Adzuna) was removed earlier the
+same day. A model or band table with no rows behind it is a claim with
+nothing to back it, which the fix plan says to delete.
+
+**Kept.** The salary parser (`salary.py`, including the LPA, lakh and crore
+handling), the salary columns on `postings`, and the "with salary" count in
+`stats`, as dormant plumbing in case a salary source returns. The v1 salary
+entries above stay as history.
+
+---
+
+## 2026-10-08 - HNSW post-filtering truncates the section search
+
+**Finding.** One HNSW index covers all of `posting_chunks` (697 `whole` and
+4,907 `section` chunks; pgvector 0.8.6, defaults m = 16, ef_construction =
+64, ef_search = 40). For `whole`, the planner never uses it: a btree filter
+to 697 rows and an exact sort is cheaper. For `section` it does, and applies
+the strategy filter after the index scan, so a query can only see about
+`ef_search` chunks. `vector_search` asks for `limit * 4`.
+
+**Measured** over the 58 golden queries against exact search (each setting
+on its own connection; psycopg's prepared statements otherwise reuse the
+first setting's plan and hide the effect):
+
+| postings requested | ef_search = 40 (default) | queries short | overlap with exact |
+| ---: | --- | ---: | ---: |
+| 10 | 10 | 0 / 58 | 0.960 |
+| 20 | 13 to 20 | 11 / 58 | 0.909 |
+| 30 | 13 to 30, mean 24.9 | 38 / 58 | 0.798 |
+| 50 | 13 to 50, mean 25.8 | 58 / 58 | 0.516 |
+
+`ef_search = 100` matches exact search at every size (about 27 ms a query);
+`hnsw.iterative_scan = relaxed_order` at ef_search 40 reaches 0.99 overlap or
+better at about 5 ms. Exact search takes about 28 to 38 ms.
+
+**Consequence.** Every `vector (section)` and `hybrid (section)` number so far
+was scored on a truncated search. The Phase 3 reranker experiments use
+`whole` and are unaffected.
+
+**Decision, same day: fixed with iterative index scans.** `vector_search` now
+runs `set local hnsw.iterative_scan = relaxed_order` in its own transaction.
+The candidates, measured head to head (one connection each, no prepared
+plans):
+
+| setting | full count | overlap with exact, limit 30 / 50 | p50 ms |
+| --- | --- | ---: | ---: |
+| ef_search = 40, the bug | no | 0.798 / 0.516 | about 25 |
+| ef_search = 100 | yes | 1.000 / 1.000 | about 78 |
+| iterative_scan = relaxed_order | yes | 0.991 / 0.997 | about 31 |
+| iterative_scan = strict_order | yes | 0.926 / 0.939 | about 28 |
+
+ef_search = 100 matches exact search only by costing what an exact scan
+costs (about 77 ms here), which says the index is not doing much at all at
+5,604 chunks; relaxed_order keeps the index useful as the table grows. A
+regression test (`tests/test_vector_search.py`) forces the index plan and
+fails without the fix: 0 of 50 postings, because every candidate the index
+returns is a crowding 'whole' chunk that the filter then drops.
+
+Effect on the section configurations (provisional, 23 LLM-judged queries):
+
+| configuration | recall@10 | MRR | nDCG@10 |
+| --- | ---: | ---: | ---: |
+| vector (section), before | 0.621 | 0.632 | 0.570 |
+| vector (section), after | 0.611 | 0.631 | 0.565 |
+| hybrid (section), before | 0.439 | 0.656 | 0.456 |
+| hybrid (section), after | 0.399 | 0.653 | 0.434 |
+
+The fix is a correctness fix and did not raise these numbers. A top 10 needs
+only 40 chunks, which the bug mostly delivered, so vector (section) is flat.
+Hybrid (section) asks each arm for 50 candidates and used to get about 26
+from the vector arm; with the full 50 it is slightly lower, within noise at
+23 queries. Correct and better on a metric are different claims.
+
+**Also measured, same day (provisional, 23 LLM-judged queries).** The RRF k
+sweep (`scripts/rrf_sweep.py`) is flat from k = 30 to 300; k = 10 is 0.03 MRR
+better than the shipped 60, within noise. Vector (whole) alone beats hybrid
+(whole), MRR 0.696 against 0.596, with keyword alone at 0.431.
+
+---
+
+## 2026-10-08 - Cities were not searchable: location indexing and a city vote
+
+**Symptom.** In manual testing, "data engineer Pune" through hybrid search put
+one Pune posting in the top ten; the top three were in Hyderabad and Chennai.
+
+**Cause.** The posting's `location` field was indexed nowhere. Keyword search
+read title, company and description; the embeddings read "Title at Company"
+and the description. A city was findable only when the description repeated
+it, which 28 of the 93 Pune postings do. Keyword search also ORs the query
+terms, so a long posting saying "data" many times outranks one that says
+"Pune" once.
+
+**Measure.** `scripts/city_precision.py`: for the 10 golden queries that name
+a city, the share of the top ten located in that city. It needs no relevance
+labels, so it is not affected by the pooling bias below.
+
+**Changes, one at a time.**
+
+1. Index the location: migration 005 adds `location` to `search_vector` at
+   weight B, and `chunking` puts it in every chunk header ("Title at
+   Company, Location"); both indexes rebuilt.
+2. `ts_rank_cd` length normalisation, flags 1, 2, 8, 16 and 32: none beat
+   the current 0 on city precision (32 is a monotonic rescale and ranks
+   identically). Not adopted; `TS_RANK_NORMALIZATION` stays 0 as an
+   experiment hook.
+3. A city vote in hybrid search (`search/places.py`): when the query names a
+   city, in-city postings among the fused top `CITY_BOOST_WINDOW * limit`
+   get a third RRF vote. A boost, not a filter.
+
+**Result.**
+
+| stage | keyword | vector (whole) | hybrid (whole) | Pune, hybrid |
+| --- | ---: | ---: | ---: | ---: |
+| before | 0.28 | 0.29 | 0.28 | 0.1 |
+| 1. location indexed | 0.33 | 0.39 | 0.36 | 0.4 |
+| 3. city vote, window 3 x limit | 0.33 | 0.39 | **0.68** | **0.6** |
+
+The window was chosen by Jetti Raviteja from this sweep (hybrid only):
+
+| window (fused top N) | city precision | Pune | Chennai | provisional recall@10 / MRR |
+| ---: | ---: | ---: | ---: | --- |
+| none | 0.36 | 0.4 | 0.2 | 0.390 / 0.571 |
+| 20 | 0.59 | 0.6 | 0.4 | 0.401 / 0.576 |
+| 30 (chosen, 3 x 10) | 0.68 | 0.6 | 0.7 | 0.384 / 0.575 |
+| 100 | 0.78 | 0.9 | 0.9 | 0.375 / 0.575 |
+
+A wider window wins more city matches but promotes in-city jobs in the wrong
+role: at 100, "data scientist role in Chennai" ranked Chennai data engineers
+and data stewards above data scientists elsewhere, which the labelling guide
+grades the other way round. The window keeps a weak role match from riding
+the city vote. On the live API, "data engineer Pune" now returns 7 Pune data
+roles in its top ten.
+
+**Relevance, and why it cannot decide this.** Provisional relevance on the 23
+LLM-judged queries barely moved (hybrid whole MRR 0.596 before, 0.575 after;
+vector whole recall@10 0.472 to 0.435). Two reasons not to read much into it:
+only 4 of those 23 queries name a city, and the judged pool was built from the
+old index, so 17 to 31% of the new top-ten results have never been judged and
+count as irrelevant. Any change that surfaces different postings is penalised
+until the pool is topped up.
+
+**Consequence for the golden set.** The labelling pool was built from the old
+index, so it no longer matches what search returns. It has to be rebuilt
+before human grading starts.
+
+**Follow-up, same day: the labelling pool now includes hybrid search.** The
+pool had drawn the top ten from keyword, vector (whole) and vector (section)
+only, never from hybrid, the default search: 31% of hybrid's top ten had
+never been judged even before the city vote. Hybrid (whole) now contributes
+its top 30, the exact pool the reranker reorders, so every reranked top ten
+is judged too, and hybrid (section) its top 10 (`label.POOL_MODES`). Rebuilt
+before any human grading: the 25-query human subset went from 604 to 918
+candidates (about 47% more grading, chosen by Jetti Raviteja so that the
+pre-registered Phase 3 run is not biased against reranking by unjudged
+postings).
+
+---
+
+## 2026-10-09 - The eval gate could never fail
+
+**Finding.** On pull request #2 the `retrieval` check was green although the
+eval had crashed with "no verified golden queries" and a traceback. The step
+ran `python -m joblens eval --suite retrieval --strict | tee eval.md`. A
+GitHub Actions step with no `shell:` runs under `bash -e`, without
+`pipefail`, so the step's exit code was `tee`'s, which always succeeds. That
+hid crashes and the `--strict` score-regression exit alike, since the gate
+was added (commit eab538c). `deploy.yml` calls this workflow, so no image
+built from `main` was ever really gated by retrieval quality.
+
+**Fix.** `shell: bash` on the step, which runs it with `-eo pipefail`. The
+scorecard step still publishes on failure (`if: always()`).
+
+**Consequence.** The `retrieval` check on pull request #2 now fails, correctly,
+until human-verified golden queries are merged and the baseline is redone.
+
+---
+
+## 2026-10-09 - Filter spot check: 20/20 in India, 17/20 target role
+
+**Setup.** 20 postings drawn at random (seed 20261009) from the 677 not shown
+in the 2026-10-08 sample, each judged by Jetti Raviteja for "in India" and
+"target role" (`JobLens-labelling/spot_check_2026-10-09.csv`, outside the
+repo). Ten rows that looked doubtful were re-checked one by one against a
+summary of the posting text.
+
+**Result.** In India: **20/20**. Target role: **17/20**. The three judged not
+target: an AI customer-success manager (Glean), a forward-deployed AI
+security consultant (AHEAD) and an AI product manager (HackerOne).
+
+**The definition behind 17/20.** The judge counted AI-adjacent roles as
+target: an AI security analyst, product marketing for agentic AI, a project
+manager for quantitative research, a robotics data collector and annotator,
+a hardware intern on an AI data rig and a design manager for AI products. The
+labelling guide's role families are stricter (marketing, design, project
+management and product management are a wrong family there), and under them
+the count would be about 13/20. Quote 17/20 with "AI-adjacent roles counted".
+
+**What it shows.** The location filter is reliable. The role filter's weak
+spot is a bare "AI" in the title, which admits marketing, design, support and
+hardware roles at companies whose product is AI.
+
+---
+
+## 2026-10-09 - The human golden set: agreement with the LLM judge, and the first human baseline
+
+**Setup.** Jetti Raviteja graded all 918 pooled candidates for the 25-query
+human subset (seed 20261009) on 2026-10-09, from summaries of the full
+posting text shown in chat, against `docs/labelling-guide.md`. The grades
+were merged with `scripts/golden_apply.py --grader human`, which marks the
+25 queries verified. Doubtful batches (grade counts that did not match,
+identical postings with different grades) were re-asked before saving.
+q24 ("0-1 years experience data scientist") has no relevant posting at all,
+so the eval skips it and 24 queries count. The LLM grades
+(`llm/grades_llm_current.json`, outside the repo) were not shown per query
+until the human grading was finished.
+
+**Agreement, human vs LLM** (`scripts/golden_agreement.py`, 918 pairs):
+
+| measure | value |
+| --- | ---: |
+| exact agreement | 0.418 |
+| kappa, linear weight | 0.238 |
+| kappa, unweighted | 0.157 |
+
+| human \ LLM | 0 | 1 | 2 |
+| --- | ---: | ---: | ---: |
+| 0 | 238 | 13 | 2 |
+| 1 | 301 | 82 | 38 |
+| 2 | 97 | 83 | 64 |
+
+The disagreement runs one way: the human grades are far more lenient. A
+mean of 73% of each query's pool is relevant (grade above 0) to the human
+and 32% to the LLM; 21 of 25 queries are at least half relevant to the
+human, 5 to the LLM. Agreement is high on the strict level queries (q01,
+q24 0.98; q02 0.87; q49 0.81; q05 0.74) and lowest where the guide caps a
+grade for a missed constraint on top of the role: q35 remote LLM engineer
+0.05, q34 hybrid ML engineer Bengaluru 0.07 (29 human 2s, 1 LLM 2), q53
+GenAI at a product company 0.09, q15 LangChain 0.10. Exact agreement is
+0.51 on the first 12 queries graded and 0.33 on the last 13.
+
+**Reading.** The human grades follow the role and treat work mode, city,
+level and negations softly; the guide, and the LLM, treat a missed
+constraint as a cap. The order effect also fits fatigue over a long
+session. Agreement cannot separate the two. The planned blind re-grade of
+10 queries (3+ days later) measures whether the human standard is stable,
+and decides whether the guide should be rewritten to match it or the
+low-agreement queries re-graded against the guide. No grade was changed on
+the strength of the LLM.
+
+**First human baseline** (`python -m joblens eval --suite retrieval
+--update-baseline`, 24 queries, 697 postings):
+
+| configuration | recall@5 | recall@10 | mrr | ndcg@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.106 | 0.219 | 0.735 | 0.448 | 24 | 58 |
+| vector (whole) | 0.154 | 0.287 | 0.889 | 0.700 | 18 | 21 |
+| vector (section) | 0.177 | 0.311 | 0.865 | 0.665 | 22 | 99 |
+| hybrid (whole) | 0.138 | 0.322 | 0.893 | 0.671 | 85 | 109 |
+| hybrid (section) | 0.163 | 0.293 | 0.837 | 0.641 | 80 | 94 |
+| hybrid + rerank | 0.167 | 0.299 | 0.927 | 0.707 | 2286 | 6494 |
+
+**What the numbers can and cannot say.**
+
+- MRR is near its ceiling. With about 28 relevant postings per query, a
+  relevant posting is almost always ranked first; every configuration but
+  keyword is between 0.84 and 0.93. The pre-registered reranker rule
+  (MRR +0.05 over hybrid at p95 under 500 ms) is therefore hard to meet on
+  this set for reasons that have nothing to do with the reranker: the
+  default rerank here is +0.034 over hybrid (whole). nDCG@10, which tells a
+  1 from a 2, still spreads the configurations (0.45 to 0.71).
+- Recall is capped by the size of the relevant sets. The best possible
+  recall@5 is 0.273 and recall@10 0.421, so the gate's absolute floor
+  (`recall@10 >= 0.55` in `report.FLOORS`) cannot be met by any retriever.
+  It was set when queries had a handful of relevant postings each. The gate
+  failed on that floor and on the drop against the old LLM-judged baseline
+  (recall@10 0.553 to 0.299); both are artefacts of the new judgements, not
+  regressions in search.
+- The rerank latency (p50 2.3 s, p95 6.5 s) is much higher than in the
+  provisional runs (around 320 ms p95 for TinyBERT at max_length 256): the
+  default configuration is MiniLM-L6 with no max_length, on full documents.
+  The whole run took 2 h 53 min of wall time, far more than the measured
+  per-query latencies add up to. The decisive reranker run the same day
+  (14 configurations, same queries) took 10.5 min, so the slow run was the
+  machine at the time, not the code.
+
+**Still open.** The rewrite-or-re-grade question above, until the blind
+re-grade. The floor and the rule metric are settled in the next entry.
+
+---
+
+## 2026-10-09 - Two changes made before the decisive reranker run
+
+Both follow from the baseline above, and both were made before the decisive
+run on the human-verified set. No number from that run existed when they
+were decided.
+
+**1. The recall@10 floor is removed.** `report.FLOORS` for retrieval is now
+nDCG@10 >= 0.45 only. With about 28 relevant postings per query the best
+possible recall@10 is 0.421, so the old 0.55 floor could not be met by any
+retriever and would have kept the CI gate red forever. recall@5 and
+recall@10 are still in the regression check (a drop of more than 0.05
+against the committed baseline fails the build).
+
+**2. The reranker rule now uses nDCG@10 instead of MRR.** The rule reads:
+rerank is on by default only if its best configuration gains at least
++0.05 nDCG@10 over hybrid (whole) with p95 under 500 ms; among passing
+configurations the highest nDCG@10 wins, then the lowest p95. The threshold
+(+0.05), the latency bound and the tie-break order are unchanged; only the
+metric moved. Reason: on the human set MRR is between 0.84 and 0.93 for
+every configuration but keyword, so a +0.05 MRR gain is close to
+impossible however good the reranker is, while nDCG@10 spreads the same
+configurations from 0.45 to 0.71 and uses the 1 vs 2 distinction the
+graders made. This is a change to a pre-registered rule, and it is
+recorded as one: the provisional 2026-10-08 runs were judged under the MRR
+version and are not re-read under the new one.
+
+---
+
+## 2026-10-09 - The decisive reranker run: hybrid stays the default
+
+**Setup.** `python scripts/rerank_experiments.py` at commit 21874fc, on the
+24 human-verified queries (697 postings), all 14 configurations and the
+hybrid (whole) baseline in one pass with warm models, 10.5 min wall time.
+The rule, as amended in the previous entry before this run: rerank is on by
+default only if a configuration gains at least +0.05 nDCG@10 over hybrid
+(whole) with p95 under 500 ms; the highest nDCG@10 then the lowest p95
+breaks ties. Output kept at `JobLens-labelling/rerank_decisive_2026-10-09.md`
+(outside the repo).
+
+| configuration | recall@10 | mrr | ndcg@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| hybrid (whole) | 0.322 | 0.893 | 0.671 | 170 | 220 |
+| rerank: shipped (snippet, pool 30) | 0.299 | 0.927 | 0.707 | 2920 | 3383 |
+| 3.2 document = head | 0.316 | 0.924 | 0.727 | 2734 | 2926 |
+| 3.2 document = best section | 0.308 | 0.901 | 0.707 | 1786 | 1967 |
+| 3.3 pool = 20 | 0.292 | 0.879 | 0.687 | 1862 | 2158 |
+| 3.3 pool = 50 | 0.244 | 0.858 | 0.580 | 3569 | 4071 |
+| 3.4 alpha = 0.3 | 0.322 | 0.907 | 0.721 | 2869 | 3263 |
+| 3.4 alpha = 0.5 | 0.317 | 0.900 | 0.713 | 2896 | 3327 |
+| 3.4 alpha = 0.7 | 0.314 | 0.892 | 0.679 | 2923 | 3272 |
+| 3.5 TinyBERT-L-2 | 0.299 | 0.923 | 0.697 | 390 | 434 |
+| 3.5 max_length = 256 | 0.300 | 0.924 | 0.703 | 1784 | 1828 |
+| 3.5 TinyBERT-L-2, max_length = 256 | 0.296 | 0.923 | 0.692 | 303 | 329 |
+| combo TinyBERT-L-2, best section | 0.310 | 0.903 | 0.692 | 320 | 362 |
+| combo TinyBERT-L-2, best section, max_length = 256 | 0.310 | 0.903 | 0.692 | 321 | 366 |
+
+**Verdict.** No configuration meets the rule. The two that gain enough,
+document = head (+0.056) and alpha = 0.3 (+0.050), cost about 3 s at p95;
+every configuration under 500 ms is TinyBERT, and those gain +0.021 to
++0.026. **Hybrid (whole) stays the default and rerank stays opt-in.** No
+code changes: that was already the default.
+
+**The amendment did not decide it.** Under the original MRR version of the
+rule nothing passes either: the best MRR gain is +0.034 (the shipped
+reranker).
+
+**What held and what did not, against the provisional LLM-judged runs
+(2026-10-08).**
+
+- The provisional winner did not hold. TinyBERT at max_length 256 gained
+  +0.129 MRR on LLM grades and gains +0.030 MRR (+0.021 nDCG@10) here. Part of the gap
+  is the lenient human grades: hybrid starts far higher (MRR 0.893 here
+  against 0.596 provisionally), leaving less to gain.
+- A pool of 50 still hurts, now badly (-0.091 nDCG@10). Held.
+- Blending the first-stage score now helps a little at alpha 0.3 (+0.014
+  over the pure reorder), where provisionally it hurt monotonically. Did not
+  hold.
+- The best section no longer beats the snippet on quality (both 0.707); the
+  head of the posting is best. Did not hold.
+- Reranking now lowers recall@10 slightly (0.322 to 0.299), where
+  provisionally it raised it. The human sets have about 28 relevant postings
+  per query, so the top ten fills with relevant postings either way.
+
+**Caveats.** 24 queries; human grades from one grader whose agreement with
+the LLM judge is weak (kappa 0.24) and whose stability is not yet measured
+(the blind re-grade). A +0.05 rule on 24 queries is a coarse instrument; the
+fast configurations' +0.02 is within what a re-grade could move. The
+decision is "not proven worth the latency here", not "reranking does not
+work".

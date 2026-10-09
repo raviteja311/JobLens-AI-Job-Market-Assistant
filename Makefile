@@ -3,7 +3,7 @@
 
 PY ?= python
 
-.PHONY: install migrate ingest transform stats skills train cluster trends \
+.PHONY: install migrate ingest transform stats skills cluster trends \
 	embed dedup serve ui eval calibrate test test-db lint format check \
 	image up down monitoring-up logs
 
@@ -25,9 +25,6 @@ stats:
 
 skills:
 	$(PY) -m joblens skills
-
-train:
-	$(PY) -m joblens train-salary --save
 
 cluster:
 	$(PY) -m joblens cluster

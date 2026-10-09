@@ -33,10 +33,6 @@ class Settings(BaseSettings):
 
     request_timeout: float = 20.0
 
-    adzuna_app_id: str | None = None
-    adzuna_app_key: str | None = None
-    adzuna_country: str = "gb"
-
     # Phase 3. The local embedder needs nothing; the API one is only used to
     # reproduce the cost/quality comparison.
     embedder: str = "local"
@@ -87,10 +83,6 @@ class Settings(BaseSettings):
     # seconds of HEAD requests per start. If the cache is ever deleted, model
     # loading fails until this is turned off again.
     hf_hub_offline: bool = False
-
-    @property
-    def adzuna_enabled(self) -> bool:
-        return bool(self.adzuna_app_id and self.adzuna_app_key)
 
     @property
     def llm_enabled(self) -> bool:
