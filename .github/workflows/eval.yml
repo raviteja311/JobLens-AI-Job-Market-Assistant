@@ -67,7 +67,11 @@ jobs:
         run: python -m joblens embed --strategy whole --strategy section
 
       # --strict makes a score drop exit 1. Without it this job is decoration.
+      # So is a pipe without pipefail: a step with no `shell:` runs under
+      # `bash -e`, the step's exit code is tee's, and until 2026-10-09 this
+      # gate passed even when the eval crashed. `shell: bash` adds pipefail.
       - name: score retrieval
+        shell: bash
         run: python -m joblens eval --suite retrieval --strict | tee eval.md
 
       - name: publish the scorecard

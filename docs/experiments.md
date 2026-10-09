@@ -1618,3 +1618,22 @@ before any human grading: the 25-query human subset went from 604 to 918
 candidates (about 47% more grading, chosen by Jetti Raviteja so that the
 pre-registered Phase 3 run is not biased against reranking by unjudged
 postings).
+
+---
+
+## 2026-10-09 - The eval gate could never fail
+
+**Finding.** On pull request #2 the `retrieval` check was green although the
+eval had crashed with "no verified golden queries" and a traceback. The step
+ran `python -m joblens eval --suite retrieval --strict | tee eval.md`. A
+GitHub Actions step with no `shell:` runs under `bash -e`, without
+`pipefail`, so the step's exit code was `tee`'s, which always succeeds. That
+hid crashes and the `--strict` score-regression exit alike, since the gate
+was added (commit eab538c). `deploy.yml` calls this workflow, so no image
+built from `main` was ever really gated by retrieval quality.
+
+**Fix.** `shell: bash` on the step, which runs it with `-eo pipefail`. The
+scorecard step still publishes on failure (`if: always()`).
+
+**Consequence.** The `retrieval` check on pull request #2 now fails, correctly,
+until human-verified golden queries are merged and the baseline is redone.
