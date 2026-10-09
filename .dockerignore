@@ -19,6 +19,9 @@ __pycache__
 # API never loads (SKILL_EXTRACTOR=rules).
 artifacts
 data
+# Except the company list the board sources read: the daily ingest job runs
+# from this image, and without it every board source fails at startup.
+!data/companies_in.yaml
 docs
 tests
 monitoring

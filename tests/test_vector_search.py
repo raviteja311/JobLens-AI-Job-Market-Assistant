@@ -155,3 +155,13 @@ def test_the_setting_does_not_leak_out_of_the_search(chunks):
         conn.commit()
         value = conn.execute("show hnsw.iterative_scan").fetchone()
     assert value["hnsw.iterative_scan"] == "off"
+
+
+def test_health_reports_the_pgvector_version():
+    # The deploy runbook reads this to confirm the hosted database can run
+    # iterative index scans, which need pgvector 0.8 or newer.
+    from joblens.api import main as api
+
+    version = api.health()["pgvector"]
+    major, minor = (int(part) for part in version.split(".")[:2])
+    assert (major, minor) >= (0, 8)
