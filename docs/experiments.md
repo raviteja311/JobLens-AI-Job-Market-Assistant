@@ -1640,19 +1640,26 @@ until human-verified golden queries are merged and the baseline is redone.
 
 ---
 
-## 2026-10-09 - Filter spot check (provisional, awaiting verification)
+## 2026-10-09 - Filter spot check: 20/20 in India, 17/20 target role
 
 **Setup.** 20 postings drawn at random (seed 20261009) from the 677 not shown
-in the 2026-10-08 sample; marked by Jetti Raviteja for "in India" and "target
-role" (`JobLens-labelling/spot_check_2026-10-09.csv`, outside the repo).
+in the 2026-10-08 sample, each judged by Jetti Raviteja for "in India" and
+"target role" (`JobLens-labelling/spot_check_2026-10-09.csv`, outside the
+repo). Ten rows that looked doubtful were re-checked one by one against a
+summary of the posting text.
 
-**Recorded so far.** In India: 20/20. Target role: marked 20/20, but **not yet
-verified**. Seven rows look outside the target family by the labelling guide's
-role rules (product marketing, customer success, project management, data
-annotation, hardware intern, product design, product management) and three
-are borderline (AI automation, two AI security roles). If those seven hold,
-the filter's target-role precision is about 13/20 or lower. The flagged rows
-are marked in the CSV's `to_verify` column.
+**Result.** In India: **20/20**. Target role: **17/20**. The three judged not
+target: an AI customer-success manager (Glean), a forward-deployed AI
+security consultant (AHEAD) and an AI product manager (HackerOne).
 
-**Not to be quoted** until the rows are re-checked against the posting text.
-What it already shows: a bare "AI" in a title is the filter's weak spot.
+**The definition behind 17/20.** The judge counted AI-adjacent roles as
+target: an AI security analyst, product marketing for agentic AI, a project
+manager for quantitative research, a robotics data collector and annotator,
+a hardware intern on an AI data rig and a design manager for AI products. The
+labelling guide's role families are stricter (marketing, design, project
+management and product management are a wrong family there), and under them
+the count would be about 13/20. Quote 17/20 with "AI-adjacent roles counted".
+
+**What it shows.** The location filter is reliable. The role filter's weak
+spot is a bare "AI" in the title, which admits marketing, design, support and
+hardware roles at companies whose product is AI.
