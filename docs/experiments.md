@@ -1873,3 +1873,60 @@ reproduces the published row exactly.
 
 The model rows are unaffected: they never use the regex. The decision from
 Phase 6 stands and widens slightly: the rules extractor stays the default.
+
+## 2026-10-27 - Company list audit
+
+**Where the list comes from.** `data/companies_in.yaml` (291 boards: 161
+Greenhouse, 71 Lever, 59 Ashby) is not hand-built. It is exported by
+`scripts/export_easyjobs_companies.py` from `seed-companies.ts` in EasyJobs,
+an earlier project of mine built with AI assistance, keeping the boards with
+a public Greenhouse, Lever or Ashby API. The export script's docstring says
+the list was slug-checked against the live APIs in EasyJobs; nothing in
+JobLens had checked that. The list mixes companies based in India with
+global ones that hire there, and the docs had called it "291 Indian
+companies" and, in one place, "hand-listed".
+
+**What was checked.** `scripts/check_company_boards.py` sends one GET per
+board to the provider's `BOARD_URL` through `base.get_json`, builds each
+job's payload as `fetch_boards` does (slug key included) and applies the
+production `to_posting()` unchanged. Per board it records the status, the
+jobs with an id, the jobs the India filter accepts (for Ashby, as
+`ashby._in_india` decides) and the jobs `to_posting()` keeps, in
+`data/companies_check.csv`. It reads only; no database is touched.
+
+**Result.**
+
+| measure | value |
+| --- | ---: |
+| boards checked | 291 |
+| ok | 290 |
+| http_404 | 1 |
+| boards with at least one India job | 284 |
+| boards with at least one kept job | 176 |
+| total kept jobs | 665 |
+
+**The dead board.** Anchanto (Greenhouse, slug `anchanto`) answers 404.
+Decision: leave it in the list and document it here. The list says to edit
+the EasyJobs seed rather than the file, and one dead board costs nothing:
+`fetch_boards` logs it and moves on.
+
+**Boards with no India job today.** Six answered `ok` with none: Cartesia
+(23 jobs), Deliveroo (9), WHOOP (134), and Nanonets, Striim and Fi Money
+with no open jobs at all. Decision: leave them; an empty board can be
+temporary.
+
+**PAR Technology.** The one Ashby slug with a space, `PAR Technology`,
+answers `ok`: 37 jobs, 14 in India, 1 kept. `fetch_boards` does not
+URL-encode the slug, but httpx percent-encodes the space when it builds the
+URL (`.../job-board/PAR%20Technology`), so ingestion reaches it too.
+
+**Two things worth knowing.** 665 kept jobs today is not the corpus size:
+the corpus keeps postings that have since closed. And the audit catches any
+failure per board, where `fetch_boards` catches only `httpx.HTTPError` and
+`RuntimeError`, so a board answering with something other than JSON would
+stop ingestion but not the audit. None did on this run.
+
+**What changed in the docs.** The README, resume bullets, demo script, two
+blog update notes, the generated header of `data/companies_in.yaml` and a
+few comments now say "companies that hire in India" and that the list came
+from EasyJobs, and the README's Phase 1 quotes this audit.
