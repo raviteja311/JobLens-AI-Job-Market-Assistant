@@ -7,7 +7,7 @@ measured on the 466-posting corpus on 2026-09-26. The first draft quoted a
 says what happened to it.*
 
 *Update, 2026-10-27: JobLens has since moved to a 697-posting corpus of
-Indian company boards, and its golden set was regraded by hand (25
+India-based postings from company boards, and its golden set was regraded by hand (25
 queries, 918 candidates). On that set hybrid no longer comes third: vector
 search leads nDCG@10 and hybrid leads recall@10. The numbers below are the
 v1 corpus's and are left as measured.*

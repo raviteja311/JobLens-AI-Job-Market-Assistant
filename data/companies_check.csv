@@ -1,0 +1,292 @@
+name,provider,slug,city,status,jobs_total,jobs_in_india,jobs_kept,checked_at
+AiPrise,ashby,aiprise,Bengaluru,ok,19,7,0,2026-10-27T06:59:46+00:00
+Anyscale,ashby,anyscale,Bengaluru,ok,21,5,1,2026-10-27T07:00:17+00:00
+APEXX Global,ashby,apexx,Pune,ok,6,3,0,2026-10-27T06:59:55+00:00
+Applied Intuition,ashby,applied,Bengaluru,ok,325,3,0,2026-10-27T07:00:27+00:00
+Articul8,ashby,articul8,Bengaluru,ok,20,3,3,2026-10-27T07:00:31+00:00
+Aspora,ashby,aspora,Bengaluru,ok,10,4,0,2026-10-27T07:00:12+00:00
+Astronomer,ashby,astronomer,Hyderabad,ok,17,1,0,2026-10-27T06:59:49+00:00
+Atlan,ashby,atlan,New Delhi,ok,7,5,2,2026-10-27T06:59:59+00:00
+Atlys,ashby,atlys,New Delhi,ok,22,21,1,2026-10-27T07:00:08+00:00
+Better,ashby,better-mortgage,Gurugram,ok,5,4,1,2026-10-27T07:00:29+00:00
+Blitzy,ashby,blitzy,Pune,ok,38,6,0,2026-10-27T06:59:55+00:00
+Bolna,ashby,bolna,Bengaluru,ok,7,7,1,2026-10-27T07:00:25+00:00
+Broccoli AI,ashby,broccoli,Bengaluru,ok,34,3,0,2026-10-27T07:00:24+00:00
+Bureau,ashby,bureau,Bengaluru,ok,19,19,4,2026-10-27T06:59:47+00:00
+Cartesia,ashby,cartesia,Bengaluru,ok,23,0,0,2026-10-27T07:00:26+00:00
+Cerebras Systems,ashby,cerebras,Bengaluru,ok,119,7,3,2026-10-27T07:00:08+00:00
+CertifyOS,ashby,certifyos,Bengaluru,ok,16,9,1,2026-10-27T07:00:16+00:00
+Ciroos,ashby,ciroos,Bengaluru,ok,7,4,0,2026-10-27T06:59:47+00:00
+Commure,ashby,commure,Bengaluru,ok,80,4,0,2026-10-27T07:00:13+00:00
+Composio,ashby,composio,Bengaluru,ok,30,3,1,2026-10-27T06:59:43+00:00
+CynLr,ashby,cynlr,Bengaluru,ok,40,32,0,2026-10-27T07:00:29+00:00
+Deliveroo,ashby,deliveroo,Hyderabad,ok,9,0,0,2026-10-27T06:59:54+00:00
+Ema,ashby,ema,Bengaluru,ok,39,15,3,2026-10-27T06:59:44+00:00
+Freehand,ashby,freehand,Chennai,ok,10,3,0,2026-10-27T07:00:02+00:00
+Gainsight,ashby,gainsight,Hyderabad,ok,14,3,0,2026-10-27T06:59:53+00:00
+Gen Digital,ashby,gen-digital,Chennai,ok,118,12,6,2026-10-27T07:00:05+00:00
+Glomopay,ashby,glomo,Bengaluru,ok,10,10,0,2026-10-27T07:00:11+00:00
+Gradera,ashby,gradera,Hyderabad,ok,7,4,2,2026-10-27T06:59:51+00:00
+HackerOne,ashby,hackerone,Pune,ok,10,5,2,2026-10-27T07:00:14+00:00
+Harvey,ashby,harvey,Bengaluru,ok,365,10,0,2026-10-27T07:00:22+00:00
+Hinge Health,ashby,hinge-health,Bengaluru,ok,77,6,0,2026-10-27T07:00:30+00:00
+Juniper Square,ashby,junipersquare,Bengaluru,ok,48,8,3,2026-10-27T07:00:09+00:00
+Kong,ashby,kong,Mumbai,ok,101,11,0,2026-10-27T06:59:57+00:00
+Litmus,ashby,litmus,Pune,ok,32,10,0,2026-10-27T07:00:32+00:00
+Lumilens,ashby,lumilens,Bengaluru,ok,162,21,0,2026-10-27T07:00:21+00:00
+Meraki Labs,ashby,meraki-labs,Bengaluru,ok,16,14,7,2026-10-27T06:59:49+00:00
+Nanonets,ashby,nanonets,Bengaluru,ok,0,0,0,2026-10-27T07:00:10+00:00
+NETGEAR,ashby,netgear,Chennai,ok,53,31,0,2026-10-27T07:00:04+00:00
+Nivoda,ashby,nivoda,Mumbai,ok,30,9,0,2026-10-27T06:59:56+00:00
+Notion,ashby,notion,Hyderabad,ok,140,2,0,2026-10-27T06:59:50+00:00
+OnePay,ashby,oneapp,Bengaluru,ok,42,4,0,2026-10-27T07:00:18+00:00
+Ontic,ashby,ontic,Pune,ok,14,3,0,2026-10-27T07:00:33+00:00
+OpenAI,ashby,openai,New Delhi,ok,796,7,3,2026-10-27T07:00:00+00:00
+PAR Technology,ashby,PAR Technology,Jaipur,ok,37,14,1,2026-10-27T07:00:05+00:00
+Plane,ashby,plane,Hyderabad,ok,33,10,1,2026-10-27T06:59:52+00:00
+Plotline,ashby,plotlineso,Bengaluru,ok,21,16,0,2026-10-27T07:00:20+00:00
+Poshmark,ashby,poshmark,Chennai,ok,29,6,2,2026-10-27T07:00:03+00:00
+Redis,ashby,Redis,Bengaluru,ok,28,3,0,2026-10-27T07:00:19+00:00
+Reo.Dev,ashby,reo-dev,Bengaluru,ok,3,3,0,2026-10-27T07:00:23+00:00
+Riveron,ashby,riveron,Pune,ok,59,23,4,2026-10-27T07:00:15+00:00
+Sarvam AI,ashby,sarvam,Bengaluru,ok,44,44,7,2026-10-27T06:59:42+00:00
+SigNoz,ashby,signoz,Bengaluru,ok,15,14,2,2026-10-27T06:59:43+00:00
+Skyflow,ashby,skyflow,Bengaluru,ok,11,4,1,2026-10-27T06:59:40+00:00
+Smallest.ai,ashby,smallest,Bengaluru,ok,3,3,0,2026-10-27T06:59:45+00:00
+Snowflake,ashby,snowflake,Pune,ok,357,5,0,2026-10-27T07:00:06+00:00
+SpotDraft,ashby,spotdraft,Bengaluru,ok,13,9,1,2026-10-27T06:59:41+00:00
+Supa,ashby,supa,Bengaluru,ok,3,2,0,2026-10-27T07:00:13+00:00
+Tekion,ashby,tekion,Bengaluru,ok,95,70,7,2026-10-27T07:00:26+00:00
+WHOOP,ashby,whoop,Mumbai,ok,134,0,0,2026-10-27T06:59:58+00:00
+6sense,greenhouse,6sense,Pune,ok,28,10,4,2026-10-27T06:55:49+00:00
+Abnormal AI,greenhouse,abnormalsecurity,Bengaluru,ok,86,12,3,2026-10-27T06:56:43+00:00
+Addepar,greenhouse,addepar1,Pune,ok,111,17,6,2026-10-27T06:57:04+00:00
+Adyen,greenhouse,adyen,Bengaluru,ok,247,4,0,2026-10-27T06:57:34+00:00
+Agoda,greenhouse,agoda,Gurugram,ok,311,13,0,2026-10-27T06:56:14+00:00
+Airbnb,greenhouse,airbnb,Gurugram,ok,188,8,1,2026-10-27T06:56:16+00:00
+AlphaGrep Securities,greenhouse,alphagrepsecurities,Mumbai,ok,11,4,0,2026-10-27T06:56:51+00:00
+AlphaSense,greenhouse,alphasense,Pune,ok,212,34,3,2026-10-27T06:55:52+00:00
+Anchanto,greenhouse,anchanto,Pune,http_404,0,0,0,2026-10-27T06:55:47+00:00
+Anthropic,greenhouse,anthropic,Bengaluru,ok,679,4,3,2026-10-27T06:57:14+00:00
+Apollo.io,greenhouse,apolloio,Bengaluru,ok,54,6,0,2026-10-27T06:56:46+00:00
+AppsFlyer,greenhouse,appsflyer,Bengaluru,ok,51,3,0,2026-10-27T06:57:39+00:00
+AppViewX,greenhouse,appviewx,Coimbatore,ok,11,5,1,2026-10-27T06:56:23+00:00
+Arcesium,greenhouse,arcesiumllc,Bengaluru,ok,45,15,2,2026-10-27T06:57:19+00:00
+Astera Labs,greenhouse,asteralabs,Bengaluru,ok,178,19,0,2026-10-27T06:57:18+00:00
+Baya Systems,greenhouse,bayasystems,Bengaluru,ok,23,6,0,2026-10-27T06:57:17+00:00
+Black Duck,greenhouse,blackduck,Bengaluru,ok,29,6,0,2026-10-27T06:57:31+00:00
+Blenheim Chalcot India,greenhouse,blenheimchalcotindia,Mumbai,ok,6,6,1,2026-10-27T06:57:04+00:00
+BlueConic,greenhouse,blueconic,Pune,ok,3,3,1,2026-10-27T06:57:45+00:00
+Bluevine,greenhouse,bluevineindia,Bengaluru,ok,2,2,0,2026-10-27T06:57:38+00:00
+bswift,greenhouse,bswiftindia,Bengaluru,ok,4,4,0,2026-10-27T06:57:38+00:00
+Capco,greenhouse,capco,Bengaluru,ok,709,127,23,2026-10-27T06:57:21+00:00
+Celigo,greenhouse,celigo,Hyderabad,ok,22,2,1,2026-10-27T06:55:43+00:00
+Celonis,greenhouse,celonis,Bengaluru,ok,224,30,4,2026-10-27T06:56:38+00:00
+ChargePoint,greenhouse,chargepoint,Gurugram,ok,40,15,0,2026-10-27T06:56:17+00:00
+Cialfo,greenhouse,cialfo,Noida,ok,4,4,0,2026-10-27T06:56:08+00:00
+ClearView Healthcare Partners,greenhouse,clearviewhealthcarepartners,Gurugram,ok,29,5,1,2026-10-27T06:58:05+00:00
+CloudSEK,greenhouse,cloudsek,Bengaluru,ok,17,13,0,2026-10-27T06:55:24+00:00
+Cockroach Labs,greenhouse,cockroachlabs,Bengaluru,ok,15,2,0,2026-10-27T06:56:47+00:00
+Cohere Health,greenhouse,coherehealth,Hyderabad,ok,71,37,12,2026-10-27T06:55:36+00:00
+Coinbase,greenhouse,coinbase,Bengaluru,ok,226,9,2,2026-10-27T06:57:12+00:00
+CommerceIQ,greenhouse,commerceiq,Bengaluru,ok,14,5,0,2026-10-27T06:56:49+00:00
+Commvault,greenhouse,commvault,Hyderabad,ok,59,14,3,2026-10-27T06:56:37+00:00
+Conga,greenhouse,conga,Bengaluru,ok,44,6,3,2026-10-27T06:57:35+00:00
+ConnectWise,greenhouse,connectwise,Pune,ok,42,11,3,2026-10-27T06:57:59+00:00
+"Connor, Clark & Lunn Financial Group",greenhouse,cclfg,Gurugram,ok,81,16,1,2026-10-27T06:58:04+00:00
+Contentstack,greenhouse,contentstack,Bengaluru,ok,9,4,3,2026-10-27T06:56:56+00:00
+Couchbase,greenhouse,couchbaseinc,Bengaluru,ok,13,6,1,2026-10-27T06:56:46+00:00
+Coupang,greenhouse,coupang,Bengaluru,ok,691,42,4,2026-10-27T06:57:24+00:00
+Crunchyroll,greenhouse,crunchyroll,Hyderabad,ok,100,18,1,2026-10-27T06:57:57+00:00
+Databricks,greenhouse,databricks,Mumbai,ok,898,86,13,2026-10-27T06:56:02+00:00
+Datadog,greenhouse,datadog,Bengaluru,ok,428,10,0,2026-10-27T06:56:31+00:00
+DeepIntent,greenhouse,deepintent,Pune,ok,14,4,1,2026-10-27T06:55:48+00:00
+Definitive Healthcare,greenhouse,definitivehcindia,Bengaluru,ok,6,6,2,2026-10-27T06:57:37+00:00
+DevRev,greenhouse,devrev,Bengaluru,ok,41,15,3,2026-10-27T06:55:28+00:00
+DigitalOcean,greenhouse,digitalocean98,Bengaluru,ok,171,25,2,2026-10-27T06:57:28+00:00
+DoorDash India,greenhouse,doordashindia,Hyderabad,ok,15,15,3,2026-10-27T06:57:08+00:00
+Druva,greenhouse,druva,Pune,ok,31,12,0,2026-10-27T06:55:45+00:00
+dunnhumby,greenhouse,dunnhumby,Gurugram,ok,53,13,3,2026-10-27T06:56:17+00:00
+EarnIn,greenhouse,earnin,Bengaluru,ok,24,5,2,2026-10-27T06:57:40+00:00
+Easyship,greenhouse,easyship,Bengaluru,ok,18,7,0,2026-10-27T06:57:33+00:00
+Elastic,greenhouse,elastic,Bengaluru,ok,401,15,2,2026-10-27T06:56:23+00:00
+Emergent,greenhouse,emergentlabsinc,Bengaluru,ok,47,42,4,2026-10-27T06:56:55+00:00
+Endor Labs,greenhouse,endorlabs,Bengaluru,ok,31,10,0,2026-10-27T06:56:51+00:00
+Energy Exemplar,greenhouse,energyexemplarllc,Pune,ok,45,24,4,2026-10-27T06:57:58+00:00
+Enterpret,greenhouse,enterpret,Bengaluru,ok,16,8,1,2026-10-27T06:57:54+00:00
+Envoy Global,greenhouse,envoyglobalinc,Hyderabad,ok,19,6,0,2026-10-27T06:57:08+00:00
+Ethernovia,greenhouse,ethernovia,Pune,ok,28,14,2,2026-10-27T06:55:45+00:00
+Eudia,greenhouse,eudia,Bengaluru,ok,21,4,0,2026-10-27T06:57:55+00:00
+FalconX,greenhouse,falconx,Bengaluru,ok,18,4,0,2026-10-27T06:56:53+00:00
+Fictiv,greenhouse,fictiv,Pune,ok,98,32,0,2026-10-27T06:55:48+00:00
+Fivetran,greenhouse,fivetran,Bengaluru,ok,172,25,0,2026-10-27T06:56:41+00:00
+Flexport,greenhouse,flexport,Mumbai,ok,188,7,0,2026-10-27T06:56:04+00:00
+Forma.ai,greenhouse,formaaiinc,Pune,ok,22,3,2,2026-10-27T06:57:05+00:00
+FourKites,greenhouse,fourkites,Chennai,ok,17,8,3,2026-10-27T06:56:18+00:00
+Future Standard,greenhouse,futurestandard,Bengaluru,ok,12,2,0,2026-10-27T06:58:07+00:00
+GHX,greenhouse,globalhealthcareexchangeinc,Hyderabad,ok,40,17,2,2026-10-27T06:55:37+00:00
+GitLab,greenhouse,gitlab,Bengaluru,ok,238,28,1,2026-10-27T06:57:09+00:00
+Glance,greenhouse,glance,Bengaluru,ok,33,20,6,2026-10-27T06:57:29+00:00
+Glean,greenhouse,gleanwork,Bengaluru,ok,132,24,6,2026-10-27T06:55:23+00:00
+Graphcore,greenhouse,graphcore,Bengaluru,ok,211,25,1,2026-10-27T06:57:49+00:00
+Graviton Research Capital,greenhouse,gravitonresearchcapital,Gurugram,ok,23,14,6,2026-10-27T06:56:08+00:00
+Groww,greenhouse,groww,Bengaluru,ok,10,10,0,2026-10-27T06:55:26+00:00
+Guidepoint,greenhouse,guidepoint,Mumbai,ok,112,17,0,2026-10-27T06:55:56+00:00
+HackerRank,greenhouse,hackerrank,Bengaluru,ok,29,17,4,2026-10-27T06:55:28+00:00
+Harness,greenhouse,harnessinc,Bengaluru,ok,68,13,0,2026-10-27T06:56:42+00:00
+HighRadius,greenhouse,highradius,Hyderabad,ok,69,47,1,2026-10-27T06:55:35+00:00
+Hudl,greenhouse,hudlindia,Mumbai,ok,2,1,0,2026-10-27T06:56:06+00:00
+IMC Trading,greenhouse,imc,Mumbai,ok,169,19,4,2026-10-27T06:57:02+00:00
+Inizio Ignite,greenhouse,ashfieldadvisory,Gurugram,ok,28,11,2,2026-10-27T06:57:19+00:00
+InMobi,greenhouse,inmobi,Mumbai,ok,79,50,5,2026-10-27T06:55:59+00:00
+Instawork,greenhouse,instawork,Bengaluru,ok,56,38,4,2026-10-27T06:56:50+00:00
+Insurity,greenhouse,insurityindia,Noida,ok,55,55,21,2026-10-27T06:58:00+00:00
+JFrog,greenhouse,jfrog,Bengaluru,ok,68,8,0,2026-10-27T06:56:34+00:00
+Karat,greenhouse,karat,Bengaluru,ok,14,5,1,2026-10-27T06:57:41+00:00
+Konovo,greenhouse,konovo,Bengaluru,ok,21,18,3,2026-10-27T06:57:52+00:00
+Konrad Group,greenhouse,konradgroup,Gurugram,ok,104,26,3,2026-10-27T06:56:10+00:00
+KRAFTON India,greenhouse,kraftonindia,Bengaluru,ok,8,8,0,2026-10-27T06:57:36+00:00
+LogicMonitor,greenhouse,logicmonitor,Pune,ok,49,14,1,2026-10-27T06:55:55+00:00
+Mitsogo,greenhouse,mitsogoinc,Chennai,ok,37,24,1,2026-10-27T06:57:42+00:00
+Modulr,greenhouse,modulrfinance,Mumbai,ok,26,8,0,2026-10-27T06:57:46+00:00
+MongoDB,greenhouse,mongodb,Gurugram,ok,367,81,6,2026-10-27T06:56:13+00:00
+Nasuni,greenhouse,nasuni,Hyderabad,ok,36,18,0,2026-10-27T06:56:44+00:00
+Navan,greenhouse,tripactions,Bengaluru,ok,222,18,1,2026-10-27T06:56:40+00:00
+Netradyne,greenhouse,netradyne,Bengaluru,ok,28,19,2,2026-10-27T06:55:30+00:00
+Netskope,greenhouse,netskope,Mumbai,ok,128,20,2,2026-10-27T06:55:58+00:00
+NeuraFlash,greenhouse,neuraflash,Bengaluru,ok,75,15,3,2026-10-27T06:57:23+00:00
+New Relic,greenhouse,newrelic,Hyderabad,ok,49,4,0,2026-10-27T06:55:41+00:00
+Observe.AI,greenhouse,observeai,Bengaluru,ok,8,4,1,2026-10-27T06:55:25+00:00
+Okta,greenhouse,okta,Bengaluru,ok,390,95,9,2026-10-27T06:56:27+00:00
+OLIVER,greenhouse,oliverseapac,Mumbai,ok,47,22,2,2026-10-27T06:58:02+00:00
+OneTrust,greenhouse,onetrust,Bengaluru,ok,80,23,3,2026-10-27T06:56:39+00:00
+OpenFX,greenhouse,openfx,Bengaluru,ok,42,24,2,2026-10-27T06:57:28+00:00
+Payoneer,greenhouse,payoneer,Gurugram,ok,105,30,1,2026-10-27T06:56:12+00:00
+PayPay India,greenhouse,pay2dc,Gurugram,ok,11,11,1,2026-10-27T06:57:47+00:00
+Platform Science,greenhouse,platformscience,Chennai,ok,27,6,0,2026-10-27T06:57:23+00:00
+Point72,greenhouse,point72,Bengaluru,ok,210,40,5,2026-10-27T06:57:48+00:00
+project44,greenhouse,project44,Bengaluru,ok,27,10,1,2026-10-27T06:57:33+00:00
+PubMatic,greenhouse,pubmatic,Pune,ok,85,36,14,2026-10-27T06:55:55+00:00
+Pure Storage,greenhouse,purestorage,Bengaluru,ok,367,62,7,2026-10-27T06:56:35+00:00
+Razorpay,greenhouse,razorpaysoftwareprivatelimited,Bengaluru,ok,28,24,3,2026-10-27T06:55:27+00:00
+Redwood Software,greenhouse,redwoodsoftware,Hyderabad,ok,39,16,3,2026-10-27T06:55:38+00:00
+Reltio,greenhouse,reltio,Bengaluru,ok,35,8,0,2026-10-27T06:56:45+00:00
+Rubrik,greenhouse,rubrik,Bengaluru,ok,147,30,6,2026-10-27T06:56:26+00:00
+Sagent,greenhouse,sagentindia,Chennai,ok,3,3,0,2026-10-27T06:57:44+00:00
+Sauce Labs,greenhouse,saucelabs,Gurugram,ok,9,4,2,2026-10-27T06:58:06+00:00
+Schrodinger,greenhouse,schrdinger,Hyderabad,ok,36,9,4,2026-10-27T06:55:40+00:00
+SentinelOne,greenhouse,sentinellabs,Bengaluru,ok,290,17,0,2026-10-27T06:56:33+00:00
+Showpad,greenhouse,showpad,Pune,ok,23,6,0,2026-10-27T06:58:01+00:00
+Sigmoid,greenhouse,sigmoid,Bengaluru,ok,41,36,13,2026-10-27T06:55:31+00:00
+Simpplr,greenhouse,simpplr,Gurugram,ok,7,5,1,2026-10-27T06:56:48+00:00
+SingleStore,greenhouse,singlestore,Hyderabad,ok,40,9,1,2026-10-27T06:56:52+00:00
+Skillz,greenhouse,skillzinc,Bengaluru,ok,18,12,2,2026-10-27T06:57:32+00:00
+SmartBear,greenhouse,smartbear,Bengaluru,ok,20,3,0,2026-10-27T06:57:42+00:00
+Smartsheet,greenhouse,smartsheet,Bengaluru,ok,86,23,11,2026-10-27T06:57:51+00:00
+SonicWall,greenhouse,sonicwall,Pune,ok,51,34,3,2026-10-27T06:57:06+00:00
+Spaulding Ridge,greenhouse,spauldingridge,Bengaluru,ok,41,19,3,2026-10-27T06:57:30+00:00
+StarRez,greenhouse,starrez,Hyderabad,ok,10,6,1,2026-10-27T06:57:51+00:00
+StockX,greenhouse,stockx,Bengaluru,ok,34,11,1,2026-10-27T06:57:50+00:00
+Strata Information Group,greenhouse,stratainformationgroup,Pune,ok,11,1,0,2026-10-27T06:58:02+00:00
+Striim,greenhouse,striiminc,Chennai,ok,0,0,0,2026-10-27T06:56:56+00:00
+Stripe,greenhouse,stripe,Bengaluru,ok,711,47,4,2026-10-27T06:57:10+00:00
+Sumo Logic,greenhouse,sumologic,Noida,ok,12,7,0,2026-10-27T06:56:09+00:00
+Tech Holding,greenhouse,techholding,Ahmedabad,ok,24,8,0,2026-10-27T06:56:22+00:00
+TechGrove by Banyan Software,greenhouse,techgrovebybanyansoftware,Chennai,ok,7,7,1,2026-10-27T06:56:58+00:00
+TEGNA,greenhouse,tegnaindia,Chennai,ok,6,6,2,2026-10-27T06:57:43+00:00
+Tenstorrent,greenhouse,tenstorrent,Bengaluru,ok,121,6,0,2026-10-27T06:57:53+00:00
+Third Bridge,greenhouse,thirdbridge,Mumbai,ok,128,11,0,2026-10-27T06:56:01+00:00
+Tide,greenhouse,tide,Hyderabad,ok,102,38,0,2026-10-27T06:55:39+00:00
+Toast,greenhouse,toast,Chennai,ok,330,21,0,2026-10-27T06:56:21+00:00
+Together AI,greenhouse,togetherai,Bengaluru,ok,85,4,1,2026-10-27T06:57:16+00:00
+Tower Research Capital,greenhouse,towerresearchcapital,Gurugram,ok,100,12,3,2026-10-27T06:56:11+00:00
+Truecaller,greenhouse,truecaller,Mumbai,ok,33,15,2,2026-10-27T06:56:00+00:00
+TrueFoundry,greenhouse,truefoundry,Bengaluru,ok,23,13,1,2026-10-27T06:55:32+00:00
+Truveta,greenhouse,truveta,Hyderabad,ok,34,19,6,2026-10-27T06:57:07+00:00
+Twilio,greenhouse,twilio,Bengaluru,ok,136,10,3,2026-10-27T06:56:29+00:00
+Twin Health,greenhouse,twinhealth,Chennai,ok,41,8,0,2026-10-27T06:58:03+00:00
+Veeam,greenhouse,veeamsoftware,Mumbai,ok,209,13,0,2026-10-27T06:56:06+00:00
+Workato,greenhouse,workato,Hyderabad,ok,52,1,0,2026-10-27T06:55:44+00:00
+WPP,greenhouse,wpp,Chennai,ok,211,68,7,2026-10-27T06:56:57+00:00
+WPP Media,greenhouse,wppmedia,Mumbai,ok,837,54,3,2026-10-27T06:56:59+00:00
+Yext,greenhouse,yext,Hyderabad,ok,23,1,0,2026-10-27T06:57:58+00:00
+Yugabyte,greenhouse,yugabyte,Bengaluru,ok,13,3,0,2026-10-27T06:56:54+00:00
+Zafin,greenhouse,zafinlabsamericasinc,Chennai,ok,30,16,0,2026-10-27T06:56:19+00:00
+Zenoti,greenhouse,zenoti,Hyderabad,ok,58,38,10,2026-10-27T06:55:33+00:00
+Zeta Global,greenhouse,zetaglobal,Hyderabad,ok,115,35,5,2026-10-27T06:55:42+00:00
+Zinnia,greenhouse,zinnia,Pune,ok,24,15,3,2026-10-27T06:57:45+00:00
+Zocdoc,greenhouse,zocdoc,Pune,ok,62,10,2,2026-10-27T06:55:51+00:00
+ZoomInfo,greenhouse,zoominfo,Chennai,ok,101,15,0,2026-10-27T06:56:38+00:00
+Zscaler,greenhouse,zscaler,Chandigarh,ok,355,67,5,2026-10-27T06:57:20+00:00
+Zuora,greenhouse,zuora,Chennai,ok,31,4,0,2026-10-27T06:56:20+00:00
+100ms,lever,100ms,Bengaluru,ok,8,8,5,2026-10-27T06:59:01+00:00
+Acceldata,lever,acceldata,Bengaluru,ok,34,14,3,2026-10-27T06:59:13+00:00
+Aera Technology,lever,aeratechnology,Pune,ok,18,2,0,2026-10-27T06:58:52+00:00
+AHEAD,lever,thinkahead,Gurugram,ok,144,58,12,2026-10-27T06:58:44+00:00
+Aleph Group,lever,aleph,Mumbai,ok,114,10,0,2026-10-27T06:58:34+00:00
+Allata,lever,Allata,Pune,ok,14,6,2,2026-10-27T06:59:38+00:00
+AppZen,lever,appzen,Pune,ok,17,7,2,2026-10-27T06:58:31+00:00
+Balbix,lever,balbix,Gurugram,ok,11,10,5,2026-10-27T06:58:39+00:00
+Beghou Consulting,lever,beghouconsulting,Bengaluru,ok,64,41,20,2026-10-27T06:59:35+00:00
+Brillio,lever,brillio-2,Bengaluru,ok,218,159,50,2026-10-27T06:59:15+00:00
+Coupa,lever,coupa,Pune,ok,37,3,1,2026-10-27T06:59:05+00:00
+Cprime,lever,cprime,Hyderabad,ok,17,9,1,2026-10-27T06:59:12+00:00
+CRED,lever,cred,Bengaluru,ok,10,10,0,2026-10-27T06:59:39+00:00
+Cyara,lever,cyara,Hyderabad,ok,16,5,1,2026-10-27T06:59:19+00:00
+Cyderes,lever,cyderes,Bengaluru,ok,21,14,0,2026-10-27T06:59:36+00:00
+Docsumo,lever,docsumo,Mumbai,ok,7,3,0,2026-10-27T06:59:00+00:00
+Dozee,lever,dozee,Bengaluru,ok,19,16,0,2026-10-27T06:59:28+00:00
+Drivetrain,lever,drivetrain,Bengaluru,ok,35,22,3,2026-10-27T06:59:02+00:00
+Dun & Bradstreet,lever,dnb,Mumbai,ok,95,23,2,2026-10-27T06:59:03+00:00
+e.l.f. Beauty,lever,elfbeauty,Ahmedabad,ok,77,7,1,2026-10-27T06:58:50+00:00
+Endpoint Clinical,lever,endpointclinical,Bengaluru,ok,24,13,2,2026-10-27T06:59:31+00:00
+Entrata,lever,entrata,Pune,ok,23,3,0,2026-10-27T06:58:32+00:00
+Enveda,lever,enveda,Hyderabad,ok,7,6,0,2026-10-27T06:58:25+00:00
+Extreme Networks,lever,extremenetworks,Chennai,ok,97,42,15,2026-10-27T06:58:47+00:00
+Fam,lever,fampay,Bengaluru,ok,17,17,1,2026-10-27T06:58:11+00:00
+Fi Money,lever,epifi,Bengaluru,ok,0,0,0,2026-10-27T06:58:11+00:00
+Greenlight,lever,greenlight,Bengaluru,ok,14,3,0,2026-10-27T06:59:37+00:00
+Gushwork,lever,gushwork,Bengaluru,ok,11,7,0,2026-10-27T06:58:13+00:00
+Hevo Data,lever,hevodata,Bengaluru,ok,53,51,3,2026-10-27T06:58:08+00:00
+ION Group,lever,ion,Noida,ok,85,13,0,2026-10-27T06:58:41+00:00
+JumpCloud,lever,jumpcloud,Mumbai,ok,38,18,3,2026-10-27T06:58:36+00:00
+Keyloop,lever,keyloop,Hyderabad,ok,66,23,2,2026-10-27T06:59:11+00:00
+KlearNow.AI,lever,klearnow,Gurugram,ok,5,2,1,2026-10-27T06:58:39+00:00
+Kobie Marketing,lever,kobie,Bengaluru,ok,33,12,0,2026-10-27T06:59:36+00:00
+Level AI,lever,levelai,Noida,ok,19,16,7,2026-10-27T06:58:37+00:00
+Mactores,lever,mactores,Mumbai,ok,31,27,3,2026-10-27T06:58:35+00:00
+Matillion,lever,matillion,Hyderabad,ok,22,5,0,2026-10-27T06:59:33+00:00
+Meesho,lever,meesho,Bengaluru,ok,54,54,9,2026-10-27T06:58:59+00:00
+Megaport,lever,megaport,Gurugram,ok,58,7,0,2026-10-27T06:59:26+00:00
+Mindtickle,lever,mindtickle,Pune,ok,21,17,1,2026-10-27T06:58:29+00:00
+MoonPay,lever,moonpay,Bengaluru,ok,21,3,0,2026-10-27T06:59:14+00:00
+Netomi,lever,netomi,Gurugram,ok,20,9,6,2026-10-27T06:58:38+00:00
+Neuron7,lever,neuron7,Bengaluru,ok,17,12,6,2026-10-27T06:58:15+00:00
+Nium,lever,nium,Mumbai,ok,19,9,0,2026-10-27T06:58:33+00:00
+Onit,lever,onit,Pune,ok,7,4,1,2026-10-27T06:58:30+00:00
+Outreach,lever,outreach,Hyderabad,ok,22,6,3,2026-10-27T06:59:18+00:00
+Parallel Wireless,lever,parallelwireless,Pune,ok,47,11,3,2026-10-27T06:58:32+00:00
+Pattern,lever,pattern,Pune,ok,99,10,1,2026-10-27T06:59:25+00:00
+Paytm,lever,paytm,Noida,ok,197,178,7,2026-10-27T06:58:45+00:00
+PDI Technologies,lever,pditechnologies,Hyderabad,ok,27,11,2,2026-10-27T06:58:28+00:00
+Perforce,lever,perforce,Pune,ok,4,3,0,2026-10-27T06:59:04+00:00
+Pocket FM,lever,pocketfm,Bengaluru,ok,11,2,1,2026-10-27T06:58:12+00:00
+Portcast,lever,portcast,Bengaluru,ok,10,8,4,2026-10-27T06:59:32+00:00
+Protolabs,lever,protolabs,Hyderabad,ok,66,5,1,2026-10-27T06:59:34+00:00
+RapidAI,lever,rapidai,Bengaluru,ok,6,2,0,2026-10-27T06:58:56+00:00
+Reply,lever,reply,Kochi,ok,49,3,1,2026-10-27T06:59:14+00:00
+Resilinc,lever,resilinc,Pune,ok,11,8,3,2026-10-27T06:59:23+00:00
+Revefi,lever,revefi,Bengaluru,ok,4,2,0,2026-10-27T06:58:55+00:00
+Safe Security,lever,safe,Bengaluru,ok,20,16,3,2026-10-27T06:59:17+00:00
+Saviynt,lever,saviynt,Bengaluru,ok,62,23,1,2026-10-27T06:58:51+00:00
+ShyftLabs,lever,shyftlabs,Noida,ok,25,8,3,2026-10-27T06:59:31+00:00
+Sonatype,lever,sonatype,Hyderabad,ok,14,2,0,2026-10-27T06:58:27+00:00
+Sprinto,lever,Sprinto,Bengaluru,ok,36,32,1,2026-10-27T06:58:14+00:00
+Stable Money,lever,stable-money1,Bengaluru,ok,11,11,0,2026-10-27T06:58:16+00:00
+Turvo,lever,turvo,Hyderabad,ok,3,3,0,2026-10-27T06:58:26+00:00
+ValGenesis,lever,valgenesis,Hyderabad,ok,10,10,3,2026-10-27T06:58:27+00:00
+Veeva Systems,lever,veeva,Hyderabad,ok,910,32,2,2026-10-27T06:59:07+00:00
+Wayground,lever,Wayground,Bengaluru,ok,9,4,0,2026-10-27T06:59:30+00:00
+Weekday,lever,weekdayworks,Bengaluru,ok,54,52,4,2026-10-27T06:58:53+00:00
+Zeta,lever,zeta,Hyderabad,ok,28,24,2,2026-10-27T06:58:16+00:00
+Zimperium,lever,zimperium,Bengaluru,ok,21,8,4,2026-10-27T06:58:55+00:00
