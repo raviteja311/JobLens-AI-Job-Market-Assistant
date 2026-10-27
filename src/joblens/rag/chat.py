@@ -33,16 +33,21 @@ log = logging.getLogger(__name__)
 # It is a raw vector similarity on purpose. The gate used to be a hybrid RRF
 # score of 0.016, but a single retriever's rank-1 hit alone scores 1/61 =
 # 0.0164 and vector search always returns neighbours, so every question in
-# data/golden/chat.yaml passed it, "what is the capital of Peru?" included.
-# Measured on that set over the v1 global corpus (466 Hacker News and
-# RemoteOK postings, whole-posting vectors), and not yet re-measured on the
-# company-board corpus of India-based postings: the 15
-# answerable questions have a best similarity of 0.408 to 0.633; the 5 that
-# must be refused have 0.163 to 0.421. No threshold separates them all
-# (the Elon Musk question sits inside the answerable range), so 0.30 is set
-# to catch the clearly off-topic with a wide margin and never refuse a real
-# question. Near-topic questions the corpus cannot answer are left to the
-# model's own refusal, which the citation check then catches.
+# the chat golden set of the time passed it, "what is the capital of Peru?"
+# included.
+#
+# Measured on 2026-10-27 with the 20 questions in data/golden/chat.yaml over
+# the company-board corpus of India-based postings (625 postings,
+# whole-posting vectors): the 15 answerable questions have a best similarity
+# of 0.297 to 0.762; the 5 that must be refused have 0.160 to 0.476. No
+# threshold separates them all: a technology or country no posting mentions
+# ("Haskell", "Sri Lanka") still lands near postings that share its other
+# words. 0.30 catches the clearly off-topic (the general-knowledge question
+# scores 0.160) and leaves near-topic questions to the model's own refusal,
+# which the citation check then catches. At 0.30 it also refuses one
+# answerable question, "which companies say they offer visa sponsorship?"
+# (0.297). On the v1 global corpus the same gate measured 0.408 to 0.633 and
+# 0.163 to 0.421.
 MIN_SIMILARITY = 0.30
 
 NO_ANSWER = (
