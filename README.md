@@ -56,26 +56,30 @@ Two tables carry the project. Both come from `make eval` and
 `make distil-eval` (the gold v2 skill rows from a rescore, see Phase 6); the full write-ups, including the runs that failed, are
 in [docs/experiments.md](docs/experiments.md).
 
-**Retrieval**, 25 human-graded queries (918 graded candidates) over the
-697-posting Indian corpus, 24 of them scored because one has no relevant
-posting, measured 2026-10-09 and committed as
-`data/eval_baseline.json`. The cross-encoder reranker leads on MRR and
-nDCG@10 but costs seconds a query, and it did not pass the decision rule
-fixed before the run (+0.05 nDCG@10 at p95 under 500 ms), so hybrid (whole)
-stays the default. The human grades leave about 28 relevant postings per
-query, which puts MRR near its ceiling and caps recall@10 at 0.421.
+**Retrieval**, 25 human-graded queries (918 graded candidates, graded
+2026-10-09 on the 697-posting Indian corpus), 24 of them scored because one
+has no relevant posting. Re-measured 2026-10-27 on the rebuilt corpus after
+the role filter was tightened (625 postings, with 694 of the 918
+judgements still pointing at a posting) and committed as `data/eval_baseline.json`.
+Hybrid (whole), the default, leads on recall@10, MRR and nDCG@10. The
+cross-encoder reranker did not pass the decision rule fixed before the
+2026-10-09 run (+0.05 nDCG@10 at p95 under 500 ms) and here scores below
+hybrid at seconds a query. The human grades leave about 21 relevant
+postings per query, which caps recall@10 at 0.534. Postings added since the
+grading are unjudged and count as not relevant, which pulls precision and
+nDCG down.
 
 | configuration | recall@5 | recall@10 | MRR | nDCG@10 | p50 ms | p95 ms |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.106 | 0.219 | 0.735 | 0.448 | 24 | 58 |
-| vector (whole) | 0.154 | 0.287 | 0.889 | 0.700 | **18** | **21** |
-| vector (section) | **0.177** | 0.311 | 0.865 | 0.665 | 22 | 99 |
-| hybrid (whole), default | 0.138 | **0.322** | 0.893 | 0.671 | 85 | 109 |
-| hybrid (section) | 0.163 | 0.293 | 0.837 | 0.641 | 80 | 94 |
-| hybrid + rerank | 0.167 | 0.299 | **0.927** | **0.707** | 2286 | 6494 |
+| keyword | 0.114 | 0.245 | 0.711 | 0.386 | 20 | 24 |
+| vector (whole) | 0.165 | 0.305 | 0.844 | 0.596 | 15 | **16** |
+| vector (section) | **0.204** | 0.336 | 0.758 | 0.558 | **14** | **16** |
+| hybrid (whole), default | 0.179 | **0.345** | **0.877** | **0.600** | 71 | 86 |
+| hybrid (section) | 0.195 | 0.331 | 0.764 | 0.541 | 71 | 89 |
+| hybrid + rerank | 0.182 | 0.313 | 0.837 | 0.590 | 1826 | 2125 |
 
-The rerank latencies here came from a run on a loaded machine; the decisive
-reranker run the same day measured the same configuration at p95 3,383 ms.
+The 2026-10-09 table on the 697-posting corpus, and the decisive reranker
+run measured on it, are in [docs/experiments.md](docs/experiments.md).
 The earlier table on the v1 global corpus (58 queries, 466 postings) is kept
 under Phase 3 as history; none of its numbers apply to this corpus.
 
@@ -105,7 +109,7 @@ grown to 20 questions (5 must be refused) and has not been re-scored.
 ## Status
 
 Phases 0 to 7 of the [12-week plan](docs/devlog.md) are complete, Phase 7
-locally. 697 India-based postings from the Greenhouse, Lever and Ashby
+locally. 625 India-based postings from the Greenhouse, Lever and Ashby
 boards of 291 companies that hire in India, hybrid search over pgvector,
 grounded chat and resume matching on a local LLM, an eval suite that fails
 CI on a regression, a distillation experiment whose headline is that a regex
@@ -235,13 +239,15 @@ re-parses every job's latest payload and `--prune` deletes postings that no
 longer pass (`--dry-run` lists them first and writes nothing). A spot check
 of 20 random
 postings found 20/20 in India and 17/20 in a target role, counting
-AI-adjacent roles; a bare "AI" in a title is the filter's weak spot.
+AI-adjacent roles; a bare "AI" in a title is the filter's weak spot. The
+filter has since been tightened (2026-10-27) to exclude customer success,
+consultant and product manager titles.
 
 | source | postings | API key | notes |
 | --- | ---: | --- | --- |
-| Greenhouse | 395 | none | 161 company boards; description HTML-escaped |
-| Lever | 229 | none | 71 boards; description split into titled lists |
-| Ashby | 73 | none | 59 boards; country in a separate address field |
+| Greenhouse | 365 | none | 161 company boards; description HTML-escaped |
+| Lever | 193 | none | 71 boards; description split into titled lists |
+| Ashby | 67 | none | 59 boards; country in a separate address field |
 
 **Storage** is bronze/silver. `raw_postings` keeps the payload exactly as the
 source sent it, one row each time a posting is new or changed, so history is
@@ -557,9 +563,9 @@ diff. Absolute floors fail the build outright; a drop of more than 0.05
 against the baseline fails it as a regression. The baseline is the last run
 recorded in the database, or, when there is none, the committed
 `data/eval_baseline.json`: scores for all six retrieval configurations,
-measured on 24 human-graded queries over the 697-posting Indian corpus
-(2026-10-09). The retrieval floor is nDCG@10 >= 0.45 and chat's is refusal
-accuracy >= 0.75. recall@10 has no floor, because with about 28 relevant
+measured on 24 human-graded queries over the 625-posting corpus
+(2026-10-27). The retrieval floor is nDCG@10 >= 0.45 and chat's is refusal
+accuracy >= 0.75. recall@10 has no floor, because with about 21 relevant
 postings per query no retriever can reach the 0.55 it once had; it is still
 checked for regressions. CI starts from an empty database every
 time, so before that file existed the regression check never applied there
@@ -798,16 +804,21 @@ a permissions check with each source first.
 
 Kept current and honest.
 
-- **The corpus is small and skewed.** 697 India-based postings from the
+- **The corpus is small and skewed.** 625 India-based postings from the
   public boards of 291 companies that hire in India. The list came from the
   EasyJobs seed rather than from a documented selection, so it reflects
   whichever companies that list happened to include, and it over-represents
   companies that use Greenhouse, Lever or Ashby. Any "the market wants X"
   claim from this data is really "these companies wanted X this month".
-- **The role filter is generous.** A bare "AI" in a title admits marketing,
-  design, support and hardware roles at AI companies: 17 of 20 sampled
-  postings were a target role counting AI-adjacent ones, about 13 under the
-  labelling guide's stricter role families.
+- **The role filter is generous.** A bare "AI" in a title admitted
+  marketing, design, support and hardware roles at AI companies: 17 of 20
+  sampled postings were a target role counting AI-adjacent ones, about 13
+  under the labelling guide's stricter role families. Since 2026-10-27
+  customer success, consultant and product manager titles are excluded (41
+  postings pruned). Marketing, design, support, security and programme
+  management roles with a bare "AI" still get in, and the consultant rule
+  also drops consulting roles that are data work, such as Beghou's data
+  warehouse and analytics consultants.
 - **The golden set is small and has one grader.** Of 58 drafted queries, 25
   are graded (918 judgements, 24 scored), all by the owner from summaries of
   the full posting text; the other 33 have no judgements yet. Agreement with

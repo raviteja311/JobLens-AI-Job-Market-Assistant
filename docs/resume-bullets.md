@@ -16,7 +16,7 @@ still true and still claimable, just say which corpus if asked.
   data postings daily from the Greenhouse, Lever and Ashby boards of 291
   companies hiring in India into a bronze/silver Postgres schema, with India and
   target-role filters, content-hash and embedding dedup, and idempotent
-  re-processing from raw payloads; 697 postings in the current corpus, and a
+  re-processing from raw payloads; 625 postings in the current corpus, and a
   spot check of 20 found 20 in India and 17 in a target role. *(README
   Phase 1, experiments 2026-10-08)* Say, if asked: the 17 counts
   AI-adjacent roles; under the labelling guide's stricter role families it

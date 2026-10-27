@@ -2087,3 +2087,62 @@ retrieval eval did not need re-running.
 The grades file and the pool dump are kept outside the repository, in
 `JobLens-labelling/regrade_2026-10-27_grades.json` and
 `regrade_2026-10-27_pool.txt`.
+
+## 2026-10-27 - Role filter tightened
+
+**Why.** The 2026-10-09 spot check found the role filter's weak spot: a
+bare "AI" in a title admits roles that are not AI, ML or data work. Its
+three misses were an AI customer-success manager (Glean), a forward-deployed
+AI security consultant (AHEAD) and an AI product manager (HackerOne). On the
+rebuilt corpus, 198 of 666 postings had "AI" as their only target word.
+
+**Scope.** Two options were put: A, narrow, only roles like the three
+misses; B, everything the labelling guide calls a wrong family. A was
+chosen. Added to `_EXCLUDED_TERMS` in `sources/filters.py`, word-bounded
+like the existing entries and checked before the target words:
+`customer success`, `success manager` (the Glean titles read "AI Success
+Manager", without "customer"), `consultants?` and `product managers?`.
+`tests/test_filters.py` pins the three real titles and four other wordings
+as excluded, and eight guard titles (managers of data and ML work among
+them) as kept.
+
+**Dry run and prune.** `joblens transform --prune --dry-run` listed 41
+postings: 13 product managers, 2 success managers and 26 consultants. Of
+the 41, 22 had passed through a target word other than a bare "AI" (data,
+analytics, python), so the consultant rule also drops consulting roles
+that are data work, such as twelve Beghou data-warehouse and analytics
+consultants and Capco's "Data Consultant". 24 of the 41 were judged in
+`data/golden/retrieval.yaml` (35 judgements, all in verified queries);
+the eval drops them now that the postings are gone. `joblens transform
+--prune` then deleted 41, the same as the dry run, with none of the
+postings lacking a bronze row.
+
+| measure | before | after |
+| --- | ---: | ---: |
+| postings | 666 | 625 |
+| greenhouse / lever / ashby | 378 / 218 / 70 | 365 / 193 / 67 |
+| whole / section chunks | 666 / 4,696 | 625 / 4,362 |
+| judgements (of 918) pointing at a posting | 729 | 694 |
+
+**Baseline.** Re-measured and committed (`--update-baseline`) on the
+625-posting corpus, 24 judged queries. Against the old baseline, which was
+measured on the lost 697-posting corpus (entry above), the gate failed on
+hybrid (whole): precision@5 0.825 to 0.750, precision@10 0.838 to 0.692,
+nDCG@10 0.671 to 0.600. The change mixes the rebuild, the prune, and
+postings added since grading that are unjudged and count as not relevant,
+so it is not a measure of the filter alone.
+
+| configuration | nDCG@10 old | nDCG@10 new | recall@10 old | recall@10 new | MRR old | MRR new |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.448 | 0.386 | 0.219 | 0.245 | 0.735 | 0.711 |
+| vector (whole) | 0.700 | 0.596 | 0.287 | 0.305 | 0.889 | 0.844 |
+| vector (section) | 0.665 | 0.558 | 0.311 | 0.336 | 0.865 | 0.758 |
+| hybrid (whole) | 0.671 | 0.600 | 0.322 | 0.345 | 0.893 | 0.877 |
+| hybrid (section) | 0.642 | 0.541 | 0.293 | 0.331 | 0.837 | 0.764 |
+| hybrid + rerank | 0.707 | 0.590 | 0.299 | 0.313 | 0.927 | 0.837 |
+
+Hybrid (whole), the default, now leads on recall@10, MRR and nDCG@10. About
+21 relevant postings per query remain, which caps recall@10 at 0.534.
+
+**Backup.** Taken before the prune, outside the repository:
+`JobLens-labelling/backup_2026-10-27.dump` (45 MB, `pg_dump -Fc`).
