@@ -765,7 +765,7 @@ repo, as drafts where publishing is a human's call:
   chat and matching take about 50 seconds an answer on the local model.
 - **Three blog drafts** in [`docs/blog/`](docs/blog/), one per plan title,
   retitled to what actually happened: the model was 0.5B not 3B, and the
-  corpus is 466 postings not 10k. Every number in them is from
+  v1 corpus was 466 postings not 10k. Every number in them is from
   `docs/experiments.md`.
 - **LinkedIn drafts and a headline** in [`docs/blog/linkedin.md`](docs/blog/linkedin.md).
 - **Resume bullets** in [`docs/resume-bullets.md`](docs/resume-bullets.md),
