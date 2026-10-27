@@ -1,66 +1,66 @@
 {
   "retrieval": {
     "keyword": {
-      "mrr": 0.735,
-      "ndcg@10": 0.4481,
-      "ndcg@5": 0.4227,
-      "precision@10": 0.65,
-      "precision@5": 0.6583,
-      "recall@10": 0.2191,
-      "recall@5": 0.1059
+      "mrr": 0.7115,
+      "ndcg@10": 0.3864,
+      "ndcg@5": 0.3477,
+      "precision@10": 0.5167,
+      "precision@5": 0.5167,
+      "recall@10": 0.2446,
+      "recall@5": 0.1142
     },
     "vector (whole)": {
-      "mrr": 0.8889,
-      "ndcg@10": 0.7003,
-      "ndcg@5": 0.6891,
-      "precision@10": 0.8333,
-      "precision@5": 0.8667,
-      "recall@10": 0.287,
-      "recall@5": 0.1542
+      "mrr": 0.8438,
+      "ndcg@10": 0.5957,
+      "ndcg@5": 0.58,
+      "precision@10": 0.6625,
+      "precision@5": 0.7083,
+      "recall@10": 0.3047,
+      "recall@5": 0.1647
     },
     "vector (section)": {
-      "mrr": 0.8646,
-      "ndcg@10": 0.6646,
-      "ndcg@5": 0.6251,
-      "precision@10": 0.8333,
-      "precision@5": 0.8667,
-      "recall@10": 0.3114,
-      "recall@5": 0.1767
+      "mrr": 0.7583,
+      "ndcg@10": 0.5575,
+      "ndcg@5": 0.5299,
+      "precision@10": 0.6667,
+      "precision@5": 0.7167,
+      "recall@10": 0.3359,
+      "recall@5": 0.2043
     },
     "hybrid (whole)": {
-      "mrr": 0.8925,
-      "ndcg@10": 0.6713,
-      "ndcg@5": 0.6383,
-      "precision@10": 0.8375,
-      "precision@5": 0.825,
-      "recall@10": 0.3221,
-      "recall@5": 0.1378
+      "mrr": 0.8769,
+      "ndcg@10": 0.6004,
+      "ndcg@5": 0.5986,
+      "precision@10": 0.6917,
+      "precision@5": 0.75,
+      "recall@10": 0.3448,
+      "recall@5": 0.1794
     },
     "hybrid (section)": {
-      "mrr": 0.8368,
-      "ndcg@10": 0.6415,
-      "ndcg@5": 0.6328,
-      "precision@10": 0.8125,
-      "precision@5": 0.825,
-      "recall@10": 0.2928,
-      "recall@5": 0.163
+      "mrr": 0.7639,
+      "ndcg@10": 0.5407,
+      "ndcg@5": 0.5326,
+      "precision@10": 0.65,
+      "precision@5": 0.6917,
+      "recall@10": 0.3306,
+      "recall@5": 0.1954
     },
     "hybrid + rerank": {
-      "mrr": 0.9271,
-      "ndcg@10": 0.7066,
-      "ndcg@5": 0.6942,
-      "precision@10": 0.8417,
-      "precision@5": 0.8833,
-      "recall@10": 0.2994,
-      "recall@5": 0.1674
+      "mrr": 0.8368,
+      "ndcg@10": 0.5904,
+      "ndcg@5": 0.5819,
+      "precision@10": 0.6542,
+      "precision@5": 0.7167,
+      "recall@10": 0.3128,
+      "recall@5": 0.1819
     }
   },
   "measured": {
     "retrieval": {
-      "date": "2026-10-09",
-      "git_sha": "d2db4eb",
+      "date": "2026-10-27",
+      "git_sha": "20e418d",
       "queries": 24,
-      "corpus": 697
+      "corpus": 625
     }
   }
 }
