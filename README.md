@@ -56,19 +56,28 @@ Two tables carry the project. Both come from `make eval` and
 `make distil-eval` (the gold v2 skill rows from a rescore, see Phase 6); the full write-ups, including the runs that failed, are
 in [docs/experiments.md](docs/experiments.md).
 
-**Retrieval**, 58 judged queries over 466 postings, 1,379 graded
-candidates. Plain vector search over whole postings wins on nDCG and
-recall; the cross-encoder reranker wins on MRR at 130x the latency; hybrid
-trails both, which was not the expected result. The ordering held when the
-corpus was rebuilt from scratch and 7% of the judged postings expired.
+**Retrieval**, 25 human-graded queries (918 graded candidates) over the
+697-posting Indian corpus, 24 of them scored because one has no relevant
+posting, measured 2026-10-09 and committed as
+`data/eval_baseline.json`. The cross-encoder reranker leads on MRR and
+nDCG@10 but costs seconds a query, and it did not pass the decision rule
+fixed before the run (+0.05 nDCG@10 at p95 under 500 ms), so hybrid (whole)
+stays the default. The human grades leave about 28 relevant postings per
+query, which puts MRR near its ceiling and caps recall@10 at 0.421.
 
-| configuration | recall@5 | recall@10 | MRR | nDCG@10 | ms/query |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.216 | 0.388 | 0.550 | 0.385 | 10 |
-| vector (whole) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
-| vector (section) | 0.333 | 0.536 | 0.743 | 0.547 | 17 |
-| hybrid (whole) | 0.367 | 0.547 | 0.770 | 0.553 | 46 |
-| hybrid + rerank | 0.362 | 0.553 | **0.797** | 0.577 | 1956 |
+| configuration | recall@5 | recall@10 | MRR | nDCG@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.106 | 0.219 | 0.735 | 0.448 | 24 | 58 |
+| vector (whole) | 0.154 | 0.287 | 0.889 | 0.700 | **18** | **21** |
+| vector (section) | **0.177** | 0.311 | 0.865 | 0.665 | 22 | 99 |
+| hybrid (whole), default | 0.138 | **0.322** | 0.893 | 0.671 | 85 | 109 |
+| hybrid (section) | 0.163 | 0.293 | 0.837 | 0.641 | 80 | 94 |
+| hybrid + rerank | 0.167 | 0.299 | **0.927** | **0.707** | 2286 | 6494 |
+
+The rerank latencies here came from a run on a loaded machine; the decisive
+reranker run the same day measured the same configuration at p95 3,383 ms.
+The earlier table on the v1 global corpus (58 queries, 466 postings) is kept
+under Phase 3 as history; none of its numbers apply to this corpus.
 
 **Skill extraction**, 60 blind-judged postings with 138 gold mentions. The
 fine-tuned student recovered from a 0.000 collapse to 0.485, and the 80-line
@@ -91,7 +100,8 @@ grown to 20 questions (5 must be refused) and has not been re-scored.
 ## Status
 
 Phases 0 to 7 of the [12-week plan](docs/devlog.md) are complete, Phase 7
-locally. 466 postings from 2 live sources, hybrid search over pgvector,
+locally. 697 postings from the Greenhouse, Lever and Ashby boards of 291
+Indian companies, hybrid search over pgvector,
 grounded chat and resume matching on a local LLM, an eval suite that fails
 CI on a regression, a distillation experiment whose headline is that a regex
 won, and a containerised, monitored stack with a runbook. Phase 8 is this
@@ -502,7 +512,11 @@ diff. Absolute floors fail the build outright; a drop of more than 0.05
 against the baseline fails it as a regression. The baseline is the last run
 recorded in the database, or, when there is none, the committed
 `data/eval_baseline.json`: scores for all six retrieval configurations,
-measured on the 466-posting corpus. CI starts from an empty database every
+measured on 24 human-graded queries over the 697-posting Indian corpus
+(2026-10-09). The retrieval floor is nDCG@10 >= 0.45 and chat's is refusal
+accuracy >= 0.75. recall@10 has no floor, because with about 28 relevant
+postings per query no retriever can reach the 0.55 it once had; it is still
+checked for regressions. CI starts from an empty database every
 time, so before that file existed the regression check never applied there
 and only the floors could fail the build. Locally it never fired either:
 `joblens eval` recorded the new run before looking up the last one, so it
