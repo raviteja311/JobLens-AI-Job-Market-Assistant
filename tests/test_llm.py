@@ -144,15 +144,16 @@ def test_detection_does_not_depend_on_how_the_refusal_is_worded():
 
 
 class _CountConn:
-    def __init__(self, n):
+    def __init__(self, n, sources=None):
         self.n = n
+        self.sources = sources
 
     def execute(self, *args):
         conn = self
 
         class Cursor:
             def fetchone(self):
-                return {"n": conn.n}
+                return {"n": conn.n, "sources": conn.sources}
 
         return Cursor()
 
@@ -161,6 +162,23 @@ def test_no_answer_text_is_honest_about_the_corpus():
     text = chat_rag.no_answer(_CountConn(468))
     assert "468 job postings" in text
     assert "could not find" in text.lower()
+
+
+def test_no_answer_names_the_sources_in_the_database():
+    # It used to say "from Hacker News and RemoteOK" whatever was loaded, which
+    # stopped being true when the corpus moved to the Indian company boards.
+    text = chat_rag.no_answer(_CountConn(697, ["ashby", "greenhouse", "lever"]))
+    assert "697 job postings collected from Ashby, Greenhouse and Lever" in text
+    assert "Hacker News" not in text
+    assert "RemoteOK" not in text
+
+
+def test_no_answer_handles_one_source_and_unknown_ones():
+    assert "from Lever," in chat_rag.no_answer(_CountConn(3, ["lever"]))
+    # A source added later without a display name still reads sensibly.
+    assert "from Greenhouse and newboard" in chat_rag.no_answer(
+        _CountConn(5, ["greenhouse", "newboard"])
+    )
 
 
 def test_no_answer_survives_a_database_error():

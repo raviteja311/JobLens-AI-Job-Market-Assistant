@@ -217,3 +217,25 @@ def test_keyword_search_finds_a_city_named_only_in_the_location(conn):
     db.upsert_postings(conn, [in_pune, elsewhere])
     hits = retrieval.keyword_search(conn, "pune", limit=5)
     assert [h.location for h in hits] == ["Pune, Maharashtra, India"]
+
+
+def test_no_answer_reads_count_and_sources_from_postings(conn):
+    # The refusal's only query, run against the real schema.
+    from joblens.rag import chat
+
+    greenhouse = make_posting("g1")
+    greenhouse.source = "greenhouse"
+    lever = make_posting("l1")
+    lever.source = "lever"
+    db.upsert_postings(conn, [greenhouse, lever, make_posting("r1")])
+    conn.commit()
+    text = chat.no_answer(conn)
+    assert "3 job postings collected from Greenhouse, Lever and RemoteOK" in text
+
+
+def test_no_answer_on_an_empty_database(conn):
+    from joblens.rag import chat
+
+    text = chat.no_answer(conn)
+    assert "0 job postings" in text
+    assert "collected from" not in text

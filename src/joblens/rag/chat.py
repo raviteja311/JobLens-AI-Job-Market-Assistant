@@ -45,19 +45,44 @@ MIN_SIMILARITY = 0.30
 
 NO_ANSWER = (
     "I could not find postings that answer that. This corpus is {n} job "
-    "postings from Hacker News and RemoteOK, so it will not know about a "
-    "company or a technology that none of them mention."
+    "postings{origin}, so it will not know about a company or a technology "
+    "that none of them mention."
 )
+
+# How each source reads in a sentence. A source missing from here is shown by
+# its key, which is still true, just less tidy.
+SOURCE_NAMES = {
+    "ashby": "Ashby",
+    "greenhouse": "Greenhouse",
+    "hackernews": "Hacker News",
+    "lever": "Lever",
+    "remoteok": "RemoteOK",
+}
+
+
+def _origin(sources: list[str] | None) -> str:
+    names = [SOURCE_NAMES.get(s, s) for s in sources or []]
+    if not names:
+        return ""
+    if len(names) == 1:
+        return f" collected from {names[0]}"
+    return f" collected from {', '.join(names[:-1])} and {names[-1]}"
 
 
 def no_answer(conn) -> str:
-    """The refusal, with the real corpus size rather than a number that was
-    true the week it was typed."""
+    """The refusal, with the real corpus size and sources rather than facts
+    that were true the week they were typed. It once named Hacker News and
+    RemoteOK long after the corpus had moved to the Indian company boards."""
     try:
-        n = conn.execute("select count(*) as n from postings").fetchone()["n"]
+        row = conn.execute("""
+            select count(*) as n,
+                   array_agg(distinct source order by source) as sources
+              from postings
+            """).fetchone()
+        n, sources = row["n"], row["sources"]
     except Exception:  # noqa: BLE001 - the refusal must not fail on a count
-        n = "a few hundred"
-    return NO_ANSWER.format(n=n)
+        n, sources = "a few hundred", None
+    return NO_ANSWER.format(n=n, origin=_origin(sources))
 
 
 # How much of each posting the model gets to read. Enough for requirements,
