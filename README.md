@@ -784,41 +784,53 @@ a permissions check with each source first.
 
 Kept current and honest.
 
-- **The corpus is small and skewed.** 466 postings from 2 sources, 79% of them
-  Hacker News comments, which over-represents startups and US remote work. Any
-  "the market wants X" claim from this data is really "these two boards wanted
-  X this month".
-- **The golden set was graded by a model and reviewed by one person.** All 60
-  queries are judged from the full posting text (1,379 judgements), graded by
-  Claude reading the postings; the owner then reviewed the 232 grade-2
-  judgements still in the corpus and kept all of them (2026-09-26). The grade
-  0 and 1 judgements have not had a human pass, and there is no second
-  reviewer, so no inter-rater agreement is reported.
+- **The corpus is small and skewed.** 697 postings from the public boards of
+  291 hand-listed Indian companies, so it over-represents companies that use
+  Greenhouse, Lever or Ashby. Any "the market wants X" claim from this data is
+  really "these companies wanted X this month".
+- **The role filter is generous.** A bare "AI" in a title admits marketing,
+  design, support and hardware roles at AI companies: 17 of 20 sampled
+  postings were a target role counting AI-adjacent ones, about 13 under the
+  labelling guide's stricter role families.
+- **The golden set is small and has one grader.** Of 58 drafted queries, 25
+  are graded (918 judgements, 24 scored), all by the owner from summaries of
+  the full posting text; the other 33 have no judgements yet. Agreement with
+  the LLM grades is weak (weighted kappa 0.238), the human grades are much
+  more lenient, and the planned blind re-grade that would measure the
+  grader's own consistency has not been run.
 - **Recall is recall over the pool**, not over the corpus. A posting no
-  retriever surfaces is never judged and never counted as missed. At 466
-  postings the gap is small; it would not be at 50,000.
+  retriever surfaces is never judged and never counted as missed. The pool
+  takes hybrid's top 30 and the other retrievers' top 10 to narrow that gap,
+  not close it.
 - **The LLM judge is uncalibrated.** See Phase 5.
-- **Hybrid retrieval is worse than vector alone** on these queries. It is kept
-  for rare-token queries, which the current golden set under-represents.
+- **Hybrid retrieval does not beat vector alone across the board.** On the
+  current set vector (whole) leads on nDCG@10 (0.700 against 0.671) and hybrid
+  on recall@10 (0.322 against 0.287) and MRR; on the v1 set vector won
+  outright. Hybrid is kept for rare-token queries, which the golden set
+  under-represents.
 - **No salary information.** None of the Greenhouse, Lever or Ashby postings
   states pay, so there is no salary prediction, no salary band and no salary
   figure anywhere in the product. The parser is kept for a future source.
-- **Locations are a lookup table, not a geocoder.** 37% of postings have no
-  usable location.
+- **Locations are a lookup table, not a geocoder.** City matching knows a
+  fixed list of Indian cities and spellings (`search/places.py`). On the v1
+  corpus 37% of postings had no usable location; that has not been measured
+  on the Indian corpus.
 - **Skill extraction knows 80 skills** and nothing else.
 - **`/chat` on a local model takes about 50 seconds an answer** on CPU, and
   llama3.1 is weaker than an API model at following the citation format.
 - **The rate limit is per process and in memory.** Correct for one process,
   wrong the moment there are two. Same for the in-process LLM cost counter;
   the per-day figure comes from the database and is the one to trust.
-- **No public URL and no hosted monitoring.** Phase 7 stops at the
-  registry push. Deploying and Grafana Cloud both need accounts that are
-  the owner's to create; see the Phase 7 section for exactly what is
-  missing.
+- **No public URL and no hosted monitoring.** The Azure deployment script
+  is ready but has not been run, and Grafana Cloud needs an account; both
+  are the owner's to create. See the Phase 7 section.
 - **The API image is 1.6GB unpacked.** 564MB of that is torch, used to
   run two small sentence-transformer models. Exporting them to ONNX and
   dropping torch from the runtime is the obvious next step if image size
   ever matters; it has not been measured.
+- **The chat golden set predates the Indian corpus.** Its questions (Rust
+  roles, jobs in Germany, hourly contract rates) were written for the v1
+  corpus, and chat has not been scored since the switch.
 - **The chat eval does not run in CI.** A local Llama on a GitHub runner
   takes half an hour, so `/chat` is scored on a schedule and before a
   release, and the deploy gate is retrieval only.
@@ -832,7 +844,8 @@ Kept current and honest.
   the student inherits that model's blind spots and its habit of inventing
   the most common skills. There is no frontier API model in the comparison
   because no key is configured.
-- **The Phase 6 test set is 60 postings** with 138 gold mentions. Differences
+- **The Phase 6 test set is 60 postings** from the v1 corpus, with 138 gold
+  mentions. Differences
   smaller than a few points of F1 are not meaningful at that size.
 - **Gold v2 has one adjudicator and no measured agreement.** All 60 postings
   were judged by the same person in one sitting, so a second pass would
