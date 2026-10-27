@@ -1,4 +1,4 @@
-"""The Indian company list and the script that exports it from EasyJobs."""
+"""The company list and the script that exports it from EasyJobs."""
 
 import importlib.util
 from pathlib import Path

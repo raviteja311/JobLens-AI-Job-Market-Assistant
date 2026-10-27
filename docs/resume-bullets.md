@@ -6,7 +6,7 @@ so rather than borrowing one. Every figure points to the README section or
 experiment that produced it. Dates are as of 2026-10-27.
 
 The corpus changed on 2026-10-08, from 466 Hacker News and RemoteOK postings
-(v1, archived in `docs/archive/v1-global-corpus/`) to Indian company boards.
+(v1, archived in `docs/archive/v1-global-corpus/`) to the job boards of companies that hire in India.
 Bullets marked *(v1)* describe work measured on the old corpus; that is
 still true and still claimable, just say which corpus if asked.
 
@@ -14,13 +14,16 @@ still true and still claimable, just say which corpus if asked.
 
 - **Built an end-to-end job intelligence platform** ingesting AI, ML and
   data postings daily from the Greenhouse, Lever and Ashby boards of 291
-  Indian companies into a bronze/silver Postgres schema, with India and
+  companies hiring in India into a bronze/silver Postgres schema, with India and
   target-role filters, content-hash and embedding dedup, and idempotent
   re-processing from raw payloads; 697 postings in the current corpus, and a
   spot check of 20 found 20 in India and 17 in a target role. *(README
   Phase 1, experiments 2026-10-08)* Say, if asked: the 17 counts
   AI-adjacent roles; under the labelling guide's stricter role families it
   is about 13, and a bare "AI" in a title is the filter's weak spot.
+  The company list was exported from my earlier EasyJobs project, built
+  with AI assistance, and a live audit on 2026-10-27 found 290 of 291 boards
+  answering and 176 with at least one kept job.
 
 - **Built a human-graded retrieval golden set and eval harness** for a
   pgvector search system: 25 queries graded by hand over 918 candidates

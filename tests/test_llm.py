@@ -166,7 +166,7 @@ def test_no_answer_text_is_honest_about_the_corpus():
 
 def test_no_answer_names_the_sources_in_the_database():
     # It used to say "from Hacker News and RemoteOK" whatever was loaded, which
-    # stopped being true when the corpus moved to the Indian company boards.
+    # stopped being true when the corpus moved to the company boards.
     text = chat_rag.no_answer(_CountConn(697, ["ashby", "greenhouse", "lever"]))
     assert "697 job postings collected from Ashby, Greenhouse and Lever" in text
     assert "Hacker News" not in text

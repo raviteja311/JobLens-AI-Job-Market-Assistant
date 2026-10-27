@@ -105,8 +105,8 @@ grown to 20 questions (5 must be refused) and has not been re-scored.
 ## Status
 
 Phases 0 to 7 of the [12-week plan](docs/devlog.md) are complete, Phase 7
-locally. 697 postings from the Greenhouse, Lever and Ashby boards of 291
-Indian companies, hybrid search over pgvector,
+locally. 697 India-based postings from the Greenhouse, Lever and Ashby
+boards of 291 companies that hire in India, hybrid search over pgvector,
 grounded chat and resume matching on a local LLM, an eval suite that fails
 CI on a regression, a distillation experiment whose headline is that a regex
 won, and a containerised, monitored stack with a runbook. Phase 8 is this
@@ -183,7 +183,8 @@ src/joblens/eval/    Phase 3+5: golden set, metrics, judge, regression gate
 src/joblens/finetune/ Phase 6: teacher labels, LoRA training, extractor benchmark
 src/joblens/observability.py  Phase 7: JSON logs, Prometheus metrics
 prompts/             versioned prompt files, one directory per prompt
-data/companies_in.yaml  the 291 Indian company boards the sources fetch
+data/companies_in.yaml  the 291 company boards the sources fetch, from EasyJobs
+data/companies_check.csv  the latest live audit of those boards
 data/golden/         the judged queries everything is scored against
 data/finetune/       Phase 6: train and test sets, gold v2 and its provenance
 artifacts/skill-lora*/  Phase 6: the four committed LoRA adapters and training logs
@@ -215,6 +216,15 @@ parser fix without touching the network. Hacker News and RemoteOK, the v1
 corpus's sources, stay registered but out of the defaults so that corpus can
 still be re-parsed.
 
+The company list is not hand-built. `data/companies_in.yaml` is exported by
+`scripts/export_easyjobs_companies.py` from the seed list of EasyJobs, an
+earlier project of mine built with AI assistance, keeping the companies whose
+careers page runs on Greenhouse, Lever or Ashby. It mixes companies based in
+India with global ones that hire there. `scripts/check_company_boards.py`
+re-checks every board against the live APIs: on 2026-10-27, 290 of 291 boards
+answered, 284 had at least one India-based job, and 176 had at least one job
+the filters keep (`data/companies_check.csv`).
+
 The three board sources read the 291 companies in `data/companies_in.yaml`
 and keep a job only if `sources/filters.py` places it in India and its title
 is in the AI, ML, data and analytics family. Both checks run in
@@ -225,7 +235,7 @@ AI-adjacent roles; a bare "AI" in a title is the filter's weak spot.
 
 | source | postings | API key | notes |
 | --- | ---: | --- | --- |
-| Greenhouse | 395 | none | 161 Indian company boards; description HTML-escaped |
+| Greenhouse | 395 | none | 161 company boards; description HTML-escaped |
 | Lever | 229 | none | 71 boards; description split into titled lists |
 | Ashby | 73 | none | 59 boards; country in a separate address field |
 
@@ -784,10 +794,12 @@ a permissions check with each source first.
 
 Kept current and honest.
 
-- **The corpus is small and skewed.** 697 postings from the public boards of
-  291 hand-listed Indian companies, so it over-represents companies that use
-  Greenhouse, Lever or Ashby. Any "the market wants X" claim from this data is
-  really "these companies wanted X this month".
+- **The corpus is small and skewed.** 697 India-based postings from the
+  public boards of 291 companies that hire in India. The list came from the
+  EasyJobs seed rather than from a documented selection, so it reflects
+  whichever companies that list happened to include, and it over-represents
+  companies that use Greenhouse, Lever or Ashby. Any "the market wants X"
+  claim from this data is really "these companies wanted X this month".
 - **The role filter is generous.** A bare "AI" in a title admits marketing,
   design, support and hardware roles at AI companies: 17 of 20 sampled
   postings were a target role counting AI-adjacent ones, about 13 under the

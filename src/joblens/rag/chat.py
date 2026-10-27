@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 # data/golden/chat.yaml passed it, "what is the capital of Peru?" included.
 # Measured on that set over the v1 global corpus (466 Hacker News and
 # RemoteOK postings, whole-posting vectors), and not yet re-measured on the
-# Indian company-board corpus: the 15
+# company-board corpus of India-based postings: the 15
 # answerable questions have a best similarity of 0.408 to 0.633; the 5 that
 # must be refused have 0.163 to 0.421. No threshold separates them all
 # (the Elon Musk question sits inside the answerable range), so 0.30 is set
@@ -74,7 +74,7 @@ def _origin(sources: list[str] | None) -> str:
 def no_answer(conn) -> str:
     """The refusal, with the real corpus size and sources rather than facts
     that were true the week they were typed. It once named Hacker News and
-    RemoteOK long after the corpus had moved to the Indian company boards."""
+    RemoteOK long after the corpus had moved to the company boards."""
     try:
         row = conn.execute("""
             select count(*) as n,

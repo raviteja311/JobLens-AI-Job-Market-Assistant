@@ -1,4 +1,4 @@
-"""The Indian company list behind the Greenhouse, Lever and Ashby sources.
+"""The company list behind the Greenhouse, Lever and Ashby sources.
 
 Those boards are per-company: there is no "search every Greenhouse job"
 endpoint, so a source needs to know which boards to ask. The list lives in

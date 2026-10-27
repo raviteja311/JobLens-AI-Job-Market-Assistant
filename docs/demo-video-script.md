@@ -23,7 +23,7 @@ nothing in the video needs a caveat the page does not already have.
 embedder, LLM).*
 
 > I built JobLens to run my own AI job search. Every day it collects AI and
-> data postings from the job boards of 291 Indian companies, about 700 right
+> data postings from the job boards of 291 companies that hire in India, about 700 right
 > now, and lets me search them by meaning, ask questions with citations,
 > and match them against my resume.
 

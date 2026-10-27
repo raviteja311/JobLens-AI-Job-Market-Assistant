@@ -7,8 +7,8 @@ boards yield in a few weeks and I would rather quote the real number.
 Everything below is from the devlog and `docs/experiments.md` in
 [JobLens](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant).*
 
-*Update, 2026-10-27: JobLens has since moved to 697 postings from the
-boards of 291 Indian companies, and the Excelência bug in section 8 has
+*Update, 2026-10-27: JobLens has since moved to 697 India-based postings
+from the boards of 291 companies that hire in India, and the Excelência bug in section 8 has
 been fixed. Everything below describes the original two-board corpus.*
 
 ---
