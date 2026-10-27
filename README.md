@@ -79,19 +79,24 @@ reranker run the same day measured the same configuration at p95 3,383 ms.
 The earlier table on the v1 global corpus (58 queries, 466 postings) is kept
 under Phase 3 as history; none of its numbers apply to this corpus.
 
-**Skill extraction**, 60 blind-judged postings with 138 gold mentions. The
-fine-tuned student recovered from a 0.000 collapse to 0.485, and the 80-line
-regex it was meant to replace still ships.
+**Skill extraction**, 60 blind-judged postings from the v1 global corpus
+(36 Hacker News, 24 RemoteOK) with 138 gold mentions. The fine-tuned student
+recovered from a 0.000 collapse to 0.485, and the 80-line regex it was meant
+to replace still ships.
 
 | extractor | micro F1 | precision | recall | ms/call |
 | --- | ---: | ---: | ---: | ---: |
-| rules (Phase 2 regex) | **0.663** | **0.986** | 0.500 | **5** |
+| rules (Phase 2 regex) | **0.667** | **1.000** | 0.500 | **5** |
 | teacher (llama3.1 8B) | 0.634 | 0.551 | **0.746** | 9,512 |
 | tuned-v2 (Qwen 0.5B + LoRA) | 0.485 | 0.516 | 0.457 | 4,201 |
 | base (Qwen 0.5B) | 0.104 | 0.094 | 0.116 | 6,046 |
 | tuned-v1 (collapsed) | 0.000 | 0.000 | 0.000 | 3,105 |
 
-**Chat**, last scored on 8 questions including up to 3 the corpus cannot
+The rules row was rescored on 2026-10-27, after a fix to the regex's word
+boundaries (see Phase 6); the version with the bug scored 0.663 and 0.986.
+The model rows are unaffected by that change.
+
+**Chat**, last scored on the v1 global corpus, on 8 questions including up to 3 the corpus cannot
 answer: refusal accuracy 1.00 (gated by `joblens eval` with a floor of 0.75,
 but not run in CI), citation rate 0.75, judge scores uncalibrated and
 labelled as such. The chat golden set has since
@@ -229,20 +234,23 @@ removed on 2026-10-08 (see Limitations).
 
 **Dedup** is an exact match on a normalised content hash of title, company and
 location, with seniority words removed. It counts duplicates rather than
-removing them: 28 on the latest run, stored in `ingestion_runs`. Phase 3 adds a
+removing them: 28 on the last v1-corpus run, stored in `ingestion_runs`. Phase 3 adds a
 second, different signal rather than replacing it.
 
 **Reliability.** Retries with backoff on 429 and 5xx, fails fast on other 4xx.
 One source failing does not stop the others. Every run writes to
-`ingestion_runs` with counts and any error. 33 of 400 Hacker News comments are
-replies rather than postings and are counted as skipped, not dropped silently.
+`ingestion_runs` with counts and any error. On the v1 corpus, 33 of 400
+Hacker News comments were replies rather than postings and were counted as
+skipped, not dropped silently.
 
 **Schedule.** `.github/workflows/ingest.yml` runs daily at 06:00 UTC and is
 idempotent, so a missed slot costs that day's postings and nothing else.
 
 ### Phase 2: Classic ML layer
 
-Everything here runs on the Phase 1 corpus. No LLM calls, and no embeddings except in
+The numbers in this section were measured on the v1 global corpus (466
+Hacker News and RemoteOK postings) and have not been re-measured on the
+Indian corpus. Everything here runs on the Phase 1 corpus. No LLM calls, and no embeddings except in
 the clustering comparison below, which reads the Phase 3 vectors. These
 are the baselines Phases 3 and 6 have to beat, so they stay in the repo
 permanently. Full write-ups in `docs/experiments.md`.
@@ -301,7 +309,12 @@ reported against the postings that could have answered the question.
 pgvector, a local MiniLM, hybrid retrieval, a cross-encoder reranker, and the
 golden set that makes all of it measurable.
 
-**The golden set** is 60 real queries in `data/golden/retrieval.yaml`, all
+The golden set and the tables in this section are from the v1 global corpus,
+kept as history in `docs/archive/v1-global-corpus/`. For the Indian corpus
+the golden set was redrafted (58 queries, 25 of them graded by a human) and
+its scores are in Results above.
+
+**The v1 golden set** was 60 real queries, all
 judged, graded 0 (no) / 1 (acceptable) / 2 (exactly what was asked). Every
 candidate that any retriever surfaces in its top 10 was graded from the full
 posting text, 1,379 judgements in all (1,274 in the first pass and 105 added
@@ -450,7 +463,8 @@ when the set had 8 questions, up to 3 of them questions the corpus genuinely
 cannot answer; it has since grown to 20 (5 must be refused) and has not been
 re-scored.
 
-Scorecard, 8 questions, `chat_answer/v2`, llama3.1 local, 12 minutes:
+Scorecard, 8 questions, `chat_answer/v2`, llama3.1 local, 12 minutes, on the
+v1 global corpus. The default chat prompt is now `chat_answer/v3`:
 
 | metric | score | gated |
 | --- | ---: | --- |
@@ -551,7 +565,8 @@ over Ollama and every number below inherits that substitution.
 **Read recall first.** Precision and recall are not symmetric here, and
 recall is the line that compares the systems fairly.
 
-All rows, same frozen 60 postings, gold v2 (hash `256c78609120d71f`), 138
+All rows, same frozen 60 postings from the v1 global corpus (36 Hacker
+News, 24 RemoteOK), gold v2 (hash `256c78609120d71f`), 138
 gold mentions. `python -m joblens distil-eval` reproduces the gold v1 run;
 the gold v2 rows come from rescoring against the updated gold set.
 
@@ -591,6 +606,11 @@ Portuguese posting it matched `excel` inside `Excelência`, because the word
 boundaries in `skills.py` are ASCII and an accented letter reads as a
 boundary. Precision is 0.986 rather than 1.000, and that 0.014 is a real bug
 that the old benchmark made structurally invisible.
+
+**Fixed 2026-10-27.** The boundaries are now Unicode-aware. Rescored against
+the same gold v2, the rules extractor reaches precision 1.000 (69/69), recall
+0.500, micro F1 0.667 and macro F1 0.809; the table above keeps the rows as
+they were measured.
 
 The circularity was worth about 0.05 F1. Against v1 the regex led the teacher
 0.753 to 0.671; against v2 it leads 0.663 to 0.634.
