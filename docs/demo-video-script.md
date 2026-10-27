@@ -22,10 +22,10 @@ nothing in the video needs a caveat the page does not already have.
 *Screen: the JobLens header with the four metrics (postings, chunks,
 embedder, LLM).*
 
-> I built JobLens to run my own AI job search. It collects real postings
-> from Hacker News and RemoteOK every day, about 470 right now, and lets me
-> search them by meaning, ask questions with citations, and match them
-> against my resume.
+> I built JobLens to run my own AI job search. Every day it collects AI and
+> data postings from the job boards of 291 Indian companies, about 700 right
+> now, and lets me search them by meaning, ask questions with citations,
+> and match them against my resume.
 
 ## 0:15 - 0:50 Search, and the query embeddings get wrong
 
@@ -45,31 +45,41 @@ with two years experience`*, mode* `vector`*.*
 > Hybrid adds keyword search back in, and both postings come first and
 > second.
 
-*(Checked on 2026-09-26 against 466 postings. Postings expire, so run both
-searches once before recording; `Elixir`, `JAX` and `CUDA` showed the same
-effect as backups. The README's original example, `pgvector`, no longer has
-a posting.)*
+*(Checked on 2026-09-26 against the v1 corpus, not yet on the Indian one.
+Before recording, find a rare term that shows the effect today: run
+`python -m joblens search "<term>" --mode vector --limit 5` and the same
+with `--mode hybrid`, and use a term where hybrid puts the matching
+postings first and vector does not. Try `vLLM`, `JAX`, `CUDA` and
+`pgvector`. If none shows the effect, cut this beat rather than fake it.)*
 
-> That is why hybrid is the default, even though on ordinary queries
-> it scores worse. Which brings me to the part I am proudest of.
+*Optional city beat: type* `data engineer Pune`*, mode* `hybrid`*.*
+
+> Name a city and the in-city postings move up. City precision on those
+> queries went from 0.28 to 0.68.
+
+> That is why hybrid is the default, even though plain vector search
+> scores as well on ordinary queries. Which brings me to the part I am
+> proudest of.
 
 ## 0:50 - 1:25 The numbers
 
 *Screen: README retrieval table.*
 
-> Every configuration is scored against a golden set: 58 real queries,
-> nearly 1,400 candidate postings, each graded for relevance from the full
-> text. Plain vector search wins recall and nDCG. The reranker wins exactly
-> one column, at 130 times the latency. Hybrid came third, which is not what
-> any blog post told me. This eval runs in CI and fails the build if
-> retrieval gets worse.
+> Every configuration is scored against a golden set I graded by hand: 25
+> queries, more than 900 candidate postings. No single configuration wins
+> everything. For the reranker I wrote the decision rule down before
+> running it: it had to gain five points of nDCG at under half a second.
+> Nothing passed, so it stays optional, and a version that looked like a
+> winner on model-made grades did not hold up on mine. This eval runs in CI
+> and fails the build if retrieval gets worse.
 
 *Optional, 10 seconds: the Actions tab with a green deploy run.*
 
 ## 1:25 - 1:55 Chat that knows when to say no
 
-*Screen: Chat tab. Ask* `which companies are hiring Rust engineers?`*.
-Cut to the pre-recorded answer.*
+*Screen: Chat tab. Ask a question the current postings can answer, such as*
+`which companies are hiring for LLM roles in Bengaluru?`*, after checking
+it on recording day. Cut to the pre-recorded answer.*
 
 > Chat answers from the postings and cites every claim. (That took about 50
 > seconds on a local model, so I cut the wait.)
@@ -78,7 +88,7 @@ Cut to the pre-recorded answer.*
 
 > And when the postings cannot answer, it says so instead of guessing. A
 > quarter of the chat test set is questions like this, and refusal accuracy
-> is gated in CI.
+> has a hard floor in the evaluation.
 
 ## 1:55 - 2:20 Resume match
 
@@ -98,6 +108,7 @@ Cut to the pre-recorded answer.*
 ---
 
 **Things not to say:** "production", "users", or a latency figure. There is
-no deployment yet, and the README says so. "About 470 postings" is safe as
-the corpus grows; check the header metric on recording day and say that
-number instead if it has moved a lot.
+no deployment yet, and the README says so. Do not say chat is tested in
+CI; only retrieval is. "About 700 postings" is safe as the corpus grows;
+check the header metric on recording day and say that number instead if
+it has moved a lot.
