@@ -81,3 +81,44 @@ def test_is_india(location, expected):
 )
 def test_is_target_role(title, expected):
     assert is_target_role(title) is expected
+
+
+# The role-filter misses from the 2026-10-09 spot check (docs/experiments.md):
+# a bare "AI" in the title admitted roles outside the corpus. Scope A, chosen
+# on 2026-10-27: customer success, consultant and product manager roles.
+@pytest.mark.parametrize(
+    "title",
+    [
+        # The three misses, as titled in the corpus.
+        "AI Success Manager (US East Customer Hours)",
+        "AI Success Manager (US West Customer Hours)",
+        "Senior Technical Consultant - Forward Deployed AI Security Engineer",
+        "AI Product Manager",
+        # The same roles, worded the other ways boards write them.
+        "Customer Success Manager, AI Platform",
+        "AI Consultant",
+        "Senior Product Manager, AI",
+    ],
+)
+def test_non_target_roles_with_a_bare_ai_are_excluded(title):
+    assert is_target_role(title) is False
+
+
+# Managers belong to the family they manage (docs/labelling-guide.md), so
+# managers of data or ML work stay in. Each of these must survive any term
+# added to the exclusions.
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Machine Learning Engineer",
+        "Data Scientist",
+        "Senior Data Engineer",
+        "Analytics Manager",
+        "Engineering Manager, Machine Learning",
+        "ML Ops Engineer",
+        "AI Engineer",
+        "Applied AI Researcher",
+    ],
+)
+def test_target_roles_survive_the_exclusions(title):
+    assert is_target_role(title) is True
