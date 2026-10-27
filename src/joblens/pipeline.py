@@ -10,7 +10,7 @@ single API. That is the whole reason for keeping the raw layer.
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from joblens import db, sources
 from joblens.models import Posting
@@ -29,6 +29,12 @@ class RunResult:
     skipped: int = 0
     failed: bool = False
     error: str | None = None
+    # transform(prune=True): postings deleted because their latest bronze
+    # payload no longer passes the filters (with dry_run, the ones that would
+    # be), and postings with no bronze row at all, which are never deleted.
+    pruned: int = 0
+    pruned_postings: list[dict] = field(default_factory=list)
+    without_bronze: int = 0
 
     def summary(self) -> str:
         if self.failed:
@@ -101,8 +107,18 @@ def ingest_source(source_name: str, limit: int = 200) -> RunResult:
     return result
 
 
-def transform(source_name: str | None = None) -> RunResult:
-    """Re-parse everything in bronze. Use after changing a parser."""
+def transform(
+    source_name: str | None = None, *, prune: bool = False, dry_run: bool = False
+) -> RunResult:
+    """Re-parse everything in bronze. Use after changing a parser or a filter.
+
+    The upsert alone only adds and refreshes: a posting whose latest payload a
+    tightened filter now rejects keeps its row. prune=True deletes those rows,
+    for the named source only when one is given. A posting with no bronze row
+    is never deleted, only counted. dry_run=True does all of it in one
+    transaction and rolls it back, so nothing is written, and reports what
+    would have happened.
+    """
     result = RunResult(source=source_name or "all")
     with db.connect() as conn:
         rows = db.fetch_raw(conn, source=source_name)
@@ -112,11 +128,30 @@ def transform(source_name: str | None = None) -> RunResult:
         for name, source_rows in by_source.items():
             module = sources.get(name)
             postings, skipped = _to_postings(module, source_rows)
-            inserted, updated = db.upsert_postings(conn, postings)
+            inserted, updated = db.upsert_postings(conn, postings, commit=False)
             result.fetched += len(source_rows)
             result.inserted += inserted
             result.updated += updated
             result.skipped += skipped
+            if prune:
+                # fetch_raw returns the latest row per job, so a key missing
+                # from the parsed postings is a job whose newest payload no
+                # longer produces one.
+                kept = {posting.source_id for posting in postings}
+                rejected = [
+                    row["source_id"]
+                    for row in source_rows
+                    if row["source_id"] not in kept
+                ]
+                doomed = db.postings_by_source_id(conn, name, rejected)
+                db.delete_postings(conn, [posting["id"] for posting in doomed])
+                result.pruned_postings += doomed
+        result.pruned = len(result.pruned_postings)
+        result.without_bronze = db.count_postings_without_bronze(conn, source_name)
+        if dry_run:
+            conn.rollback()
+        else:
+            conn.commit()
     return result
 
 
