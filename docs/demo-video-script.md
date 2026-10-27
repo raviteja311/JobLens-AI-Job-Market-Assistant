@@ -23,7 +23,7 @@ nothing in the video needs a caveat the page does not already have.
 embedder, LLM).*
 
 > I built JobLens to run my own AI job search. Every day it collects AI and
-> data postings from the job boards of 291 companies that hire in India, about 700 right
+> data postings from the job boards of 291 companies that hire in India, about 625 right
 > now, and lets me search them by meaning, ask questions with citations,
 > and match them against my resume.
 
@@ -109,6 +109,6 @@ it on recording day. Cut to the pre-recorded answer.*
 
 **Things not to say:** "production", "users", or a latency figure. There is
 no deployment yet, and the README says so. Do not say chat is tested in
-CI; only retrieval is. "About 700 postings" is safe as the corpus grows;
+CI; only retrieval is. "About 625 postings" is safe as the corpus grows;
 check the header metric on recording day and say that number instead if
 it has moved a lot.

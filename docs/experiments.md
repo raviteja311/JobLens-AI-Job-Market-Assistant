@@ -1930,3 +1930,301 @@ stop ingestion but not the audit. None did on this run.
 blog update notes, the generated header of `data/companies_in.yaml` and a
 few comments now say "companies that hire in India" and that the list came
 from EasyJobs, and the README's Phase 1 quotes this audit.
+
+## 2026-10-27 - The 697-posting development database was lost; corpus rebuilt
+
+**What happened.** The Postgres database that held the 697-posting Indian
+corpus, the one the golden set was graded on (2026-10-09) and the
+2026-10-08 and 2026-10-09 entries above were measured on, is gone. The only Docker
+volume on the development machine was created on 2026-10-27, and no dump of
+the old database existed. The cause is not known.
+
+**What that costs.** `data/eval_baseline.json` ("corpus": 697) can no
+longer be reproduced: its numbers stand as a record of what was measured on
+that corpus, not as something a fresh database will match. The golden set
+survives, because judgements key on `(source, source_id)`, never on the
+database id.
+
+**Rebuild.** `joblens migrate`, then `joblens ingest --limit 2000` (high
+enough that every board is visited) from 07:14 to 07:20 UTC, then
+`joblens embed --strategy whole --strategy section`.
+
+| measure | value |
+| --- | ---: |
+| raw jobs fetched | 23,830 |
+| postings (greenhouse / lever / ashby) | 666 (378 / 218 / 70) |
+| boards failed | 1 (Anchanto, 404) |
+| whole chunks / section chunks | 666 / 4,696 |
+
+**Golden coverage.** 729 of the 918 judged postings are in the rebuilt
+corpus; the other 189 are not, most likely because they have closed
+since 2026-10-09. A retrieval eval drops
+judged postings that are no longer present (`golden.resolve`) and scores
+new, ungraded ones as not relevant, so a re-baseline on this corpus is a
+separate decision.
+
+**Backup.** A `pg_dump -Fc` of the rebuilt database (45 MB) is kept outside
+the repository, in `JobLens-labelling/joblens_666_2026-10-27.dump`. The
+lesson: take a dump after every graded pass, before anything else touches
+the database.
+
+## 2026-10-27 - Blind re-grade: planned
+
+**Pre-registration.** Written and committed before any re-grading, following
+"Measuring consistency" in `docs/labelling-guide.md`. The first pass was
+graded on 2026-10-09; this is 18 days later.
+
+**What.** 10 queries sampled from the ids of the 25 verified queries in
+`data/golden/retrieval.yaml`:
+
+    random.seed(20261027)
+    sorted(random.sample(sorted(ids), 10))
+
+which gives `q01 q02 q08 q12 q14 q15 q30 q45 q49 q53`.
+
+**How.** A fresh pool dump of those 10 queries with `scripts/golden_pool.py`,
+graded blind from the dump, not the YAML, by Jetti Raviteja in one sitting,
+then compared with the first pass by `scripts/golden_agreement.py`
+(linearly weighted Cohen's kappa, plus unweighted kappa and exact
+agreement), overall and per query.
+
+**Where this departs from the guide.** The guide compares the two passes
+"over every candidate in those 10 queries". The first pass's corpus is lost
+(entry above), so the pools are drawn from the rebuilt 666-posting corpus,
+and only pairs graded in both passes can be compared: 262 of the 356
+first-pass judgements on these queries, measured before grading from the
+judged keys alone, no grades read. Two consequences, to be stated with the
+result:
+
+- Survival bias. The 262 are postings still open 18 days later and still in
+  a top-10 pool, not a random subset of the first pass.
+- The fresh pools also hold 98 candidates the first pass never graded. They are
+  graded blind with the rest but have nothing to be compared with; whether
+  they go into the golden set is a separate decision.
+
+**Reading,** from the guide: above 0.8 is strong, 0.6 to 0.8 is
+substantial, below 0.6 means a rule needs work before the numbers are worth
+quoting.
+
+## 2026-10-27 - Blind re-grade: result
+
+**What was run.** As pre-registered above: a fresh pool dump of q01, q02,
+q08, q12, q14, q15, q30, q45, q49 and q53 from the rebuilt 666-posting
+corpus (360 candidates), graded blind by Jetti Raviteja from the full
+posting text. The dump's per-query `NOTE:` lines were stripped first, by
+decision, because they carried the first pass's note text; they held no
+grades. The grades were given in chat query by query and written into the
+grades file by candidate number; every value was checked to be 0, 1 or 2
+and every candidate present.
+
+**Result** (`scripts/golden_agreement.py data/golden/retrieval.yaml
+<grades> --show 50`):
+
+| measure | value |
+| --- | ---: |
+| pairs compared | 262, over 10 queries |
+| exact agreement | 0.378 |
+| kappa, linear weight | -0.005 |
+| kappa, unweighted | 0.010 |
+
+Rows are the first pass, columns the re-grade:
+
+| | 0 | 1 | 2 |
+| --- | ---: | ---: | ---: |
+| **0** | 46 | 41 | 0 |
+| **1** | 62 | 50 | 0 |
+| **2** | 39 | 21 | 3 |
+
+Per query, linear kappa on the same pairs:
+
+| query | pairs | exact | linear kappa | first pass 0/1/2 | re-grade 0/1/2 |
+| --- | ---: | ---: | ---: | --- | --- |
+| q01 | 31 | 0.419 | 0.157 | 29/1/1 | 11/19/1 |
+| q02 | 32 | 0.562 | -0.077 | 28/4/0 | 20/12/0 |
+| q08 | 25 | 0.400 | 0.008 | 4/13/8 | 12/13/0 |
+| q12 | 21 | 0.571 | 0.292 | 9/7/5 | 17/3/1 |
+| q14 | 22 | 0.136 | 0.000 | 3/8/11 | 22/0/0 |
+| q15 | 35 | 0.200 | 0.000 | 0/15/20 | 18/17/0 |
+| q30 | 24 | 0.417 | -0.217 | 6/17/1 | 9/15/0 |
+| q45 | 25 | 0.600 | 0.203 | 8/13/4 | 5/20/0 |
+| q49 | 22 | 0.364 | 0.000 | 0/19/3 | 12/10/0 |
+| q53 | 25 | 0.120 | 0.038 | 0/15/10 | 21/3/1 |
+
+The 0.000 for q14, q15 and q49 is what kappa gives when one pass uses a
+single grade, or nearly so, on those pairs; in q14 every re-grade is 0.
+
+**Reading.** By the guide, below 0.6 means a rule needs work before the
+numbers are worth quoting. At -0.005 the two passes agree no better than
+chance. The disagreements are not symmetric: the first pass gave 63 grades
+of 2 on these pairs and the re-grade gave 3, and 39 of the first pass's 2s
+became 0s.
+
+**Disagreements and causes.** All 163 disagreements were shown query by
+query with the posting and both grades. No causes were given, so the
+guide's step 4 test (several disagreements sharing a cause) could not be
+applied.
+
+**Decision.** Keep every grade as it is, in both files, and do not change
+`docs/labelling-guide.md`. `data/golden/retrieval.yaml` is unchanged, so the
+retrieval eval did not need re-running.
+
+**Caveats that belong with the number.**
+
+- Only pairs graded in both passes are compared, not every candidate as the
+  guide asks; the first pass's corpus is gone (entry above).
+- Survival bias: the 262 pairs are postings still open 18 days later and
+  still in a top-10 pool.
+- The 98 candidates the first pass never graded are in the grades file but
+  not in `data/golden/retrieval.yaml` and not in this comparison.
+- Method differed: the query notes say the first pass was graded from
+  summaries of the full posting text; this pass was graded from the full
+  text, as the guide's rule 1 asks.
+- Recording: in q01 and q45 one more grade was given than there were
+  candidates and the last was dropped; in q49 one fewer was given and the
+  missing grade was added as the last. If a slip sat earlier in one of those
+  lists, later grades in that query are shifted by one position.
+
+The grades file and the pool dump are kept outside the repository, in
+`JobLens-labelling/regrade_2026-10-27_grades.json` and
+`regrade_2026-10-27_pool.txt`.
+
+## 2026-10-27 - Role filter tightened
+
+**Why.** The 2026-10-09 spot check found the role filter's weak spot: a
+bare "AI" in a title admits roles that are not AI, ML or data work. Its
+three misses were an AI customer-success manager (Glean), a forward-deployed
+AI security consultant (AHEAD) and an AI product manager (HackerOne). On the
+rebuilt corpus, 198 of 666 postings had "AI" as their only target word.
+
+**Scope.** Two options were put: A, narrow, only roles like the three
+misses; B, everything the labelling guide calls a wrong family. A was
+chosen. Added to `_EXCLUDED_TERMS` in `sources/filters.py`, word-bounded
+like the existing entries and checked before the target words:
+`customer success`, `success manager` (the Glean titles read "AI Success
+Manager", without "customer"), `consultants?` and `product managers?`.
+`tests/test_filters.py` pins the three real titles and four other wordings
+as excluded, and eight guard titles (managers of data and ML work among
+them) as kept.
+
+**Dry run and prune.** `joblens transform --prune --dry-run` listed 41
+postings: 13 product managers, 2 success managers and 26 consultants. Of
+the 41, 22 had passed through a target word other than a bare "AI" (data,
+analytics, python), so the consultant rule also drops consulting roles
+that are data work, such as twelve Beghou data-warehouse and analytics
+consultants and Capco's "Data Consultant". 24 of the 41 were judged in
+`data/golden/retrieval.yaml` (35 judgements, all in verified queries);
+the eval drops them now that the postings are gone. `joblens transform
+--prune` then deleted 41, the same as the dry run, with none of the
+postings lacking a bronze row.
+
+| measure | before | after |
+| --- | ---: | ---: |
+| postings | 666 | 625 |
+| greenhouse / lever / ashby | 378 / 218 / 70 | 365 / 193 / 67 |
+| whole / section chunks | 666 / 4,696 | 625 / 4,362 |
+| judgements (of 918) pointing at a posting | 729 | 694 |
+
+**Baseline.** Re-measured and committed (`--update-baseline`) on the
+625-posting corpus, 24 judged queries. Against the old baseline, which was
+measured on the lost 697-posting corpus (entry above), the gate failed on
+hybrid (whole): precision@5 0.825 to 0.750, precision@10 0.838 to 0.692,
+nDCG@10 0.671 to 0.600. The change mixes the rebuild, the prune, and
+postings added since grading that are unjudged and count as not relevant,
+so it is not a measure of the filter alone.
+
+| configuration | nDCG@10 old | nDCG@10 new | recall@10 old | recall@10 new | MRR old | MRR new |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.448 | 0.386 | 0.219 | 0.245 | 0.735 | 0.711 |
+| vector (whole) | 0.700 | 0.596 | 0.287 | 0.305 | 0.889 | 0.844 |
+| vector (section) | 0.665 | 0.558 | 0.311 | 0.336 | 0.865 | 0.758 |
+| hybrid (whole) | 0.671 | 0.600 | 0.322 | 0.345 | 0.893 | 0.877 |
+| hybrid (section) | 0.642 | 0.541 | 0.293 | 0.331 | 0.837 | 0.764 |
+| hybrid + rerank | 0.707 | 0.590 | 0.299 | 0.313 | 0.927 | 0.837 |
+
+Hybrid (whole), the default, now leads on recall@10, MRR and nDCG@10. About
+21 relevant postings per query remain, which caps recall@10 at 0.534.
+
+**Backup.** Taken before the prune, outside the repository:
+`JobLens-labelling/backup_2026-10-27.dump` (45 MB, `pg_dump -Fc`).
+
+## 2026-10-27 - Chat re-scored on the Indian corpus
+
+**Why.** The chat golden set was written for the v1 global corpus (Rust
+roles, jobs in Germany, hourly contract rates), chat was last scored on 8
+of its questions on v1, and the refusal threshold `MIN_SIMILARITY = 0.30`
+was measured there too.
+
+**How the questions were written.** From the 625-posting corpus after the
+role filter change. The corpus was profiled first (cities, and how many
+postings mention each of several dozen technologies and countries), then
+15 answerable questions were drafted, each checked against postings that
+answer it, and 5 must-refuse ones: a general-knowledge question and four
+about things no posting mentions, each proved by a query over title,
+location and description (Brazil, COBOL, Haskell, Sri Lanka: 0 postings
+each). Germany, Japan and Canada were avoided as must-refuse topics because
+12 or 13 postings mention each, mostly in company introductions. Two
+questions were shaped by reading the matching text, not just counting
+matches: no data engineer posting states a salary figure, only "competitive
+salary", so c08 expects the answer to say no figure is given; of the nine
+postings that mention visa sponsorship only Anthropic's three say they
+sponsor, while Addepar and EarnIn say it is not available, so c12 expects
+the answer to tell them apart. Jetti Raviteja approved all 20 before they
+were written (`data/golden/chat.yaml`, version 2, c01 to c20).
+
+**Scorecard** (`joblens eval --suite chat`, `chat_answer/v3`, llama3.1 8B
+Q4_K_M on Ollama, 20 questions, 1,644 s):
+
+| metric | score |
+| --- | ---: |
+| faithfulness (judge) | 0.85 |
+| completeness (judge) | 0.93 |
+| citation rate | 0.55 |
+| refusal accuracy | 1.00 |
+| cost | $0.0000 |
+
+Refusal accuracy counts only the 5 must-refuse questions, and all 5 were
+refused. Citation rate counts all 20: 11 answers cited a posting, so 4 of
+the 15 answerable questions ended without a citation, declined or answered
+uncited. The run keeps totals only, so which 4 is not recorded, except c12,
+which the similarity gate declines before the model is called (below). The
+judge is still uncalibrated.
+
+**Similarity.** The score `chat.collect_sources` gates on, the best cosine
+similarity from `retrieval.vector_search(..., strategy="whole", limit=1)`:
+
+| id | must_refuse | best score | question |
+| --- | --- | ---: | --- |
+| c16 | True | 0.160 | what is the capital of Peru? |
+| c12 | False | 0.297 | which companies say they offer visa sponsorship? |
+| c17 | True | 0.344 | which jobs are based in Brazil? |
+| c11 | False | 0.361 | which roles involve computer vision? |
+| c18 | True | 0.364 | which roles ask for COBOL experience? |
+| c04 | False | 0.398 | which roles involve building RAG systems or LLM agents with LangChain or LangGraph? |
+| c15 | False | 0.400 | which roles ask for both Airflow and dbt? |
+| c20 | True | 0.450 | which companies are hiring in Sri Lanka? |
+| c19 | True | 0.476 | are there any Haskell developer roles? |
+| c09 | False | 0.511 | are there roles at quantitative trading or hedge fund firms? |
+| c06 | False | 0.517 | which companies are hiring MLOps engineers? |
+| c05 | False | 0.573 | are there remote machine learning engineer roles open to people in India? |
+| c14 | False | 0.585 | what does an analytics engineer do, according to these postings? |
+| c01 | False | 0.606 | which companies are hiring data engineers in Hyderabad? |
+| c08 | False | 0.610 | what salary do the data engineer roles offer? |
+| c02 | False | 0.615 | are there any internships in AI, ML or data? |
+| c03 | False | 0.625 | which roles ask for Databricks experience? |
+| c13 | False | 0.652 | which data scientist roles are open in Pune? |
+| c10 | False | 0.653 | which healthcare companies are hiring for data or AI roles? |
+| c07 | False | 0.762 | which data analyst roles ask for Power BI or Tableau? |
+
+Answerable 0.297 to 0.762; must-refuse 0.160 to 0.476. No single threshold
+separates them: answerable c04, c11, c12 and c15 sit at or below the
+highest must-refuse, and must-refuse c17 to c20 at or above the lowest
+answerable. A technology or country no posting mentions still lands near
+postings that share its other words ("Haskell developer" scores 0.476).
+
+**Threshold decision.** Kept at 0.30, by decision. On this set it catches
+the general-knowledge question (0.160) and declines one answerable question,
+c12 (0.297); c17 to c20 pass the gate and the model refused all four itself.
+A value above 0.160 and up to 0.297 would have gated no answerable question
+here; above 0.476 would have caught every must-refuse question but also
+declined c04, c11, c12 and c15. The comment above `MIN_SIMILARITY` now
+quotes these measurements.

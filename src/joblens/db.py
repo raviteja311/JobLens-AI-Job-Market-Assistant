@@ -224,12 +224,15 @@ returning (xmax = 0) as inserted
 
 
 def upsert_postings(
-    conn: psycopg.Connection, postings: Iterable[Posting]
+    conn: psycopg.Connection, postings: Iterable[Posting], *, commit: bool = True
 ) -> tuple[int, int]:
     """Insert or refresh postings. Returns (inserted, updated).
     The `xmax = 0` trick tells us which branch Postgres took: xmax is zero on
     a fresh insert and non-zero when the row was updated by the conflict
     clause. It is the cheapest way to get real counts out of an upsert.
+
+    commit=False leaves the writes in the open transaction, for a caller that
+    may roll them back (`transform --dry-run`).
     """
     inserted = updated = 0
     with conn.cursor() as cur:
@@ -240,8 +243,54 @@ def upsert_postings(
                 inserted += 1
             else:
                 updated += 1
-    conn.commit()
+    if commit:
+        conn.commit()
     return inserted, updated
+
+
+def postings_by_source_id(
+    conn: psycopg.Connection, source: str, source_ids: Iterable[str]
+) -> list[dict]:
+    """The postings of one source with these source_ids, for a prune to list
+    before it deletes."""
+    ids = list(source_ids)
+    if not ids:
+        return []
+    return conn.execute(
+        """
+        select id, source, source_id, title, company from postings
+         where source = %s and source_id = any(%s)
+         order by source, source_id
+        """,
+        (source, ids),
+    ).fetchall()
+
+
+def delete_postings(conn: psycopg.Connection, posting_ids: Iterable[int]) -> int:
+    """Delete postings by id, without committing. posting_chunks and
+    posting_duplicates go with them (on delete cascade, migration 002)."""
+    ids = list(posting_ids)
+    if not ids:
+        return 0
+    return conn.execute("delete from postings where id = any(%s)", (ids,)).rowcount
+
+
+def count_postings_without_bronze(
+    conn: psycopg.Connection, source: str | None = None
+) -> int:
+    """Postings with no raw_postings row at all. A prune never touches them:
+    with no payload there is nothing to re-judge."""
+    sql = """
+        select count(*) as n from postings p
+         where {where} not exists (
+               select 1 from raw_postings r
+                where r.source = p.source and r.source_id = p.source_id)
+    """
+    if source:
+        row = conn.execute(sql.format(where="p.source = %s and"), (source,)).fetchone()
+    else:
+        row = conn.execute(sql.format(where="")).fetchone()
+    return int(row["n"])
 
 
 def count_duplicates(conn: psycopg.Connection) -> int:

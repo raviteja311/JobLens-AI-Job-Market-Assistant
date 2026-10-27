@@ -104,6 +104,12 @@ _EXCLUDED_TERMS = [
     r"business development",
     r"recruiter",
     r"talent acquisition",
+    # The bare-"AI" misses from the 2026-10-09 spot check (docs/experiments.md):
+    # roles at AI companies that are not AI, ML or data work.
+    r"customer success",
+    r"success manager",
+    r"consultants?",
+    r"product managers?",
 ]
 _EXCLUDED = re.compile(r"\b(?:" + "|".join(_EXCLUDED_TERMS) + r")\b", re.IGNORECASE)
 

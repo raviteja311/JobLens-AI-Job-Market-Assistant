@@ -8,127 +8,125 @@
 # match. must_refuse marks the questions the corpus genuinely cannot answer:
 # the correct behaviour is to say so, and a fluent answer to one of these is
 # the single worst failure this system can have.
-version: 1
+#
+# Rewritten 2026-10-27 for the Indian corpus (625 postings). Every answerable
+# question was checked against postings that answer it, and every
+# must_refuse one asks for something no posting states (checked by query);
+# see docs/experiments.md.
+version: 2
 questions:
 - id: c01
-  question: which companies are hiring Rust engineers?
+  question: which companies are hiring data engineers in Hyderabad?
   expected_facts:
-  - names at least one company with a Rust role
+  - names at least one company with a data engineer posting located in Hyderabad
   - does not claim to be a complete list of the market
   must_refuse: false
 - id: c02
-  question: what skills do the machine learning roles ask for most often?
+  question: are there any internships in AI, ML or data?
   expected_facts:
-  - names specific technologies rather than generic skills
-  - the technologies named appear in the cited postings
+  - names at least one intern posting
+  - does not claim there are none
   must_refuse: false
 - id: c03
-  question: are there any founding engineer roles, and where are they based?
+  question: which roles ask for Databricks experience?
   expected_facts:
-  - names at least one founding engineer posting
-  - gives a location for at least one of them
+  - names at least one role whose cited posting mentions Databricks
+  - does not list a posting that never mentions it
   must_refuse: false
 - id: c04
-  question: what is the capital of Peru?
+  question: which roles involve building RAG systems or LLM agents with LangChain or LangGraph?
   expected_facts:
-  - says the postings do not contain this
-  must_refuse: true
+  - names at least one posting that mentions LangChain or LangGraph
+  - the technologies named appear in the cited postings
+  must_refuse: false
 - id: c05
-  question: which of these companies was founded by Elon Musk?
+  question: are there remote machine learning engineer roles open to people in India?
   expected_facts:
-  - says the postings do not say who founded these companies
-  must_refuse: true
+  - names at least one remote machine learning posting
+  - states where or how it is remote only as the posting says
+  must_refuse: false
 - id: c06
-  question: are there remote jobs that mention Kubernetes?
+  question: which companies are hiring MLOps engineers?
   expected_facts:
-  - names at least one posting mentioning Kubernetes
-  - states whether it is remote
+  - names at least one company with an MLOps posting
+  - does not claim to be a complete list of the market
   must_refuse: false
 - id: c07
+  question: which data analyst roles ask for Power BI or Tableau?
+  expected_facts:
+  - names at least one analyst role whose cited posting mentions Power BI or Tableau
+  - says which of the two tools the posting names
+  must_refuse: false
+- id: c08
   question: what salary do the data engineer roles offer?
   expected_facts:
   - quotes a salary only if a cited posting states one
-  - says that most postings do not state a salary
+  - says the postings do not state a salary figure
   must_refuse: false
-- id: c08
-  question: which posting pays the highest salary across the whole database?
-  expected_facts:
-  - says it can only speak to the postings retrieved, not the whole database
-  # Corrected after the first run. This was must_refuse: true, which
-  # contradicted its own expected_facts: the right behaviour is to answer and
-  # scope the claim, not to decline. v2 of the prompt does exactly that
-  # ("I can only see the salaries in [1], [3] and [5]") and the binary
-  # refusal check scored it as a failure. The case was mis-specified, not the
-  # answer.
-  must_refuse: false
-# Added 2026-09-26 to take the set from 8 to 20. Written against the corpus
-# as it stood that day (468 postings); each answerable question was checked
-# to have at least one posting that answers it, and each must_refuse one
-# asks for something no posting states.
 - id: c09
-  question: which postings offer hourly contract rates, and what are the rates?
+  question: are there roles at quantitative trading or hedge fund firms?
   expected_facts:
-  - names at least one posting that quotes an hourly rate
-  - every rate quoted appears in the cited posting
+  - names at least one trading or quantitative firm with a posting
+  - names a role at that firm from the cited posting
   must_refuse: false
 - id: c10
-  question: are there any internships or entry-level engineering roles?
+  question: which healthcare companies are hiring for data or AI roles?
   expected_facts:
-  - names at least one intern or entry-level posting
-  - does not claim there are none
+  - names at least one company whose cited posting describes healthcare or clinical work
+  - names a data or AI role at that company
   must_refuse: false
 - id: c11
-  question: which jobs are based in Germany, and in which cities?
+  question: which roles involve computer vision?
   expected_facts:
-  - names at least one posting located in Germany
-  - gives the city stated in the posting
+  - names at least one role whose cited posting mentions computer vision
+  - does not list a posting that never mentions it
   must_refuse: false
 - id: c12
   question: which companies say they offer visa sponsorship?
   expected_facts:
-  - names only companies whose cited posting mentions sponsorship
+  - names only companies whose cited posting says they sponsor visas
+  - does not list a company whose posting says sponsorship is not available
   must_refuse: false
 - id: c13
-  question: what does a founding engineer role involve, according to these postings?
+  question: which data scientist roles are open in Pune?
   expected_facts:
-  - describes responsibilities drawn from cited founding engineer postings
-  - does not generalise beyond the postings shown
+  - names at least one data science posting located in Pune
+  - gives the company for each role named
   must_refuse: false
 - id: c14
-  question: which roles ask for Kubernetes experience?
+  question: what does an analytics engineer do, according to these postings?
   expected_facts:
-  - names roles whose cited posting mentions Kubernetes
-  - does not list a posting that never mentions it
+  - describes responsibilities drawn from cited analytics engineer postings
+  - does not generalise beyond the postings shown
   must_refuse: false
 - id: c15
-  question: are there healthcare or clinical software roles?
+  question: which roles ask for both Airflow and dbt?
   expected_facts:
-  - names at least one healthcare or clinical posting
+  - names at least one role whose cited posting mentions both Airflow and dbt
+  - does not list a posting that names only one of them
   must_refuse: false
 - id: c16
-  question: of the postings you can see, which pays the most?
+  question: what is the capital of Peru?
   expected_facts:
-  - quotes a salary that appears in a cited posting
-  - says the claim is limited to the retrieved postings
-  must_refuse: false
+  - says the postings do not contain this
+  must_refuse: true
 - id: c17
-  question: which roles involve building RAG systems or LLM agents?
+  question: which jobs are based in Brazil?
   expected_facts:
-  - names at least one posting that mentions RAG, agents or LLM applications
-  - the technologies named appear in the cited postings
-  must_refuse: false
+  - says no posting is located in Brazil
+  must_refuse: true
 - id: c18
-  question: what are the visa requirements for working in Canada?
+  question: which roles ask for COBOL experience?
   expected_facts:
-  - says the postings do not answer this
+  - says no posting mentions COBOL
   must_refuse: true
 - id: c19
-  question: which of these companies are publicly traded?
+  question: are there any Haskell developer roles?
   expected_facts:
-  - says the postings do not state this
+  - says no posting mentions Haskell
   must_refuse: true
 - id: c20
-  question: which programming language should I learn first to get hired?
+  question: which companies are hiring in Sri Lanka?
   expected_facts:
-  - declines to give career advice the postings do not contain
+  - says no posting is located in Sri Lanka
   must_refuse: true

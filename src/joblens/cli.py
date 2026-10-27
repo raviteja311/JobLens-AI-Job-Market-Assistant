@@ -47,8 +47,22 @@ def cmd_ingest(args: argparse.Namespace) -> int:
 
 
 def cmd_transform(args: argparse.Namespace) -> int:
-    result = pipeline.transform(args.source)
+    result = pipeline.transform(args.source, prune=args.prune, dry_run=args.dry_run)
     log.info(result.summary())
+    if args.prune:
+        verb = "would delete" if args.dry_run else "deleted"
+        print(f"{verb} {result.pruned} postings the filters now reject")
+        print(f"postings with no bronze row (never deleted): {result.without_bronze}")
+        if args.dry_run:
+            for posting in sorted(
+                result.pruned_postings, key=lambda p: (p["source"], p["source_id"])
+            ):
+                print(
+                    f"  {posting['source']}:{posting['source_id']}  "
+                    f"{posting['title']}  ({posting['company']})"
+                )
+    if args.dry_run:
+        print("dry run: nothing was written")
     return 0
 
 
@@ -389,6 +403,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     transform = sub.add_parser("transform", help="re-parse bronze into silver")
     transform.add_argument("--source", choices=sorted(sources.REGISTRY))
+    transform.add_argument(
+        "--prune",
+        action="store_true",
+        help="delete postings whose latest payload no longer passes the filters",
+    )
+    transform.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="report what would change and roll everything back",
+    )
     transform.set_defaults(func=cmd_transform)
 
     sub.add_parser("stats", help="what is in the database").set_defaults(func=cmd_stats)
