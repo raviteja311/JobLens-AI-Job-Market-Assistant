@@ -2005,3 +2005,85 @@ result:
 **Reading,** from the guide: above 0.8 is strong, 0.6 to 0.8 is
 substantial, below 0.6 means a rule needs work before the numbers are worth
 quoting.
+
+## 2026-10-27 - Blind re-grade: result
+
+**What was run.** As pre-registered above: a fresh pool dump of q01, q02,
+q08, q12, q14, q15, q30, q45, q49 and q53 from the rebuilt 666-posting
+corpus (360 candidates), graded blind by Jetti Raviteja from the full
+posting text. The dump's per-query `NOTE:` lines were stripped first, by
+decision, because they carried the first pass's note text; they held no
+grades. The grades were given in chat query by query and written into the
+grades file by candidate number; every value was checked to be 0, 1 or 2
+and every candidate present.
+
+**Result** (`scripts/golden_agreement.py data/golden/retrieval.yaml
+<grades> --show 50`):
+
+| measure | value |
+| --- | ---: |
+| pairs compared | 262, over 10 queries |
+| exact agreement | 0.378 |
+| kappa, linear weight | -0.005 |
+| kappa, unweighted | 0.010 |
+
+Rows are the first pass, columns the re-grade:
+
+| | 0 | 1 | 2 |
+| --- | ---: | ---: | ---: |
+| **0** | 46 | 41 | 0 |
+| **1** | 62 | 50 | 0 |
+| **2** | 39 | 21 | 3 |
+
+Per query, linear kappa on the same pairs:
+
+| query | pairs | exact | linear kappa | first pass 0/1/2 | re-grade 0/1/2 |
+| --- | ---: | ---: | ---: | --- | --- |
+| q01 | 31 | 0.419 | 0.157 | 29/1/1 | 11/19/1 |
+| q02 | 32 | 0.562 | -0.077 | 28/4/0 | 20/12/0 |
+| q08 | 25 | 0.400 | 0.008 | 4/13/8 | 12/13/0 |
+| q12 | 21 | 0.571 | 0.292 | 9/7/5 | 17/3/1 |
+| q14 | 22 | 0.136 | 0.000 | 3/8/11 | 22/0/0 |
+| q15 | 35 | 0.200 | 0.000 | 0/15/20 | 18/17/0 |
+| q30 | 24 | 0.417 | -0.217 | 6/17/1 | 9/15/0 |
+| q45 | 25 | 0.600 | 0.203 | 8/13/4 | 5/20/0 |
+| q49 | 22 | 0.364 | 0.000 | 0/19/3 | 12/10/0 |
+| q53 | 25 | 0.120 | 0.038 | 0/15/10 | 21/3/1 |
+
+The 0.000 for q14, q15 and q49 is what kappa gives when one pass uses a
+single grade, or nearly so, on those pairs; in q14 every re-grade is 0.
+
+**Reading.** By the guide, below 0.6 means a rule needs work before the
+numbers are worth quoting. At -0.005 the two passes agree no better than
+chance. The disagreements are not symmetric: the first pass gave 63 grades
+of 2 on these pairs and the re-grade gave 3, and 39 of the first pass's 2s
+became 0s.
+
+**Disagreements and causes.** All 163 disagreements were shown query by
+query with the posting and both grades. No causes were given, so the
+guide's step 4 test (several disagreements sharing a cause) could not be
+applied.
+
+**Decision.** Keep every grade as it is, in both files, and do not change
+`docs/labelling-guide.md`. `data/golden/retrieval.yaml` is unchanged, so the
+retrieval eval did not need re-running.
+
+**Caveats that belong with the number.**
+
+- Only pairs graded in both passes are compared, not every candidate as the
+  guide asks; the first pass's corpus is gone (entry above).
+- Survival bias: the 262 pairs are postings still open 18 days later and
+  still in a top-10 pool.
+- The 98 candidates the first pass never graded are in the grades file but
+  not in `data/golden/retrieval.yaml` and not in this comparison.
+- Method differed: the query notes say the first pass was graded from
+  summaries of the full posting text; this pass was graded from the full
+  text, as the guide's rule 1 asks.
+- Recording: in q01 and q45 one more grade was given than there were
+  candidates and the last was dropped; in q49 one fewer was given and the
+  missing grade was added as the last. If a slip sat earlier in one of those
+  lists, later grades in that query are shifted by one position.
+
+The grades file and the pool dump are kept outside the repository, in
+`JobLens-labelling/regrade_2026-10-27_grades.json` and
+`regrade_2026-10-27_pool.txt`.
