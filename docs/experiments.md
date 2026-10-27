@@ -1930,3 +1930,40 @@ stop ingestion but not the audit. None did on this run.
 blog update notes, the generated header of `data/companies_in.yaml` and a
 few comments now say "companies that hire in India" and that the list came
 from EasyJobs, and the README's Phase 1 quotes this audit.
+
+## 2026-10-27 - The 697-posting development database was lost; corpus rebuilt
+
+**What happened.** The Postgres database that held the 697-posting Indian
+corpus, the one the golden set was graded on (2026-10-09) and the
+2026-10-08 and 2026-10-09 entries above were measured on, is gone. The only Docker
+volume on the development machine was created on 2026-10-27, and no dump of
+the old database existed. The cause is not known.
+
+**What that costs.** `data/eval_baseline.json` ("corpus": 697) can no
+longer be reproduced: its numbers stand as a record of what was measured on
+that corpus, not as something a fresh database will match. The golden set
+survives, because judgements key on `(source, source_id)`, never on the
+database id.
+
+**Rebuild.** `joblens migrate`, then `joblens ingest --limit 2000` (high
+enough that every board is visited) from 07:14 to 07:20 UTC, then
+`joblens embed --strategy whole --strategy section`.
+
+| measure | value |
+| --- | ---: |
+| raw jobs fetched | 23,830 |
+| postings (greenhouse / lever / ashby) | 666 (378 / 218 / 70) |
+| boards failed | 1 (Anchanto, 404) |
+| whole chunks / section chunks | 666 / 4,696 |
+
+**Golden coverage.** 729 of the 918 judged postings are in the rebuilt
+corpus; the other 189 are not, most likely because they have closed
+since 2026-10-09. A retrieval eval drops
+judged postings that are no longer present (`golden.resolve`) and scores
+new, ungraded ones as not relevant, so a re-baseline on this corpus is a
+separate decision.
+
+**Backup.** A `pg_dump -Fc` of the rebuilt database (45 MB) is kept outside
+the repository, in `JobLens-labelling/joblens_666_2026-10-27.dump`. The
+lesson: take a dump after every graded pass, before anything else touches
+the database.
