@@ -156,6 +156,7 @@ debugging a bad run all take the same code path.
 ```bash
 python -m joblens ingest --limit 200   # fetch every source into the database
 python -m joblens transform            # re-parse bronze after a parser fix
+python -m joblens transform --prune --dry-run  # list postings a changed filter would drop
 python -m joblens stats                # what is in the database right now
 python -m joblens embed                # build the vector index
 python -m joblens search "remote LLM role" --rerank
@@ -228,8 +229,11 @@ the filters keep (`data/companies_check.csv`).
 The three board sources read the 291 companies in `data/companies_in.yaml`
 and keep a job only if `sources/filters.py` places it in India and its title
 is in the AI, ML, data and analytics family. Both checks run in
-`to_posting()`, so every fetched job still reaches bronze and a changed rule
-plus `joblens transform` re-filters history. A spot check of 20 random
+`to_posting()`, so every fetched job still reaches bronze, and a changed
+rule plus `joblens transform --prune` re-filters history: the transform
+re-parses every job's latest payload and `--prune` deletes postings that no
+longer pass (`--dry-run` lists them first and writes nothing). A spot check
+of 20 random
 postings found 20/20 in India and 17/20 in a target role, counting
 AI-adjacent roles; a bare "AI" in a title is the filter's weak spot.
 
