@@ -808,8 +808,10 @@ Kept current and honest.
   are graded (918 judgements, 24 scored), all by the owner from summaries of
   the full posting text; the other 33 have no judgements yet. Agreement with
   the LLM grades is weak (weighted kappa 0.238), the human grades are much
-  more lenient, and the planned blind re-grade that would measure the
-  grader's own consistency has not been run.
+  more lenient, and a blind re-grade of 10 queries on 2026-10-27 agreed with
+  the first pass no better than chance: linear kappa -0.005 over the 262
+  candidates graded in both passes, which the labelling guide reads as below
+  0.6, a rule needs work before the numbers are worth quoting.
 - **Recall is recall over the pool**, not over the corpus. A posting no
   retriever surfaces is never judged and never counted as missed. The pool
   takes hybrid's top 30 and the other retrievers' top 10 to narrow that gap,
