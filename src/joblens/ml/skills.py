@@ -135,8 +135,14 @@ SKILLS: tuple[str, ...] = tuple(sorted(SKILL_ALIASES))
 # is a real bug we shipped once: every skill that happened to fall at the end
 # of a sentence went missing. So a dot only blocks when a letter or digit
 # follows it.
-_LEFT = r"(?<![a-z0-9+#])(?<![a-z0-9]\.)"
-_RIGHT = r"(?![a-z0-9+#])(?!\.[a-z0-9])"
+#
+# "A letter or digit" is any Unicode one, written [^\W_]: not a non-word
+# character and not the underscore, which keeps the underscore treated as it
+# always was. The class used to be [a-z0-9], so an accented letter counted as
+# a boundary and "excel" matched inside the Portuguese "Excelência".
+_ALNUM = r"[^\W_]"
+_LEFT = rf"(?<!{_ALNUM})(?<![+#])(?<!{_ALNUM}\.)"
+_RIGHT = rf"(?!{_ALNUM})(?![+#])(?!\.{_ALNUM})"
 
 
 def _compile(aliases: Sequence[str]) -> re.Pattern[str]:

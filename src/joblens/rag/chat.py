@@ -34,7 +34,9 @@ log = logging.getLogger(__name__)
 # score of 0.016, but a single retriever's rank-1 hit alone scores 1/61 =
 # 0.0164 and vector search always returns neighbours, so every question in
 # data/golden/chat.yaml passed it, "what is the capital of Peru?" included.
-# Measured on that set (466 postings, whole-posting vectors): the 15
+# Measured on that set over the v1 global corpus (466 Hacker News and
+# RemoteOK postings, whole-posting vectors), and not yet re-measured on the
+# Indian company-board corpus: the 15
 # answerable questions have a best similarity of 0.408 to 0.633; the 5 that
 # must be refused have 0.163 to 0.421. No threshold separates them all
 # (the Elon Musk question sits inside the answerable range), so 0.30 is set
@@ -45,19 +47,44 @@ MIN_SIMILARITY = 0.30
 
 NO_ANSWER = (
     "I could not find postings that answer that. This corpus is {n} job "
-    "postings from Hacker News and RemoteOK, so it will not know about a "
-    "company or a technology that none of them mention."
+    "postings{origin}, so it will not know about a company or a technology "
+    "that none of them mention."
 )
+
+# How each source reads in a sentence. A source missing from here is shown by
+# its key, which is still true, just less tidy.
+SOURCE_NAMES = {
+    "ashby": "Ashby",
+    "greenhouse": "Greenhouse",
+    "hackernews": "Hacker News",
+    "lever": "Lever",
+    "remoteok": "RemoteOK",
+}
+
+
+def _origin(sources: list[str] | None) -> str:
+    names = [SOURCE_NAMES.get(s, s) for s in sources or []]
+    if not names:
+        return ""
+    if len(names) == 1:
+        return f" collected from {names[0]}"
+    return f" collected from {', '.join(names[:-1])} and {names[-1]}"
 
 
 def no_answer(conn) -> str:
-    """The refusal, with the real corpus size rather than a number that was
-    true the week it was typed."""
+    """The refusal, with the real corpus size and sources rather than facts
+    that were true the week they were typed. It once named Hacker News and
+    RemoteOK long after the corpus had moved to the Indian company boards."""
     try:
-        n = conn.execute("select count(*) as n from postings").fetchone()["n"]
+        row = conn.execute("""
+            select count(*) as n,
+                   array_agg(distinct source order by source) as sources
+              from postings
+            """).fetchone()
+        n, sources = row["n"], row["sources"]
     except Exception:  # noqa: BLE001 - the refusal must not fail on a count
-        n = "a few hundred"
-    return NO_ANSWER.format(n=n)
+        n, sources = "a few hundred", None
+    return NO_ANSWER.format(n=n, origin=_origin(sources))
 
 
 # How much of each posting the model gets to read. Enough for requirements,

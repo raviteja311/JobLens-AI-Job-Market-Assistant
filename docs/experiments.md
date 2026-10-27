@@ -1842,3 +1842,34 @@ the LLM judge is weak (kappa 0.24) and whose stability is not yet measured
 fast configurations' +0.02 is within what a re-grade could move. The
 decision is "not proven worth the latency here", not "reranking does not
 work".
+
+---
+
+## 2026-10-27 - Unicode word boundaries in the skill regex
+
+**Finding.** Gold v2 recorded one false positive against the rules
+extractor: `excel` inside the Portuguese "Excelência", stored in the
+postings as "ExcelÃªncia" (UTF-8 read as Latin-1). The boundary classes in
+`ml/skills.py` were `[a-z0-9]`, so an accented letter counted as the end of
+a word.
+
+**Fix.** The classes are now `[^\W_]`, any Unicode letter or digit, with the
+underscore outside the class as before. The `+`, `#` and dot rules are
+unchanged. `tests/test_skills.py` pins both spellings and checks that a real
+"Excel" next to accented words still counts.
+
+**Blast radius.** Across the 464 committed fine-tuning postings (60 test,
+404 train) exactly two predictions changed, both losing that `excel`:
+`remoteok:1136570` (test) and `remoteok:1136569` (train).
+
+**Result.** The rules extractor rescored with `evaluate.score_extractor`
+against the same gold v2 (hash `256c78609120d71f`); the code before the fix
+reproduces the published row exactly.
+
+| rules extractor | micro F1 | macro F1 | precision | recall | exact | empty |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| before | 0.663 | 0.792 | 0.986 (69/70) | 0.500 (69/138) | 0.583 | 39/60 |
+| after | 0.667 | 0.809 | 1.000 (69/69) | 0.500 (69/138) | 0.600 | 40/60 |
+
+The model rows are unaffected: they never use the regex. The decision from
+Phase 6 stands and widens slightly: the rules extractor stays the default.

@@ -17,9 +17,9 @@ Trends only: chat and resume matching take about 50 seconds an answer on the
 local model.*
 
 **Live URL:** not deployed yet. The API image is published at
-`ghcr.io/raviteja311/joblens`, the pipeline that builds it is green, and the
-deploy step is waiting on a hosting account. See Phase 7. Until then, three
-commands run the whole thing:
+`ghcr.io/raviteja311/joblens`, the pipeline that builds it is green, and an
+Azure deployment script is ready and waiting on a subscription. See Phase 7.
+Until then, three commands run the whole thing:
 
 ```bash
 cp .env.example .env
@@ -56,33 +56,47 @@ Two tables carry the project. Both come from `make eval` and
 `make distil-eval` (the gold v2 skill rows from a rescore, see Phase 6); the full write-ups, including the runs that failed, are
 in [docs/experiments.md](docs/experiments.md).
 
-**Retrieval**, 58 judged queries over 466 postings, 1,379 graded
-candidates. Plain vector search over whole postings wins on nDCG and
-recall; the cross-encoder reranker wins on MRR at 130x the latency; hybrid
-trails both, which was not the expected result. The ordering held when the
-corpus was rebuilt from scratch and 7% of the judged postings expired.
+**Retrieval**, 25 human-graded queries (918 graded candidates) over the
+697-posting Indian corpus, 24 of them scored because one has no relevant
+posting, measured 2026-10-09 and committed as
+`data/eval_baseline.json`. The cross-encoder reranker leads on MRR and
+nDCG@10 but costs seconds a query, and it did not pass the decision rule
+fixed before the run (+0.05 nDCG@10 at p95 under 500 ms), so hybrid (whole)
+stays the default. The human grades leave about 28 relevant postings per
+query, which puts MRR near its ceiling and caps recall@10 at 0.421.
 
-| configuration | recall@5 | recall@10 | MRR | nDCG@10 | ms/query |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| keyword | 0.216 | 0.388 | 0.550 | 0.385 | 10 |
-| vector (whole) | **0.374** | **0.653** | 0.761 | **0.612** | 15 |
-| vector (section) | 0.333 | 0.536 | 0.743 | 0.547 | 17 |
-| hybrid (whole) | 0.367 | 0.547 | 0.770 | 0.553 | 46 |
-| hybrid + rerank | 0.362 | 0.553 | **0.797** | 0.577 | 1956 |
+| configuration | recall@5 | recall@10 | MRR | nDCG@10 | p50 ms | p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | 0.106 | 0.219 | 0.735 | 0.448 | 24 | 58 |
+| vector (whole) | 0.154 | 0.287 | 0.889 | 0.700 | **18** | **21** |
+| vector (section) | **0.177** | 0.311 | 0.865 | 0.665 | 22 | 99 |
+| hybrid (whole), default | 0.138 | **0.322** | 0.893 | 0.671 | 85 | 109 |
+| hybrid (section) | 0.163 | 0.293 | 0.837 | 0.641 | 80 | 94 |
+| hybrid + rerank | 0.167 | 0.299 | **0.927** | **0.707** | 2286 | 6494 |
 
-**Skill extraction**, 60 blind-judged postings with 138 gold mentions. The
-fine-tuned student recovered from a 0.000 collapse to 0.485, and the 80-line
-regex it was meant to replace still ships.
+The rerank latencies here came from a run on a loaded machine; the decisive
+reranker run the same day measured the same configuration at p95 3,383 ms.
+The earlier table on the v1 global corpus (58 queries, 466 postings) is kept
+under Phase 3 as history; none of its numbers apply to this corpus.
+
+**Skill extraction**, 60 blind-judged postings from the v1 global corpus
+(36 Hacker News, 24 RemoteOK) with 138 gold mentions. The fine-tuned student
+recovered from a 0.000 collapse to 0.485, and the 80-line regex it was meant
+to replace still ships.
 
 | extractor | micro F1 | precision | recall | ms/call |
 | --- | ---: | ---: | ---: | ---: |
-| rules (Phase 2 regex) | **0.663** | **0.986** | 0.500 | **5** |
+| rules (Phase 2 regex) | **0.667** | **1.000** | 0.500 | **5** |
 | teacher (llama3.1 8B) | 0.634 | 0.551 | **0.746** | 9,512 |
 | tuned-v2 (Qwen 0.5B + LoRA) | 0.485 | 0.516 | 0.457 | 4,201 |
 | base (Qwen 0.5B) | 0.104 | 0.094 | 0.116 | 6,046 |
 | tuned-v1 (collapsed) | 0.000 | 0.000 | 0.000 | 3,105 |
 
-**Chat**, last scored on 8 questions including up to 3 the corpus cannot
+The rules row was rescored on 2026-10-27, after a fix to the regex's word
+boundaries (see Phase 6); the version with the bug scored 0.663 and 0.986.
+The model rows are unaffected by that change.
+
+**Chat**, last scored on the v1 global corpus, on 8 questions including up to 3 the corpus cannot
 answer: refusal accuracy 1.00 (gated by `joblens eval` with a floor of 0.75,
 but not run in CI), citation rate 0.75, judge scores uncalibrated and
 labelled as such. The chat golden set has since
@@ -91,7 +105,8 @@ grown to 20 questions (5 must be refused) and has not been re-scored.
 ## Status
 
 Phases 0 to 7 of the [12-week plan](docs/devlog.md) are complete, Phase 7
-locally. 466 postings from 2 live sources, hybrid search over pgvector,
+locally. 697 postings from the Greenhouse, Lever and Ashby boards of 291
+Indian companies, hybrid search over pgvector,
 grounded chat and resume matching on a local LLM, an eval suite that fails
 CI on a regression, a distillation experiment whose headline is that a regex
 won, and a containerised, monitored stack with a runbook. Phase 8 is this
@@ -151,12 +166,13 @@ python -m joblens spend                # what the LLM calls have cost
 python -m joblens serve                # the API
 ```
 
-`make test` runs the pytest suite (271 tests across 20 modules); `make test-db`
+`make test` runs the pytest suite (420 tests across 28 modules); `make test-db`
 fails instead of skipping when Postgres is unreachable.
 
 ## Repo structure
 
 ```
+app.py               Streamlit dashboard: search, chat, match and trends tabs
 src/joblens/         ingestion pipeline, sources, database
 src/joblens/ml/      Phase 2: skills, clustering, trends
 src/joblens/search/  Phase 3: chunking, embeddings, retrieval, reranking
@@ -167,12 +183,18 @@ src/joblens/eval/    Phase 3+5: golden set, metrics, judge, regression gate
 src/joblens/finetune/ Phase 6: teacher labels, LoRA training, extractor benchmark
 src/joblens/observability.py  Phase 7: JSON logs, Prometheus metrics
 prompts/             versioned prompt files, one directory per prompt
+data/companies_in.yaml  the 291 Indian company boards the sources fetch
 data/golden/         the judged queries everything is scored against
+data/finetune/       Phase 6: train and test sets, gold v2 and its provenance
+artifacts/skill-lora*/  Phase 6: the four committed LoRA adapters and training logs
 data/eval_baseline.json  committed retrieval scores the CI gate compares with
 tests/               pytest suite
 migrations/          schema, applied by `joblens migrate`
 monitoring/          Phase 7: Prometheus scrape config, Grafana dashboard and alerts
-docs/                devlog, experiments, runbook, blog drafts, resume bullets
+docs/                devlog, experiments, runbook, labelling guide, Azure guide,
+                     blog drafts, resume bullets
+docs/archive/v1-global-corpus/  golden set, baseline and history of the v1 corpus
+deploy/azure/        Phase 7: Azure Container Apps deployment script
 scripts/demo_gif.py  records the README demo from the running UI
 Dockerfile           two images from one file: the API (runtime) and the UI (ui)
 ```
@@ -186,10 +208,20 @@ board with phases as milestones.
 
 ### Phase 1: Data ingestion pipeline
 
-Three source adapters behind one interface. A source is any module with
-`fetch(limit)` and `to_posting(payload)`, which is what lets the pipeline
-re-parse everything already collected after a parser fix without touching the
-network.
+Five source adapters behind one interface; three are fetched by default.
+A source is any module with `fetch(limit)` and `to_posting(payload)`, which
+is what lets the pipeline re-parse everything already collected after a
+parser fix without touching the network. Hacker News and RemoteOK, the v1
+corpus's sources, stay registered but out of the defaults so that corpus can
+still be re-parsed.
+
+The three board sources read the 291 companies in `data/companies_in.yaml`
+and keep a job only if `sources/filters.py` places it in India and its title
+is in the AI, ML, data and analytics family. Both checks run in
+`to_posting()`, so every fetched job still reaches bronze and a changed rule
+plus `joblens transform` re-filters history. A spot check of 20 random
+postings found 20/20 in India and 17/20 in a target role, counting
+AI-adjacent roles; a bare "AI" in a title is the filter's weak spot.
 
 | source | postings | API key | notes |
 | --- | ---: | --- | --- |
@@ -219,20 +251,23 @@ removed on 2026-10-08 (see Limitations).
 
 **Dedup** is an exact match on a normalised content hash of title, company and
 location, with seniority words removed. It counts duplicates rather than
-removing them: 28 on the latest run, stored in `ingestion_runs`. Phase 3 adds a
+removing them: 28 on the last v1-corpus run, stored in `ingestion_runs`. Phase 3 adds a
 second, different signal rather than replacing it.
 
 **Reliability.** Retries with backoff on 429 and 5xx, fails fast on other 4xx.
 One source failing does not stop the others. Every run writes to
-`ingestion_runs` with counts and any error. 33 of 400 Hacker News comments are
-replies rather than postings and are counted as skipped, not dropped silently.
+`ingestion_runs` with counts and any error. On the v1 corpus, 33 of 400
+Hacker News comments were replies rather than postings and were counted as
+skipped, not dropped silently.
 
 **Schedule.** `.github/workflows/ingest.yml` runs daily at 06:00 UTC and is
 idempotent, so a missed slot costs that day's postings and nothing else.
 
 ### Phase 2: Classic ML layer
 
-Everything here runs on the Phase 1 corpus. No LLM calls, and no embeddings except in
+The numbers in this section were measured on the v1 global corpus (466
+Hacker News and RemoteOK postings) and have not been re-measured on the
+Indian corpus. Everything here runs on the Phase 1 corpus. No LLM calls, and no embeddings except in
 the clustering comparison below, which reads the Phase 3 vectors. These
 are the baselines Phases 3 and 6 have to beat, so they stay in the repo
 permanently. Full write-ups in `docs/experiments.md`.
@@ -291,7 +326,12 @@ reported against the postings that could have answered the question.
 pgvector, a local MiniLM, hybrid retrieval, a cross-encoder reranker, and the
 golden set that makes all of it measurable.
 
-**The golden set** is 60 real queries in `data/golden/retrieval.yaml`, all
+The golden set and the tables in this section are from the v1 global corpus,
+kept as history in `docs/archive/v1-global-corpus/`. For the Indian corpus
+the golden set was redrafted (58 queries, 25 of them graded by a human) and
+its scores are in Results above.
+
+**The v1 golden set** was 60 real queries, all
 judged, graded 0 (no) / 1 (acceptable) / 2 (exactly what was asked). Every
 candidate that any retriever surfaces in its top 10 was graded from the full
 posting text, 1,379 judgements in all (1,274 in the first pass and 105 added
@@ -440,7 +480,8 @@ when the set had 8 questions, up to 3 of them questions the corpus genuinely
 cannot answer; it has since grown to 20 (5 must be refused) and has not been
 re-scored.
 
-Scorecard, 8 questions, `chat_answer/v2`, llama3.1 local, 12 minutes:
+Scorecard, 8 questions, `chat_answer/v2`, llama3.1 local, 12 minutes, on the
+v1 global corpus. The default chat prompt is now `chat_answer/v3`:
 
 | metric | score | gated |
 | --- | ---: | --- |
@@ -502,7 +543,11 @@ diff. Absolute floors fail the build outright; a drop of more than 0.05
 against the baseline fails it as a regression. The baseline is the last run
 recorded in the database, or, when there is none, the committed
 `data/eval_baseline.json`: scores for all six retrieval configurations,
-measured on the 466-posting corpus. CI starts from an empty database every
+measured on 24 human-graded queries over the 697-posting Indian corpus
+(2026-10-09). The retrieval floor is nDCG@10 >= 0.45 and chat's is refusal
+accuracy >= 0.75. recall@10 has no floor, because with about 28 relevant
+postings per query no retriever can reach the 0.55 it once had; it is still
+checked for regressions. CI starts from an empty database every
 time, so before that file existed the regression check never applied there
 and only the floors could fail the build. Locally it never fired either:
 `joblens eval` recorded the new run before looking up the last one, so it
@@ -537,7 +582,8 @@ over Ollama and every number below inherits that substitution.
 **Read recall first.** Precision and recall are not symmetric here, and
 recall is the line that compares the systems fairly.
 
-All rows, same frozen 60 postings, gold v2 (hash `256c78609120d71f`), 138
+All rows, same frozen 60 postings from the v1 global corpus (36 Hacker
+News, 24 RemoteOK), gold v2 (hash `256c78609120d71f`), 138
 gold mentions. `python -m joblens distil-eval` reproduces the gold v1 run;
 the gold v2 rows come from rescoring against the updated gold set.
 
@@ -577,6 +623,11 @@ Portuguese posting it matched `excel` inside `Excelência`, because the word
 boundaries in `skills.py` are ASCII and an accented letter reads as a
 boundary. Precision is 0.986 rather than 1.000, and that 0.014 is a real bug
 that the old benchmark made structurally invisible.
+
+**Fixed 2026-10-27.** The boundaries are now Unicode-aware. Rescored against
+the same gold v2, the rules extractor reaches precision 1.000 (69/69), recall
+0.500, micro F1 0.667 and macro F1 0.809; the table above keeps the rows as
+they were measured.
 
 The circularity was worth about 0.05 F1. Against v1 the regex led the teacher
 0.753 to 0.671; against v2 it leads 0.663 to 0.634.
@@ -687,10 +738,13 @@ Containers run as an unprivileged user with no compiler or git installed.
 
 **Not done yet, and why.**
 
-- **No public URL.** Deploying needs an account on Railway, Fly.io or Cloud
-  Run plus a hosted Postgres with pgvector, and those are the owner's to
-  create. The image, the compose file and the pipeline up to the registry
-  push are ready; the deploy step is one job away.
+- **No public URL.** An Azure deployment is prepared but not yet run:
+  `deploy/azure/deploy.sh` creates a PostgreSQL Flexible Server with
+  pgvector, Container Apps for the API and the dashboard, and a scheduled
+  Container Apps Job for the daily ingest, with chat switched off
+  (`LLM_BACKEND=none`) because Container Apps cannot host Ollama.
+  `docs/deploy-azure.md` is the walkthrough. The subscription is the
+  owner's to create.
 - **Grafana runs locally, not on Grafana Cloud.** Same reason. The dashboard
   and alert rules are provisioned from files and import unchanged into a
   Grafana Cloud stack.
@@ -730,41 +784,53 @@ a permissions check with each source first.
 
 Kept current and honest.
 
-- **The corpus is small and skewed.** 466 postings from 2 sources, 79% of them
-  Hacker News comments, which over-represents startups and US remote work. Any
-  "the market wants X" claim from this data is really "these two boards wanted
-  X this month".
-- **The golden set was graded by a model and reviewed by one person.** All 60
-  queries are judged from the full posting text (1,379 judgements), graded by
-  Claude reading the postings; the owner then reviewed the 232 grade-2
-  judgements still in the corpus and kept all of them (2026-09-26). The grade
-  0 and 1 judgements have not had a human pass, and there is no second
-  reviewer, so no inter-rater agreement is reported.
+- **The corpus is small and skewed.** 697 postings from the public boards of
+  291 hand-listed Indian companies, so it over-represents companies that use
+  Greenhouse, Lever or Ashby. Any "the market wants X" claim from this data is
+  really "these companies wanted X this month".
+- **The role filter is generous.** A bare "AI" in a title admits marketing,
+  design, support and hardware roles at AI companies: 17 of 20 sampled
+  postings were a target role counting AI-adjacent ones, about 13 under the
+  labelling guide's stricter role families.
+- **The golden set is small and has one grader.** Of 58 drafted queries, 25
+  are graded (918 judgements, 24 scored), all by the owner from summaries of
+  the full posting text; the other 33 have no judgements yet. Agreement with
+  the LLM grades is weak (weighted kappa 0.238), the human grades are much
+  more lenient, and the planned blind re-grade that would measure the
+  grader's own consistency has not been run.
 - **Recall is recall over the pool**, not over the corpus. A posting no
-  retriever surfaces is never judged and never counted as missed. At 466
-  postings the gap is small; it would not be at 50,000.
+  retriever surfaces is never judged and never counted as missed. The pool
+  takes hybrid's top 30 and the other retrievers' top 10 to narrow that gap,
+  not close it.
 - **The LLM judge is uncalibrated.** See Phase 5.
-- **Hybrid retrieval is worse than vector alone** on these queries. It is kept
-  for rare-token queries, which the current golden set under-represents.
+- **Hybrid retrieval does not beat vector alone across the board.** On the
+  current set vector (whole) leads on nDCG@10 (0.700 against 0.671) and hybrid
+  on recall@10 (0.322 against 0.287) and MRR; on the v1 set vector won
+  outright. Hybrid is kept for rare-token queries, which the golden set
+  under-represents.
 - **No salary information.** None of the Greenhouse, Lever or Ashby postings
   states pay, so there is no salary prediction, no salary band and no salary
   figure anywhere in the product. The parser is kept for a future source.
-- **Locations are a lookup table, not a geocoder.** 37% of postings have no
-  usable location.
+- **Locations are a lookup table, not a geocoder.** City matching knows a
+  fixed list of Indian cities and spellings (`search/places.py`). On the v1
+  corpus 37% of postings had no usable location; that has not been measured
+  on the Indian corpus.
 - **Skill extraction knows 80 skills** and nothing else.
 - **`/chat` on a local model takes about 50 seconds an answer** on CPU, and
   llama3.1 is weaker than an API model at following the citation format.
 - **The rate limit is per process and in memory.** Correct for one process,
   wrong the moment there are two. Same for the in-process LLM cost counter;
   the per-day figure comes from the database and is the one to trust.
-- **No public URL and no hosted monitoring.** Phase 7 stops at the
-  registry push. Deploying and Grafana Cloud both need accounts that are
-  the owner's to create; see the Phase 7 section for exactly what is
-  missing.
+- **No public URL and no hosted monitoring.** The Azure deployment script
+  is ready but has not been run, and Grafana Cloud needs an account; both
+  are the owner's to create. See the Phase 7 section.
 - **The API image is 1.6GB unpacked.** 564MB of that is torch, used to
   run two small sentence-transformer models. Exporting them to ONNX and
   dropping torch from the runtime is the obvious next step if image size
   ever matters; it has not been measured.
+- **The chat golden set predates the Indian corpus.** Its questions (Rust
+  roles, jobs in Germany, hourly contract rates) were written for the v1
+  corpus, and chat has not been scored since the switch.
 - **The chat eval does not run in CI.** A local Llama on a GitHub runner
   takes half an hour, so `/chat` is scored on a schedule and before a
   release, and the deploy gate is retrieval only.
@@ -778,7 +844,8 @@ Kept current and honest.
   the student inherits that model's blind spots and its habit of inventing
   the most common skills. There is no frontier API model in the comparison
   because no key is configured.
-- **The Phase 6 test set is 60 postings** with 138 gold mentions. Differences
+- **The Phase 6 test set is 60 postings** from the v1 corpus, with 138 gold
+  mentions. Differences
   smaller than a few points of F1 are not meaningful at that size.
 - **Gold v2 has one adjudicator and no measured agreement.** All 60 postings
   were judged by the same person in one sitting, so a second pass would

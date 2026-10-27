@@ -29,6 +29,20 @@ def test_does_not_match_inside_longer_words():
     assert "java" not in skills.extract_skills("Frontend work in JavaScript")
 
 
+def test_accented_letters_are_part_of_the_word():
+    # The boundaries used to be ASCII, so an accented letter read as the end
+    # of a word: "excel" matched inside the Portuguese "Excelência" and was a
+    # false positive in the gold v2 benchmark (docs/experiments.md).
+    assert "excel" not in skills.extract_skills("Buscamos Excelência operacional")
+    # The form actually stored for those postings: UTF-8 read as Latin-1.
+    assert "excel" not in skills.extract_skills("Buscamos ExcelÃªncia operacional")
+    assert "excel" not in skills.extract_skills("Não ÉExcel")
+    assert "java" not in skills.extract_skills("javaé")
+    # A real mention next to accented words, or in non-English text, still counts.
+    assert "excel" in skills.extract_skills("Experiência com Excel e SQL")
+    assert "python" in skills.extract_skills("Conhecimento em Python, é essencial")
+
+
 def test_empty_text_is_not_an_error():
     assert skills.extract_skills(None) == []
     assert skills.extract_skills("") == []
