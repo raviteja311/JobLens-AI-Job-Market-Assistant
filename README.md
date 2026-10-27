@@ -17,9 +17,9 @@ Trends only: chat and resume matching take about 50 seconds an answer on the
 local model.*
 
 **Live URL:** not deployed yet. The API image is published at
-`ghcr.io/raviteja311/joblens`, the pipeline that builds it is green, and the
-deploy step is waiting on a hosting account. See Phase 7. Until then, three
-commands run the whole thing:
+`ghcr.io/raviteja311/joblens`, the pipeline that builds it is green, and an
+Azure deployment script is ready and waiting on a subscription. See Phase 7.
+Until then, three commands run the whole thing:
 
 ```bash
 cp .env.example .env
@@ -166,12 +166,13 @@ python -m joblens spend                # what the LLM calls have cost
 python -m joblens serve                # the API
 ```
 
-`make test` runs the pytest suite (271 tests across 20 modules); `make test-db`
+`make test` runs the pytest suite (420 tests across 28 modules); `make test-db`
 fails instead of skipping when Postgres is unreachable.
 
 ## Repo structure
 
 ```
+app.py               Streamlit dashboard: search, chat, match and trends tabs
 src/joblens/         ingestion pipeline, sources, database
 src/joblens/ml/      Phase 2: skills, clustering, trends
 src/joblens/search/  Phase 3: chunking, embeddings, retrieval, reranking
@@ -182,12 +183,18 @@ src/joblens/eval/    Phase 3+5: golden set, metrics, judge, regression gate
 src/joblens/finetune/ Phase 6: teacher labels, LoRA training, extractor benchmark
 src/joblens/observability.py  Phase 7: JSON logs, Prometheus metrics
 prompts/             versioned prompt files, one directory per prompt
+data/companies_in.yaml  the 291 Indian company boards the sources fetch
 data/golden/         the judged queries everything is scored against
+data/finetune/       Phase 6: train and test sets, gold v2 and its provenance
+artifacts/skill-lora*/  Phase 6: the four committed LoRA adapters and training logs
 data/eval_baseline.json  committed retrieval scores the CI gate compares with
 tests/               pytest suite
 migrations/          schema, applied by `joblens migrate`
 monitoring/          Phase 7: Prometheus scrape config, Grafana dashboard and alerts
-docs/                devlog, experiments, runbook, blog drafts, resume bullets
+docs/                devlog, experiments, runbook, labelling guide, Azure guide,
+                     blog drafts, resume bullets
+docs/archive/v1-global-corpus/  golden set, baseline and history of the v1 corpus
+deploy/azure/        Phase 7: Azure Container Apps deployment script
 scripts/demo_gif.py  records the README demo from the running UI
 Dockerfile           two images from one file: the API (runtime) and the UI (ui)
 ```
@@ -201,10 +208,20 @@ board with phases as milestones.
 
 ### Phase 1: Data ingestion pipeline
 
-Three source adapters behind one interface. A source is any module with
-`fetch(limit)` and `to_posting(payload)`, which is what lets the pipeline
-re-parse everything already collected after a parser fix without touching the
-network.
+Five source adapters behind one interface; three are fetched by default.
+A source is any module with `fetch(limit)` and `to_posting(payload)`, which
+is what lets the pipeline re-parse everything already collected after a
+parser fix without touching the network. Hacker News and RemoteOK, the v1
+corpus's sources, stay registered but out of the defaults so that corpus can
+still be re-parsed.
+
+The three board sources read the 291 companies in `data/companies_in.yaml`
+and keep a job only if `sources/filters.py` places it in India and its title
+is in the AI, ML, data and analytics family. Both checks run in
+`to_posting()`, so every fetched job still reaches bronze and a changed rule
+plus `joblens transform` re-filters history. A spot check of 20 random
+postings found 20/20 in India and 17/20 in a target role, counting
+AI-adjacent roles; a bare "AI" in a title is the filter's weak spot.
 
 | source | postings | API key | notes |
 | --- | ---: | --- | --- |
@@ -721,10 +738,13 @@ Containers run as an unprivileged user with no compiler or git installed.
 
 **Not done yet, and why.**
 
-- **No public URL.** Deploying needs an account on Railway, Fly.io or Cloud
-  Run plus a hosted Postgres with pgvector, and those are the owner's to
-  create. The image, the compose file and the pipeline up to the registry
-  push are ready; the deploy step is one job away.
+- **No public URL.** An Azure deployment is prepared but not yet run:
+  `deploy/azure/deploy.sh` creates a PostgreSQL Flexible Server with
+  pgvector, Container Apps for the API and the dashboard, and a scheduled
+  Container Apps Job for the daily ingest, with chat switched off
+  (`LLM_BACKEND=none`) because Container Apps cannot host Ollama.
+  `docs/deploy-azure.md` is the walkthrough. The subscription is the
+  owner's to create.
 - **Grafana runs locally, not on Grafana Cloud.** Same reason. The dashboard
   and alert rules are provisioned from files and import unchanged into a
   Grafana Cloud stack.
