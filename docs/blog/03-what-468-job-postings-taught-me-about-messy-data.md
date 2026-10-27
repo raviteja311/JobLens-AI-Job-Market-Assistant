@@ -7,6 +7,10 @@ boards yield in a few weeks and I would rather quote the real number.
 Everything below is from the devlog and `docs/experiments.md` in
 [JobLens](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant).*
 
+*Update, 2026-10-27: JobLens has since moved to 697 postings from the
+boards of 291 Indian companies, and the Excelência bug in section 8 has
+been fixed. Everything below describes the original two-board corpus.*
+
 ---
 
 Kaggle CSVs are clean. That is what makes them useless for learning data
@@ -178,5 +182,5 @@ celebrate.
 468 postings from two boards, 79% of them Hacker News comments, which
 over-represents startups and US remote work. Any "the market wants X" claim
 from this data is really "these two boards wanted X this month". That
-sentence is in the README's limitations section and stays there until the
-corpus earns its removal.
+sentence stayed in the README's limitations section for as long as this
+was the corpus.

@@ -35,7 +35,9 @@ The second thing it told me was that hybrid search, once it worked, lost
 to plain vector search: recall@10 0.55 against 0.65 across 58 judged
 queries. Every write-up says hybrid wins. On mine it came third. Reranking
 won exactly one column, MRR, at 130 times the latency. And my first 15-query
-table, graded from snippets, had been flattering everything.
+table, graded from snippets, had been flattering everything. (On the
+human-graded set I built later, the picture is closer: vector leads nDCG,
+hybrid leads recall.)
 
 The third thing was about me. My refusal detector for the chat endpoint was
 a list of phrases, and it had scored three correct refusals as failures. I
@@ -76,7 +78,9 @@ Fixing that took it to 0.38. Then I found my benchmark could not fail the
 baseline: the gold labels were built from the regex's own output, so its
 precision was exactly 1.000 by construction. I had published that as a
 result. Rebuilt the gold set blind and the regex dropped to 0.986, because it
-had matched "excel" inside a Portuguese "Excelência". That 0.014 was real.
+had matched "excel" inside a Portuguese "Excelência". That 0.014 was real,
+and fixing the word boundaries took it back to a precision of 1.000 that
+this time means something.
 
 Final table on 60 postings: regex 0.66 F1 at 5 ms, 8B teacher 0.63 at
 9.5 seconds, fine-tuned student 0.49 at 4.2 seconds. The regex cannot
@@ -121,7 +125,8 @@ Eight things 468 real postings taught me that a Kaggle CSV never would:
 6. Two dedup methods found 26 pairs each with only 19 in common. That is
    information, not a bug.
 7. Never key anything on an auto-increment id. A re-ingest renumbers it.
-8. Word boundaries are ASCII. "excel" matched inside "Excelência".
+8. Word boundaries were ASCII. "excel" matched inside "Excelência" until
+   I switched to Unicode-aware ones.
 
 Full write-up: [link to post 3]
 

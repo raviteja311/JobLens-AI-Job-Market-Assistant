@@ -7,6 +7,10 @@ than an API, and the result was not the one the title promised. Every number
 is from `docs/experiments.md` in
 [JobLens](https://github.com/raviteja311/JobLens-AI-Job-Market-Assistant).*
 
+*Update, 2026-10-27: the Unicode word-boundary bug described below has
+been fixed. Rescored on the same gold set, the regex reaches precision
+1.000 and micro F1 0.667; the table below is left as measured.*
+
 ---
 
 The pitch for distillation is simple. You have a task an LLM does well but
@@ -146,8 +150,8 @@ additive pass over all 60 postings for skills neither labeller had proposed.
 206 occurrences judged, 116 kept, 90 dropped, 22 added.
 
 One dropped term came from the regex. On a Portuguese posting it matched
-`excel` inside `Excelência`, because the word boundaries are ASCII and an
-accented letter reads as a boundary. Precision went from 1.000 to 0.986. That
+`excel` inside `Excelência`, because the word boundaries were ASCII and an
+accented letter read as a boundary. Precision went from 1.000 to 0.986. That
 0.014 is a real bug the first gold set had made structurally invisible.
 
 ## The final table
