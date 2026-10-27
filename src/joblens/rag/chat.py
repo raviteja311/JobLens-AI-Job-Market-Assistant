@@ -34,7 +34,9 @@ log = logging.getLogger(__name__)
 # score of 0.016, but a single retriever's rank-1 hit alone scores 1/61 =
 # 0.0164 and vector search always returns neighbours, so every question in
 # data/golden/chat.yaml passed it, "what is the capital of Peru?" included.
-# Measured on that set (466 postings, whole-posting vectors): the 15
+# Measured on that set over the v1 global corpus (466 Hacker News and
+# RemoteOK postings, whole-posting vectors), and not yet re-measured on the
+# Indian company-board corpus: the 15
 # answerable questions have a best similarity of 0.408 to 0.633; the 5 that
 # must be refused have 0.163 to 0.421. No threshold separates them all
 # (the Elon Musk question sits inside the answerable range), so 0.30 is set

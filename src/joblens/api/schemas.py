@@ -60,9 +60,11 @@ class ChatResponse(BaseModel):
     # Everything the model was given, cited or not, so a client can still
     # show what retrieval found.
     retrieved: list[Citation] = Field(default_factory=list)
-    # True when retrieval found nothing worth answering from. The endpoint
-    # says so rather than letting the model improvise, and the flag lets a
-    # client render that case differently.
+    # True when the answer cites at least one supplied posting and invents
+    # no citation number. False when retrieval found nothing worth answering
+    # from (the model is not called and the reply is a refusal), when the
+    # model answered without citing anything, or when it cited a number it
+    # was never given; the flag lets a client render those cases differently.
     grounded: bool
     took_ms: float
     cost_usd: float
