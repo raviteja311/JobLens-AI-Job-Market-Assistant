@@ -1967,3 +1967,41 @@ separate decision.
 the repository, in `JobLens-labelling/joblens_666_2026-10-27.dump`. The
 lesson: take a dump after every graded pass, before anything else touches
 the database.
+
+## 2026-10-27 - Blind re-grade: planned
+
+**Pre-registration.** Written and committed before any re-grading, following
+"Measuring consistency" in `docs/labelling-guide.md`. The first pass was
+graded on 2026-10-09; this is 18 days later.
+
+**What.** 10 queries sampled from the ids of the 25 verified queries in
+`data/golden/retrieval.yaml`:
+
+    random.seed(20261027)
+    sorted(random.sample(sorted(ids), 10))
+
+which gives `q01 q02 q08 q12 q14 q15 q30 q45 q49 q53`.
+
+**How.** A fresh pool dump of those 10 queries with `scripts/golden_pool.py`,
+graded blind from the dump, not the YAML, by Jetti Raviteja in one sitting,
+then compared with the first pass by `scripts/golden_agreement.py`
+(linearly weighted Cohen's kappa, plus unweighted kappa and exact
+agreement), overall and per query.
+
+**Where this departs from the guide.** The guide compares the two passes
+"over every candidate in those 10 queries". The first pass's corpus is lost
+(entry above), so the pools are drawn from the rebuilt 666-posting corpus,
+and only pairs graded in both passes can be compared: 262 of the 356
+first-pass judgements on these queries, measured before grading from the
+judged keys alone, no grades read. Two consequences, to be stated with the
+result:
+
+- Survival bias. The 262 are postings still open 18 days later and still in
+  a top-10 pool, not a random subset of the first pass.
+- The fresh pools also hold 98 candidates the first pass never graded. They are
+  graded blind with the rest but have nothing to be compared with; whether
+  they go into the golden set is a separate decision.
+
+**Reading,** from the guide: above 0.8 is strong, 0.6 to 0.8 is
+substantial, below 0.6 means a rule needs work before the numbers are worth
+quoting.
