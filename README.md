@@ -100,11 +100,13 @@ The rules row was rescored on 2026-10-27, after a fix to the regex's word
 boundaries (see Phase 6); the version with the bug scored 0.663 and 0.986.
 The model rows are unaffected by that change.
 
-**Chat**, last scored on the v1 global corpus, on 8 questions including up to 3 the corpus cannot
-answer: refusal accuracy 1.00 (gated by `joblens eval` with a floor of 0.75,
-but not run in CI), citation rate 0.75, judge scores uncalibrated and
-labelled as such. The chat golden set has since
-grown to 20 questions (5 must be refused) and has not been re-scored.
+**Chat**, scored 2026-10-27 on the 625-posting corpus with 20 questions
+written for it (5 must be refused), `chat_answer/v3` on a local llama3.1:
+refusal accuracy 1.00 (gated by `joblens eval` with a floor of 0.75, but not
+run in CI), citation rate 0.55, faithfulness 0.85 and completeness 0.93 from
+a judge that is uncalibrated and labelled as such. Refusal accuracy counts
+only the 5 must-refuse questions; 4 of the 15 answerable ones ended without
+a citation, one of them declined by the similarity gate.
 
 ## Status
 
@@ -497,8 +499,9 @@ regression. An eval that only prints numbers is a report; this one is a test.
 **Retrieval** is scored against the golden set above. **Chat** is scored
 against the QA pairs in `data/golden/chat.yaml`. The scorecard below was run
 when the set had 8 questions, up to 3 of them questions the corpus genuinely
-cannot answer; it has since grown to 20 (5 must be refused) and has not been
-re-scored.
+cannot answer. The set has since been rewritten for the Indian corpus (20
+questions, 5 must be refused) and re-scored on 2026-10-27; that scorecard is
+under Results.
 
 Scorecard, 8 questions, `chat_answer/v2`, llama3.1 local, 12 minutes, on the
 v1 global corpus. The default chat prompt is now `chat_answer/v3`:
@@ -857,9 +860,6 @@ Kept current and honest.
   run two small sentence-transformer models. Exporting them to ONNX and
   dropping torch from the runtime is the obvious next step if image size
   ever matters; it has not been measured.
-- **The chat golden set predates the Indian corpus.** Its questions (Rust
-  roles, jobs in Germany, hourly contract rates) were written for the v1
-  corpus, and chat has not been scored since the switch.
 - **The chat eval does not run in CI.** A local Llama on a GitHub runner
   takes half an hour, so `/chat` is scored on a schedule and before a
   release, and the deploy gate is retrieval only.

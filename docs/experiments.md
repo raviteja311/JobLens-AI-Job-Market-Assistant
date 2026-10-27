@@ -2146,3 +2146,85 @@ Hybrid (whole), the default, now leads on recall@10, MRR and nDCG@10. About
 
 **Backup.** Taken before the prune, outside the repository:
 `JobLens-labelling/backup_2026-10-27.dump` (45 MB, `pg_dump -Fc`).
+
+## 2026-10-27 - Chat re-scored on the Indian corpus
+
+**Why.** The chat golden set was written for the v1 global corpus (Rust
+roles, jobs in Germany, hourly contract rates), chat was last scored on 8
+of its questions on v1, and the refusal threshold `MIN_SIMILARITY = 0.30`
+was measured there too.
+
+**How the questions were written.** From the 625-posting corpus after the
+role filter change. The corpus was profiled first (cities, and how many
+postings mention each of several dozen technologies and countries), then
+15 answerable questions were drafted, each checked against postings that
+answer it, and 5 must-refuse ones: a general-knowledge question and four
+about things no posting mentions, each proved by a query over title,
+location and description (Brazil, COBOL, Haskell, Sri Lanka: 0 postings
+each). Germany, Japan and Canada were avoided as must-refuse topics because
+12 or 13 postings mention each, mostly in company introductions. Two
+questions were shaped by reading the matching text, not just counting
+matches: no data engineer posting states a salary figure, only "competitive
+salary", so c08 expects the answer to say no figure is given; of the nine
+postings that mention visa sponsorship only Anthropic's three say they
+sponsor, while Addepar and EarnIn say it is not available, so c12 expects
+the answer to tell them apart. Jetti Raviteja approved all 20 before they
+were written (`data/golden/chat.yaml`, version 2, c01 to c20).
+
+**Scorecard** (`joblens eval --suite chat`, `chat_answer/v3`, llama3.1 8B
+Q4_K_M on Ollama, 20 questions, 1,644 s):
+
+| metric | score |
+| --- | ---: |
+| faithfulness (judge) | 0.85 |
+| completeness (judge) | 0.93 |
+| citation rate | 0.55 |
+| refusal accuracy | 1.00 |
+| cost | $0.0000 |
+
+Refusal accuracy counts only the 5 must-refuse questions, and all 5 were
+refused. Citation rate counts all 20: 11 answers cited a posting, so 4 of
+the 15 answerable questions ended without a citation, declined or answered
+uncited. The run keeps totals only, so which 4 is not recorded, except c12,
+which the similarity gate declines before the model is called (below). The
+judge is still uncalibrated.
+
+**Similarity.** The score `chat.collect_sources` gates on, the best cosine
+similarity from `retrieval.vector_search(..., strategy="whole", limit=1)`:
+
+| id | must_refuse | best score | question |
+| --- | --- | ---: | --- |
+| c16 | True | 0.160 | what is the capital of Peru? |
+| c12 | False | 0.297 | which companies say they offer visa sponsorship? |
+| c17 | True | 0.344 | which jobs are based in Brazil? |
+| c11 | False | 0.361 | which roles involve computer vision? |
+| c18 | True | 0.364 | which roles ask for COBOL experience? |
+| c04 | False | 0.398 | which roles involve building RAG systems or LLM agents with LangChain or LangGraph? |
+| c15 | False | 0.400 | which roles ask for both Airflow and dbt? |
+| c20 | True | 0.450 | which companies are hiring in Sri Lanka? |
+| c19 | True | 0.476 | are there any Haskell developer roles? |
+| c09 | False | 0.511 | are there roles at quantitative trading or hedge fund firms? |
+| c06 | False | 0.517 | which companies are hiring MLOps engineers? |
+| c05 | False | 0.573 | are there remote machine learning engineer roles open to people in India? |
+| c14 | False | 0.585 | what does an analytics engineer do, according to these postings? |
+| c01 | False | 0.606 | which companies are hiring data engineers in Hyderabad? |
+| c08 | False | 0.610 | what salary do the data engineer roles offer? |
+| c02 | False | 0.615 | are there any internships in AI, ML or data? |
+| c03 | False | 0.625 | which roles ask for Databricks experience? |
+| c13 | False | 0.652 | which data scientist roles are open in Pune? |
+| c10 | False | 0.653 | which healthcare companies are hiring for data or AI roles? |
+| c07 | False | 0.762 | which data analyst roles ask for Power BI or Tableau? |
+
+Answerable 0.297 to 0.762; must-refuse 0.160 to 0.476. No single threshold
+separates them: answerable c04, c11, c12 and c15 sit at or below the
+highest must-refuse, and must-refuse c17 to c20 at or above the lowest
+answerable. A technology or country no posting mentions still lands near
+postings that share its other words ("Haskell developer" scores 0.476).
+
+**Threshold decision.** Kept at 0.30, by decision. On this set it catches
+the general-knowledge question (0.160) and declines one answerable question,
+c12 (0.297); c17 to c20 pass the gate and the model refused all four itself.
+A value above 0.160 and up to 0.297 would have gated no answerable question
+here; above 0.476 would have caught every must-refuse question but also
+declined c04, c11, c12 and c15. The comment above `MIN_SIMILARITY` now
+quotes these measurements.
