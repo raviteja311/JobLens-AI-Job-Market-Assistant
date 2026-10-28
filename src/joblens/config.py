@@ -58,8 +58,9 @@ class Settings(BaseSettings):
     skill_extractor: str = "rules"
     skill_adapter_path: str | None = None
 
-    # Per-caller request budget for the LLM endpoints, counted in a fixed
-    # window. Small on purpose: this is a personal project with a public URL.
+    # Per-caller request budget for the LLM endpoints, counted in a sliding
+    # 60-second window. Small on purpose: this is a personal project with a
+    # public URL.
     rate_limit_per_minute: int = 10
 
     # Which upstream addresses uvicorn trusts to set X-Forwarded-For. The

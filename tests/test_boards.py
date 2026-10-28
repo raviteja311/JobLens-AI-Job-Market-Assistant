@@ -192,3 +192,38 @@ def test_fetch_limit_counts_usable_jobs_only(fake_boards):
     items = run(limit=1)
     assert [item.source_id for item in items] == ["one:1", "one:2"]
     assert fake_boards == ["one"]
+
+
+def test_fetch_warns_when_the_limit_skips_later_boards(monkeypatch, caplog):
+    # Three boards with one usable job each. A limit of 1 is met on the first
+    # board, so the other two are never fetched and the log has to say so.
+    slugs = ["first", "second", "third"]
+    requested = []
+
+    def fake_get_json(http, url, *, params=None, attempts=3):
+        slug = url.rsplit("/", 1)[1]
+        requested.append(slug)
+        return {"jobs": [{"id": slug, "t": "Data Scientist", "l": "Pune"}]}
+
+    class FakeClient:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    monkeypatch.setattr(boards, "get_json", fake_get_json)
+    monkeypatch.setattr(boards, "client", FakeClient)
+    monkeypatch.setattr(
+        boards.companies,
+        "for_provider",
+        lambda provider: [Company(s, provider, s, "Pune") for s in slugs],
+    )
+    with caplog.at_level("WARNING", logger=boards.__name__):
+        run(limit=1)
+    assert requested == ["first"]
+    warnings = [r.getMessage() for r in caplog.records if r.levelname == "WARNING"]
+    assert warnings == [
+        "test: stopped after 1 of 3 boards at limit 1; later boards were not "
+        "fetched, raise --limit to cover them"
+    ]

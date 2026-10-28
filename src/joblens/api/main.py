@@ -1,9 +1,10 @@
 """The FastAPI backend.
 
-Four endpoints. /search and /trends are free to serve. /chat and /match each
-cost an LLM call, so they sit behind a rate limit: this is a personal project
-whose whole point is to have a public URL, and a public URL with an uncapped
-model call behind it is someone else's free inference endpoint.
+Four feature endpoints, plus /health and /metrics for operations. /search and
+/trends are free to serve. /chat and /match each cost an LLM call, so they sit
+behind a rate limit: this is a personal project whose whole point is to have a
+public URL, and a public URL with an uncapped model call behind it is someone
+else's free inference endpoint.
 
 The embedder is loaded once at startup rather than per request. Loading it
 lazily inside the handler makes the first user after a deploy wait two
@@ -155,9 +156,9 @@ def _observe(request: Request, status: int, seconds: float) -> None:
     )
 
 
-# A fixed window per client, in memory. Correct for one process and wrong the
-# moment there are two, which is fine at this size and is the kind of thing
-# that should be written down rather than discovered.
+# A sliding 60-second window per client, in memory. Correct for one process
+# and wrong the moment there are two, which is fine at this size and is the
+# kind of thing that should be written down rather than discovered.
 _hits: dict[str, deque] = defaultdict(deque)
 # Above this many distinct callers, forget the ones whose window has expired.
 # Without a sweep the dict only ever grows: one entry per IP that ever called.

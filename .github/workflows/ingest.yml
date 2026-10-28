@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
     inputs:
       limit:
-        description: postings per source
-        default: "200"
+        description: usable postings per source; boards after this many are skipped
+        default: "2000"
 
 permissions:
   contents: read
@@ -54,7 +54,7 @@ jobs:
         run: python -m joblens migrate
 
       - if: steps.config.outputs.configured == 'true'
-        run: python -m joblens ingest --limit ${{ inputs.limit || 200 }}
+        run: python -m joblens ingest --limit ${{ inputs.limit || 2000 }}
 
       - name: summary
         if: always() && steps.config.outputs.configured == 'true'

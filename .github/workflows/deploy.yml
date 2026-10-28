@@ -5,10 +5,12 @@ name: deploy
 # here, so a green tick on main means exactly what a green tick on a PR
 # meant and nothing was skipped for speed.
 #
-# The image goes to GitHub's registry under this repository, tagged with the
-# short commit SHA. There is no deploy job yet: the workflow ends at the
-# push. When one is added it should pull that tag, so what runs in production
-# is byte for byte the image the eval gate passed, not a rebuild.
+# Two images go to GitHub's registry under this repository, the API
+# (joblens) and the dashboard (joblens-ui), both tagged with the same short
+# commit SHA and latest, so one IMAGE_TAG works for deploy/azure/deploy.sh.
+# There is no deploy job yet: the workflow ends at the push. When one is
+# added it should pull that tag, so what runs in production is byte for byte
+# the image the eval gate passed, not a rebuild.
 on:
   push:
     branches: [main]
@@ -36,7 +38,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      tag: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta_api.outputs.version }}
+      api-tags: ${{ steps.meta_api.outputs.tags }}
+      ui-tags: ${{ steps.meta_ui.outputs.tags }}
 
     steps:
       - uses: actions/checkout@v7
@@ -49,7 +53,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - id: meta
+      # The same two tag rules for both images, so a tag that exists for the
+      # API also exists for the dashboard.
+      - id: meta_api
         uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository_owner }}/joblens
@@ -57,21 +63,43 @@ jobs:
             type=sha,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - uses: docker/build-push-action@v7
+      - id: meta_ui
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/joblens-ui
+          tags: |
+            type=sha,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: api image
+        uses: docker/build-push-action@v7
         with:
           context: .
+          target: runtime
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta_api.outputs.tags }}
+          labels: ${{ steps.meta_api.outputs.labels }}
+          cache-from: type=gha,scope=runtime
+          cache-to: type=gha,scope=runtime,mode=max
+
+      - name: dashboard image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: ui
+          push: true
+          tags: ${{ steps.meta_ui.outputs.tags }}
+          labels: ${{ steps.meta_ui.outputs.labels }}
+          cache-from: type=gha,scope=ui
+          cache-to: type=gha,scope=ui,mode=max
 
       - name: image summary
         run: |
           {
-            echo "### image"
+            echo "### images"
             echo
             echo '```'
-            echo "${{ steps.meta.outputs.tags }}"
+            echo "${{ steps.meta_api.outputs.tags }}"
+            echo "${{ steps.meta_ui.outputs.tags }}"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

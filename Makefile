@@ -15,7 +15,7 @@ migrate:
 	$(PY) -m joblens migrate
 
 ingest:
-	$(PY) -m joblens ingest --limit $(or $(LIMIT),200)
+	$(PY) -m joblens ingest --limit $(or $(LIMIT),2000)
 
 transform:
 	$(PY) -m joblens transform
@@ -61,12 +61,16 @@ calibrate:
 # "is everything actually running" a question with a one word answer.
 services-up:
 	docker compose up -d db
+ifeq ($(OS),Windows_NT)
 	@powershell -NoProfile -Command "if (-not (Get-Process ollama -ErrorAction SilentlyContinue)) { Start-Process -FilePath 'ollama' -ArgumentList 'serve' -WindowStyle Hidden }" || true
+else
+	@pgrep -x ollama > /dev/null || (nohup ollama serve > /dev/null 2>&1 &)
+endif
 	@$(MAKE) services-check
 
 services-check:
-	@docker compose exec -T db pg_isready -U joblens > /dev/null 		&& echo "postgres: up" 		|| (echo "postgres: DOWN, run make services-up" && exit 1)
-	@curl -s -m 5 http://localhost:11434/api/tags > /dev/null 		&& echo "ollama:   up" 		|| (echo "ollama:   DOWN, run make services-up" && exit 1)
+	@docker compose exec -T db pg_isready -U joblens > /dev/null && echo "postgres: up" || (echo "postgres: DOWN, run make services-up" && exit 1)
+	@curl -s -m 5 http://localhost:11434/api/tags > /dev/null && echo "ollama:   up" || (echo "ollama:   DOWN, run make services-up" && exit 1)
 
 # Phase 6. distil-label takes about an hour on a local 8B teacher and is
 # resumable, so it is safe to interrupt.

@@ -173,7 +173,10 @@ python -m joblens spend                # what the LLM calls have cost
 python -m joblens serve                # the API
 ```
 
-`make test` runs the pytest suite (420 tests across 28 modules); `make test-db`
+The ingest limit counts usable postings per source, and boards after the
+point where it is reached are skipped, so the scheduled job uses 2000.
+
+`make test` runs the pytest suite (446 tests across 28 modules); `make test-db`
 fails instead of skipping when Postgres is unreachable.
 
 ## Repo structure
@@ -230,7 +233,10 @@ careers page runs on Greenhouse, Lever or Ashby. It mixes companies based in
 India with global ones that hire there. `scripts/check_company_boards.py`
 re-checks every board against the live APIs: on 2026-10-27, 290 of 291 boards
 answered, 284 had at least one India-based job, and 176 had at least one job
-the filters keep (`data/companies_check.csv`).
+the filters keep (`data/companies_check.csv`). The seed file lives in the
+separate EasyJobs project and is not included here, so the committed
+`data/companies_in.yaml` is the source of truth for this repository and
+`scripts/check_company_boards.py` is the way to re-audit it.
 
 The three board sources read the 291 companies in `data/companies_in.yaml`
 and keep a job only if `sources/filters.py` places it in India and its title
@@ -835,11 +841,12 @@ Kept current and honest.
   takes hybrid's top 30 and the other retrievers' top 10 to narrow that gap,
   not close it.
 - **The LLM judge is uncalibrated.** See Phase 5.
-- **Hybrid retrieval does not beat vector alone across the board.** On the
-  current set vector (whole) leads on nDCG@10 (0.700 against 0.671) and hybrid
-  on recall@10 (0.322 against 0.287) and MRR; on the v1 set vector won
-  outright. Hybrid is kept for rare-token queries, which the golden set
-  under-represents.
+- **Hybrid retrieval barely beats vector alone.** On the 2026-10-27 baseline
+  hybrid (whole) leads vector (whole) on nDCG@10 (0.600 against 0.596),
+  recall@10 (0.345 against 0.305) and MRR (0.877 against 0.844), but the
+  nDCG@10 margin is very small. On the 2026-10-09 measurement vector (whole)
+  led on nDCG@10, and on the v1 set vector won outright. Hybrid is kept mainly
+  for rare-token queries, which the golden set under-represents.
 - **No salary information.** None of the Greenhouse, Lever or Ashby postings
   states pay, so there is no salary prediction, no salary band and no salary
   figure anywhere in the product. The parser is kept for a future source.
