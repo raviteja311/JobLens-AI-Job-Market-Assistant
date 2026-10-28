@@ -87,6 +87,18 @@ def fetch_boards(
                 if is_india(location_of(job)) and is_target_role(title_of(job)):
                     usable += 1
             if usable >= limit:
+                # Boards are visited in YAML order, so the ones after this
+                # point are skipped every run at this limit. Say so, or a
+                # scheduled ingest quietly stops refreshing them.
+                if index + 1 < len(boards):
+                    log.warning(
+                        "%s: stopped after %d of %d boards at limit %d; later "
+                        "boards were not fetched, raise --limit to cover them",
+                        provider,
+                        index + 1,
+                        len(boards),
+                        limit,
+                    )
                 break
     log.info(
         "%s: %s jobs from %s boards, %s usable, %s boards failed",

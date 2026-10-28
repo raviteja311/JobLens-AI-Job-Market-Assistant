@@ -398,7 +398,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=sorted(sources.REGISTRY),
         help="repeatable. Defaults to greenhouse, lever and ashby.",
     )
-    ingest.add_argument("--limit", type=int, default=200)
+    ingest.add_argument("--limit", type=int, default=2000)
     ingest.set_defaults(func=cmd_ingest)
 
     transform = sub.add_parser("transform", help="re-parse bronze into silver")

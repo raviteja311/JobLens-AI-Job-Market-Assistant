@@ -173,6 +173,9 @@ python -m joblens spend                # what the LLM calls have cost
 python -m joblens serve                # the API
 ```
 
+The ingest limit counts usable postings per source, and boards after the
+point where it is reached are skipped, so the scheduled job uses 2000.
+
 `make test` runs the pytest suite (420 tests across 28 modules); `make test-db`
 fails instead of skipping when Postgres is unreachable.
 

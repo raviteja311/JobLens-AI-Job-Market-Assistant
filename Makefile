@@ -15,7 +15,7 @@ migrate:
 	$(PY) -m joblens migrate
 
 ingest:
-	$(PY) -m joblens ingest --limit $(or $(LIMIT),200)
+	$(PY) -m joblens ingest --limit $(or $(LIMIT),2000)
 
 transform:
 	$(PY) -m joblens transform
