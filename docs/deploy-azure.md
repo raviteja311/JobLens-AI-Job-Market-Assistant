@@ -61,7 +61,9 @@ profile, Packages, each package, Package settings, Change visibility), or
 Container Apps cannot pull them.
 
 `latest` is still built only from `main`, by `deploy.yml`, behind the tests
-and the retrieval eval gate.
+and the retrieval eval gate. That workflow pushes both `joblens` and
+`joblens-ui` with the same `sha-<short>` and `latest` tags, so either of those
+works as `IMAGE_TAG` for `deploy.sh` as well as a preview tag.
 
 ## 2. Create or update the deployment
 
