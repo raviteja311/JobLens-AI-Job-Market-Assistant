@@ -160,7 +160,7 @@ Everything runs through one entry point, so the cron job, CI and a human
 debugging a bad run all take the same code path.
 
 ```bash
-python -m joblens ingest --limit 200   # fetch every source into the database
+python -m joblens ingest              # fetch every source (default limit 2000 per source)
 python -m joblens transform            # re-parse bronze after a parser fix
 python -m joblens transform --prune --dry-run  # list postings a changed filter would drop
 python -m joblens stats                # what is in the database right now
