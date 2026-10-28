@@ -155,9 +155,9 @@ def _observe(request: Request, status: int, seconds: float) -> None:
     )
 
 
-# A fixed window per client, in memory. Correct for one process and wrong the
-# moment there are two, which is fine at this size and is the kind of thing
-# that should be written down rather than discovered.
+# A sliding 60-second window per client, in memory. Correct for one process
+# and wrong the moment there are two, which is fine at this size and is the
+# kind of thing that should be written down rather than discovered.
 _hits: dict[str, deque] = defaultdict(deque)
 # Above this many distinct callers, forget the ones whose window has expired.
 # Without a sweep the dict only ever grows: one entry per IP that ever called.
