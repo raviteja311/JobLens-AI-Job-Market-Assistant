@@ -233,7 +233,10 @@ careers page runs on Greenhouse, Lever or Ashby. It mixes companies based in
 India with global ones that hire there. `scripts/check_company_boards.py`
 re-checks every board against the live APIs: on 2026-10-27, 290 of 291 boards
 answered, 284 had at least one India-based job, and 176 had at least one job
-the filters keep (`data/companies_check.csv`).
+the filters keep (`data/companies_check.csv`). The seed file lives in the
+separate EasyJobs project and is not included here, so the committed
+`data/companies_in.yaml` is the source of truth for this repository and
+`scripts/check_company_boards.py` is the way to re-audit it.
 
 The three board sources read the 291 companies in `data/companies_in.yaml`
 and keep a job only if `sources/filters.py` places it in India and its title

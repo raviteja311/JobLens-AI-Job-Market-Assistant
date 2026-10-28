@@ -63,6 +63,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, default=OUTPUT)
     args = parser.parse_args(argv)
 
+    # The seed lives in the separate EasyJobs project, not in this repo.
+    if not args.seed.is_file():
+        print(
+            f"seed file not found: {args.seed} (pass its path with --seed)",
+            file=sys.stderr,
+        )
+        return 2
+
     companies = parse(args.seed.read_text(encoding="utf-8"))
     missing = [c for c in companies if not all(c.values())]
     if missing:
