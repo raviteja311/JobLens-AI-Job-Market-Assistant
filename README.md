@@ -835,11 +835,12 @@ Kept current and honest.
   takes hybrid's top 30 and the other retrievers' top 10 to narrow that gap,
   not close it.
 - **The LLM judge is uncalibrated.** See Phase 5.
-- **Hybrid retrieval does not beat vector alone across the board.** On the
-  current set vector (whole) leads on nDCG@10 (0.700 against 0.671) and hybrid
-  on recall@10 (0.322 against 0.287) and MRR; on the v1 set vector won
-  outright. Hybrid is kept for rare-token queries, which the golden set
-  under-represents.
+- **Hybrid retrieval barely beats vector alone.** On the 2026-10-27 baseline
+  hybrid (whole) leads vector (whole) on nDCG@10 (0.600 against 0.596),
+  recall@10 (0.345 against 0.305) and MRR (0.877 against 0.844), but the
+  nDCG@10 margin is very small. On the 2026-10-09 measurement vector (whole)
+  led on nDCG@10, and on the v1 set vector won outright. Hybrid is kept mainly
+  for rare-token queries, which the golden set under-represents.
 - **No salary information.** None of the Greenhouse, Lever or Ashby postings
   states pay, so there is no salary prediction, no salary band and no salary
   figure anywhere in the product. The parser is kept for a future source.
